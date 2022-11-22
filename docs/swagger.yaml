@@ -1,0 +1,218 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/v1/sessions":
+    post:
+      summary: Creates a session
+      tags:
+      - Sessions
+      parameters: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/access_token"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Something went wrong, please try again
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                    password:
+                      type: string
+              required:
+              - email
+              - password
+              - password_confirmation
+  "/api/v1/sessions/refresh":
+    post:
+      summary: Refresh session
+      tags:
+      - Sessions
+      parameters: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/access_token"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Access denied
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+              required:
+              - token
+  "/api/v1/sessions/logout":
+    delete:
+      summary: Delete session
+      tags:
+      - Sessions
+      parameters: []
+      responses:
+        '204':
+          description: No content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Access denied
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+              required:
+              - token
+  "/api/v1/users":
+    post:
+      summary: Creates a user
+      tags:
+      - Users
+      parameters: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: You're registered successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Something went wrong, please try again
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                    password:
+                      type: string
+                    password_confirmation:
+                      type: string
+              required:
+              - email
+              - password
+              - password_confirmation
+    get:
+      summary: Return users list
+      tags:
+      - Users
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/users_array"
+  "/api/v1/users/:id":
+    get:
+      summary: Return user
+      tags:
+      - Users
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/user"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Something went wrong, please try again
+servers:
+- url: http://{defaultHost}
+  variables:
+    defaultHost:
+      default: localhost:3000
+components:
+  schemas:
+    user:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    access_token:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        token:
+          type: string
+        expires_in:
+          type: string
+        refresh:
+          type: string
+    users_array:
+      type: array
+      items:
+        "$ref": "#/components/schemas/user"
