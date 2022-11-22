@@ -4,18 +4,16 @@ import { ref } from 'vue';
 import { VBtn, VCard, VList, VListItem } from 'vuetify/components';
 
 import { useAuthStore } from '@/stores/auth';
-import { UsersApi } from '@/generated-sources/openapi/index';
+import { Configuration, UsersApi } from '@/generated-sources/openapi/index';
 
 const { accessToken } = useAuthStore();
 
-const usersApi = new UsersApi();
+const getUsersApi = () => new UsersApi(new Configuration({ accessToken }));
 
 const users = ref<Awaited<ReturnType<UsersApi['apiV1UsersGet']>>['data']>([]);
 const fetchUsers = async () => {
   try {
-    const response = await usersApi.apiV1UsersGet({
-      headers: { authorization: `Bearer ${accessToken}` },
-    });
+    const response = await getUsersApi().apiV1UsersGet();
     users.value = response.data;
   } catch (e) {
     console.warn({ e });
