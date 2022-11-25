@@ -9,6 +9,7 @@
           class="mb-2"
           clearable
           label="Email"
+          type="email"
         ></v-text-field>
 
         <v-text-field
@@ -17,13 +18,17 @@
           :rules="[required]"
           clearable
           label="Password"
+          type="password"
           placeholder="Enter your password"
         ></v-text-field>
 
         <v-text-field
           v-model="password_confirmation"
           :readonly="loading"
-          :rules="[required, isEqual({ field: 'password', value: password })]"
+          :rules="[
+            required,
+            isEqual({ fieldName: 'password', fieldValue: password }),
+          ]"
           clearable
           label="Password confirm"
           placeholder="Enter your password again"
@@ -87,9 +92,15 @@ const required = (v: string) => {
   return !!v || 'Field is required';
 };
 
-const isEqual = ({ field, value }: { field: string; value: string }) => {
+const isEqual = ({
+  fieldName,
+  fieldValue,
+}: {
+  fieldName: string;
+  fieldValue: string;
+}) => {
   return (currentValue: string) => {
-    return value === currentValue || `Field is not equal to ${field}`;
+    return fieldValue === currentValue || `Field is not equal to ${fieldName}`;
   };
 };
 </script>

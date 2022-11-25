@@ -10,7 +10,7 @@ import {
   type ApiV1SessionsPostRequest,
 } from '@/generated-sources/openapi/index';
 
-const { setAccessToken, setRefreshToken, isAuthenticated } = useAuthStore();
+const { setTokens } = useAuthStore();
 
 const sessionsApi = new SessionsApi();
 
@@ -21,10 +21,10 @@ const onAuthSigninFormSubmit = async (
   authSigninFormIsLoading.value = true;
   try {
     const result = await sessionsApi.apiV1SessionsPost({ user });
-    setAccessToken(result.data.token!);
-    setRefreshToken(result.data.refresh!);
-
-    console.log({ data: result.data, isAuthenticated });
+    setTokens({
+      accessToken: result.data.token!,
+      refreshToken: result.data.refresh!,
+    });
   } catch (error) {
     console.warn({ error });
   } finally {

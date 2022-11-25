@@ -9,6 +9,7 @@
           class="mb-2"
           clearable
           label="Email"
+          type="email"
         ></v-text-field>
 
         <v-text-field
@@ -17,6 +18,7 @@
           :rules="[required]"
           clearable
           label="Password"
+          type="password"
           placeholder="Enter your password"
         ></v-text-field>
 

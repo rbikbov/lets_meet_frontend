@@ -30,7 +30,7 @@ export default defineComponent({
   },
 
   emits: {
-    submit: () => {},
+    submit: null,
   },
 
   components: {

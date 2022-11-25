@@ -1,38 +1,33 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
-import { UsersApiService } from '@/services/usersApiService';
-import { HttpService } from '@/services/httpApiService';
-
-import UserCreateForm from '@/components/UserCreateForm.vue';
+import { useAuthStore } from '@/stores/auth';
 import type { AuthSignupRequest } from '@/types/api/authSignupRequest';
 
-const usersApiService = new UsersApiService(new HttpService());
+import UserCreateForm from '@/components/UserCreateForm.vue';
+import { Configuration, UsersApi } from '@/generated-sources/openapi/index';
 
-const users = ref<Awaited<ReturnType<UsersApiService['getAll']>>['data']>([]);
-const fetchUsers = async () => {
-  try {
-    const response = await usersApiService.getAll();
-    users.value = response.data;
-  } catch (e) {
-    console.error({ e });
-  }
-};
-fetchUsers();
+const { accessToken } = storeToRefs(useAuthStore());
+
+const getUsersApi = () =>
+  new UsersApi(
+    new Configuration(
+      accessToken.value ? { accessToken: accessToken.value } : {}
+    )
+  );
 
 const userCreateFormIsLoading = ref(false);
 const onUserCreateFormSubmit = async (payload: AuthSignupRequest) => {
   userCreateFormIsLoading.value = true;
   try {
-    await usersApiService.create({ user: payload });
+    await getUsersApi().apiV1UsersPost({ user: payload });
   } catch (e) {
     console.error({ e });
   } finally {
     userCreateFormIsLoading.value = false;
   }
 };
-
-// const sessionsApi = new SessionsApi();
 </script>
 
 <template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { RouterView } from 'vue-router';
 import {
   VApp,
@@ -15,10 +16,14 @@ import {
 
 import { useAuthStore } from '@/stores/auth';
 
-const { user, isAuthenticated } = useAuthStore();
-const userTitle = computed(() => (isAuthenticated ? user!.email : 'Anonimys'));
+const DEFAULT_THEME = 'dark'; // 'light'
 
-const theme = ref('light');
+const { user, isAuthenticated } = storeToRefs(useAuthStore());
+const userTitle = computed(() =>
+  isAuthenticated.value ? user.value?.email : 'Anonymous'
+);
+
+const theme = ref(DEFAULT_THEME);
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light';
@@ -27,10 +32,10 @@ const toggleTheme = () => {
 
 <template>
   <v-app :theme="theme">
-    <v-navigation-drawer theme="dark" rail permanent>
+    <v-navigation-drawer rail permanent>
       <v-list-item
         nav
-        prepend-avatar="https://randomuser.me/api/portraits/women/75.jpg"
+        prepend-avatar="https://randomuser.me/api/portraits/men/75.jpg"
       ></v-list-item>
 
       <v-divider></v-divider>

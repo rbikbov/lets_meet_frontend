@@ -6,26 +6,28 @@ import { useAuthStore } from '@/stores/auth';
 import AuthSignoutForm from '@/components/AuthSignoutForm.vue';
 
 import { Configuration, SessionsApi } from '@/generated-sources/openapi/index';
+import { storeToRefs } from 'pinia';
 
-const { accessToken, removeAccessToken, removeRefreshToken, getAccessToken } =
-  useAuthStore();
+const { accessToken } = storeToRefs(useAuthStore());
+const { removeTokens } = useAuthStore();
 
-const getSessionApi = () => {
-  const configuration = new Configuration({
-    accessToken: accessToken || getAccessToken,
-  });
-  const sessionsApi = new SessionsApi(configuration);
-  console.log(configuration.accessToken);
-  return sessionsApi;
-};
+const getSessionApi = () =>
+  new SessionsApi(
+    new Configuration(
+      accessToken.value
+        ? {
+            accessToken: accessToken.value,
+          }
+        : {}
+    )
+  );
 
 const authSignoutFormIsLoading = ref(false);
 const onAuthSignoutFormSubmit = async () => {
   authSignoutFormIsLoading.value = true;
   try {
     await getSessionApi().apiV1SessionsLogoutDelete();
-    removeAccessToken();
-    removeRefreshToken();
+    removeTokens();
   } catch (error) {
     console.warn({ error });
   } finally {

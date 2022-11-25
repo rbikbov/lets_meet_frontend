@@ -1,22 +1,32 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { VBtn, VCard, VList, VListItem } from 'vuetify/components';
 
 import { useAuthStore } from '@/stores/auth';
 import { Configuration, UsersApi } from '@/generated-sources/openapi/index';
 
-const { accessToken } = useAuthStore();
+const { accessToken } = storeToRefs(useAuthStore());
 
-const getUsersApi = () => new UsersApi(new Configuration({ accessToken }));
+const getUsersApi = () =>
+  new UsersApi(
+    new Configuration(
+      accessToken.value ? { accessToken: accessToken.value } : {}
+    )
+  );
 
+const usersIsLoading = ref(false);
 const users = ref<Awaited<ReturnType<UsersApi['apiV1UsersGet']>>['data']>([]);
 const fetchUsers = async () => {
   try {
+    usersIsLoading.value = true;
     const response = await getUsersApi().apiV1UsersGet();
     users.value = response.data;
   } catch (e) {
     console.warn({ e });
+  } finally {
+    usersIsLoading.value = false;
   }
 };
 fetchUsers();

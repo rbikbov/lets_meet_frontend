@@ -3,54 +3,58 @@ import { defineStore } from 'pinia';
 import jwt_decode from 'jwt-decode';
 import type { User } from '@/generated-sources/openapi';
 
-type TokenType = string;
-// type TokenType = string | null;
+// type TokenType = string;
+type TokenType = string | null;
 type UserType = User | null;
 
 const ACCESS_TOKEN_KEY = 'at_key';
 const REFRESH_TOKEN_KEY = 'rt_key';
 
 export const useAuthStore = defineStore('auth', () => {
+  // tokens start
   const accessToken = ref<TokenType>('');
   const refreshToken = ref<TokenType>('');
 
+  function getTokens() {
+    accessToken.value = localStorage.getItem(ACCESS_TOKEN_KEY) || '';
+    refreshToken.value = localStorage.getItem(REFRESH_TOKEN_KEY) || '';
+  }
+  function setTokens({
+    accessToken,
+    refreshToken,
+  }: {
+    accessToken: string;
+    refreshToken: string;
+  }) {
+    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    getTokens();
+  }
+  function removeTokens() {
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    getTokens();
+  }
+  // tokens end
+
+  // user start
   const user = ref<UserType>(null);
 
-  function getAccessToken() {
-    accessToken.value = localStorage.getItem(ACCESS_TOKEN_KEY) || '';
-    return accessToken.value;
-  }
-  function getRefreshToken() {
-    refreshToken.value = localStorage.getItem(REFRESH_TOKEN_KEY) || '';
-    return refreshToken.value;
-  }
-  function setAccessToken(value: string) {
-    localStorage.setItem(ACCESS_TOKEN_KEY, value);
-  }
-  function setRefreshToken(value: string) {
-    localStorage.setItem(REFRESH_TOKEN_KEY, value);
-  }
-  function removeAccessToken() {
-    localStorage.removeItem(ACCESS_TOKEN_KEY);
-  }
-  function removeRefreshToken() {
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-  }
-
-  function decodeToken() {
+  function setUserInfoFromDecodedToken() {
     user.value = jwt_decode<User>(accessToken.value!);
   }
+  // user end
 
-  getAccessToken();
-  getRefreshToken();
-
+  // initialize start
+  getTokens();
   const isAuthenticated = computed(() =>
     Boolean(accessToken.value && refreshToken.value)
   );
 
   if (isAuthenticated.value) {
-    decodeToken();
+    setUserInfoFromDecodedToken();
   }
+  // initialize end
 
   return {
     accessToken,
@@ -59,11 +63,8 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     isAuthenticated,
 
-    getAccessToken,
-    getRefreshToken,
-    setAccessToken,
-    setRefreshToken,
-    removeAccessToken,
-    removeRefreshToken,
+    getTokens,
+    setTokens,
+    removeTokens,
   };
 });
