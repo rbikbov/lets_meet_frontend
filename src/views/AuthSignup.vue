@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import { useAuthStore } from '@/stores/auth';
 import type { User } from '@/services/api';
 import UserCreateForm from '@/components/UserCreateForm.vue';
 
-import { signUp } from '@/stores/auth';
+const { signUp } = useAuthStore();
 
 const userCreateFormIsLoading = ref(false);
 const onUserCreateFormSubmit = async (user: User) => {
