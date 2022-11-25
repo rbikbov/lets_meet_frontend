@@ -2,29 +2,19 @@
 import { ref } from 'vue';
 
 import { useAuthStore } from '@/stores/auth';
+import router from '@/router';
+import type { User } from '@/services/api';
 
 import AuthSigninForm from '@/components/AuthSigninForm.vue';
 
-import {
-  SessionsApi,
-  type ApiV1SessionsPostRequest,
-} from '@/generated-sources/openapi/index';
-
-const { setTokens } = useAuthStore();
-
-const sessionsApi = new SessionsApi();
+const { signIn } = useAuthStore();
 
 const authSigninFormIsLoading = ref(false);
-const onAuthSigninFormSubmit = async (
-  user: ApiV1SessionsPostRequest['user']
-) => {
+const onAuthSigninFormSubmit = async (user: User) => {
   authSigninFormIsLoading.value = true;
   try {
-    const result = await sessionsApi.apiV1SessionsPost({ user });
-    setTokens({
-      accessToken: result.data.token!,
-      refreshToken: result.data.refresh!,
-    });
+    await signIn(user);
+    router.push({ name: 'home' });
   } catch (error) {
     console.warn({ error });
   } finally {

@@ -202,10 +202,13 @@ components:
           type: integer
         email:
           type: string
+          format: email
         created_at:
           type: string
+          format: date-time
         updated_at:
           type: string
+          format: date-time
     access_token:
       type: object
       properties:
@@ -215,6 +218,7 @@ components:
           type: string
         expires_in:
           type: string
+          format: date-time
         refresh:
           type: string
     users_array:

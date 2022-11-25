@@ -1,7 +1,8 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watchSyncEffect } from 'vue';
 import { defineStore } from 'pinia';
 import jwt_decode from 'jwt-decode';
-import type { User } from '@/generated-sources/openapi';
+import type { User } from '@/services/api';
+import { api, setAuthorizationToken, setRefreshInterceptor } from '@/services';
 
 // type TokenType = string;
 type TokenType = string | null;
@@ -35,6 +36,8 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     getTokens();
   }
+
+  watchSyncEffect(() => setAuthorizationToken(accessToken.value));
   // tokens end
 
   // user start
@@ -44,6 +47,32 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = jwt_decode<User>(accessToken.value!);
   }
   // user end
+
+  // auth methods start
+  async function signUp(user: User) {
+    await api.api.v1UsersCreate({ user });
+  }
+  async function signIn(user: User) {
+    const result = await api.api.v1SessionsCreate({ user });
+    setTokens({
+      accessToken: result.data.token!,
+      refreshToken: result.data.refresh!,
+    });
+  }
+  async function signOut() {
+    await api.api.v1SessionsLogoutDelete();
+    removeTokens();
+  }
+  async function refreshAccessToken() {
+    const result = await api.api.v1SessionsRefreshCreate({
+      token: refreshToken.value!,
+    });
+    setTokens({
+      accessToken: result.data.token!,
+      refreshToken: result.data.refresh!,
+    });
+  }
+  // auth methods end
 
   // initialize start
   getTokens();
@@ -56,6 +85,14 @@ export const useAuthStore = defineStore('auth', () => {
   }
   // initialize end
 
+  setRefreshInterceptor({
+    isAuthenticated,
+    accessToken,
+    refreshAccessToken,
+    signOut,
+    removeTokens,
+  });
+
   return {
     accessToken,
     refreshToken,
@@ -63,8 +100,9 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     isAuthenticated,
 
-    getTokens,
-    setTokens,
-    removeTokens,
+    signUp,
+    signIn,
+    signOut,
+    refreshAccessToken,
   };
 });

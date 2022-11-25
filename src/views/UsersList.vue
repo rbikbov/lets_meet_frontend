@@ -4,32 +4,23 @@ import { storeToRefs } from 'pinia';
 
 import { VBtn, VCard, VList, VListItem } from 'vuetify/components';
 
-import { useAuthStore } from '@/stores/auth';
-import { Configuration, UsersApi } from '@/generated-sources/openapi/index';
+import { useUsersStore } from '@/stores/users';
 
-const { accessToken } = storeToRefs(useAuthStore());
-
-const getUsersApi = () =>
-  new UsersApi(
-    new Configuration(
-      accessToken.value ? { accessToken: accessToken.value } : {}
-    )
-  );
+const { users } = storeToRefs(useUsersStore());
+const { fetchUsers } = useUsersStore();
 
 const usersIsLoading = ref(false);
-const users = ref<Awaited<ReturnType<UsersApi['apiV1UsersGet']>>['data']>([]);
-const fetchUsers = async () => {
+const getUsers = async () => {
   try {
     usersIsLoading.value = true;
-    const response = await getUsersApi().apiV1UsersGet();
-    users.value = response.data;
+    await fetchUsers();
   } catch (e) {
     console.warn({ e });
   } finally {
     usersIsLoading.value = false;
   }
 };
-fetchUsers();
+getUsers();
 </script>
 
 <template>
@@ -39,7 +30,7 @@ fetchUsers();
       color="success"
       type="button"
       variant="elevated"
-      @click="fetchUsers"
+      @click="getUsers"
     >
       Fetch users
     </v-btn>

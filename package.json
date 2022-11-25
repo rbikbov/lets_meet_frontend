@@ -2,7 +2,7 @@
   "name": "car_select",
   "version": "0.0.0",
   "scripts": {
-    "openapi-gen": "openapi-generator-cli generate -i docs/swagger.yaml -g typescript-axios -o src/generated-sources/openapi --additional-properties=npmName=restClient,supportsES6=true,npmVersion=8.19.2,withInterfaces=true",
+    "generate:api": "sta -p ./docs/swagger.yaml -o ./src/services -n api.ts --axios",
     "dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
@@ -12,6 +12,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "axios": "^1.2.0",
     "jwt-decode": "^3.1.2",
     "pinia": "^2.0.23",
     "vue": "^3.2.41",
@@ -19,7 +20,6 @@
     "vuetify": "^3.0.1"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.5.2",
     "@rushstack/eslint-patch": "^1.1.4",
     "@types/jsdom": "^20.0.0",
     "@types/node": "^16.11.68",
@@ -33,6 +33,7 @@
     "jsdom": "^20.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
+    "swagger-typescript-api": "^12.0.2",
     "typescript": "~4.7.4",
     "vite": "^3.1.8",
     "vite-plugin-pwa": "^0.13.3",

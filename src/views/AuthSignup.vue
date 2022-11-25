@@ -1,27 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { storeToRefs } from 'pinia';
 
-import { useAuthStore } from '@/stores/auth';
-import type { AuthSignupRequest } from '@/types/api/authSignupRequest';
-
+import type { User } from '@/services/api';
 import UserCreateForm from '@/components/UserCreateForm.vue';
-import { Configuration, UsersApi } from '@/generated-sources/openapi/index';
 
-const { accessToken } = storeToRefs(useAuthStore());
-
-const getUsersApi = () =>
-  new UsersApi(
-    new Configuration(
-      accessToken.value ? { accessToken: accessToken.value } : {}
-    )
-  );
+import { signUp } from '@/stores/auth';
 
 const userCreateFormIsLoading = ref(false);
-const onUserCreateFormSubmit = async (payload: AuthSignupRequest) => {
+const onUserCreateFormSubmit = async (user: User) => {
   userCreateFormIsLoading.value = true;
   try {
-    await getUsersApi().apiV1UsersPost({ user: payload });
+    await signUp(user);
   } catch (e) {
     console.error({ e });
   } finally {

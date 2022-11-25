@@ -9,6 +9,7 @@ module.exports = {
     '@vue/eslint-config-typescript',
     '@vue/eslint-config-prettier',
   ],
+  ignorePatterns: ['src/services/api.ts'],
   parserOptions: {
     ecmaVersion: 'latest',
   },
