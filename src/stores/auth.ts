@@ -2,15 +2,15 @@ import { ref, computed, watchSyncEffect } from 'vue';
 import { defineStore } from 'pinia';
 import jwt_decode from 'jwt-decode';
 import type {
+  JwtPayload,
   SigninRequestDataUser,
   SignupRequestDataUser,
-  User,
 } from '@/services/api';
 import { api, setAuthorizationToken, setRefreshInterceptor } from '@/services';
 
 // type TokenType = string;
 type TokenType = string | null;
-type UserType = User | null;
+type UserType = JwtPayload | null;
 
 const ACCESS_TOKEN_KEY = 'at_key';
 const REFRESH_TOKEN_KEY = 'rt_key';
@@ -20,7 +20,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserType>(null);
 
   function setUserInfoFromDecodedToken(token: TokenType) {
-    user.value = token ? jwt_decode<User>(token) : null;
+    user.value = token ? jwt_decode<JwtPayload>(token) : null;
   }
   // user end
 
@@ -86,6 +86,9 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() =>
     Boolean(accessToken.value && refreshToken.value)
   );
+  const isAdmin = computed(() =>
+    Boolean(isAuthenticated.value && user.value?.admin)
+  );
   // initialize end
 
   setRefreshInterceptor({
@@ -102,6 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     user,
     isAuthenticated,
+    isAdmin,
 
     signUp,
     signIn,

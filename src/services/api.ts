@@ -9,6 +9,16 @@
  * ---------------------------------------------------------------
  */
 
+export interface JwtPayload {
+  id: number;
+  /** @format email */
+  email: string;
+  admin: boolean;
+  salt: string;
+  /** @format date-time */
+  expires_in: string;
+}
+
 export interface SigninRequestDataUser {
   /** @format email */
   email: string;
@@ -29,6 +39,11 @@ export interface User {
   created_at: string;
   /** @format date-time */
   updated_at: string;
+}
+
+export interface InvalidUser {
+  email?: string[];
+  password?: string[];
 }
 
 export interface AccessToken {
@@ -60,6 +75,10 @@ export interface V1UsersCreatePayload {
 }
 
 export type V1UsersCreateData = any;
+
+export type V1UsersCreateError = {
+  errors?: InvalidUser;
+};
 
 export type V1UsersListData = UsersArray;
 
@@ -381,7 +400,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     v1UsersCreate: (data: V1UsersCreatePayload, params: RequestParams = {}) =>
-      this.request<V1UsersCreateData, void>({
+      this.request<V1UsersCreateData, V1UsersCreateError>({
         path: `/api/v1/users`,
         method: 'POST',
         body: data,
