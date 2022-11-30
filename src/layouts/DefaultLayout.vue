@@ -13,21 +13,21 @@ import {
   VBtn,
   VMain,
 } from 'vuetify/components';
+import { usePreferredDark } from '@vueuse/core';
 
 import { useAuthStore } from '@/stores/auth';
 import { AppRouteNames } from '@/router';
-
-const DEFAULT_THEME = 'dark'; // 'light'
 
 const { user, isAuthenticated } = storeToRefs(useAuthStore());
 const userTitle = computed(() =>
   isAuthenticated.value ? user.value?.email : 'Anonymous'
 );
 
-const theme = ref(DEFAULT_THEME);
-
+const prefersDark = usePreferredDark();
+const isDark = ref(prefersDark);
+const theme = computed(() => (isDark.value ? 'dark' : 'light'));
 const toggleTheme = () => {
-  theme.value = theme.value === 'light' ? 'dark' : 'light';
+  isDark.value = !isDark.value;
 };
 </script>
 
@@ -53,6 +53,10 @@ const toggleTheme = () => {
 
     <v-navigation-drawer permanent>
       <v-list>
+        <v-list-item :title="userTitle" key="userTitle"></v-list-item>
+
+        <v-divider></v-divider>
+
         <v-list-item
           title="SignUp"
           value="signup"
@@ -98,8 +102,6 @@ const toggleTheme = () => {
     </v-navigation-drawer>
 
     <v-app-bar title="Base App Frontend">
-      <div>{{ userTitle }}</div>
-
       <v-spacer></v-spacer>
 
       <v-btn
