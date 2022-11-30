@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+import { AppRouteNames } from '@/router';
 import { useAuthStore } from '@/stores/auth';
 
 import AuthSignoutForm from '@/components/AuthSignoutForm.vue';
 
-import router from '@/router';
+const router = useRouter();
 
 const { signOut } = useAuthStore();
 
@@ -15,7 +17,9 @@ const onAuthSignoutFormSubmit = async () => {
   authSignoutFormIsLoading.value = true;
   try {
     await signOut();
-    router.push({ name: 'home' });
+    router.push({
+      name: AppRouteNames.authSignin,
+    });
   } catch (error) {
     console.warn({ error });
   } finally {

@@ -15,6 +15,7 @@ import {
 } from 'vuetify/components';
 
 import { useAuthStore } from '@/stores/auth';
+import { AppRouteNames } from '@/router';
 
 const DEFAULT_THEME = 'dark'; // 'light'
 
@@ -55,44 +56,44 @@ const toggleTheme = () => {
         <v-list-item
           title="SignUp"
           value="signup"
-          :to="{ name: 'signup' }"
+          :to="{ name: AppRouteNames.authSignup }"
           :exact="true"
         ></v-list-item>
 
         <v-list-item
           title="SignIn"
           value="signin"
-          :to="{ name: 'signin' }"
+          :to="{ name: AppRouteNames.authSignin }"
           :exact="true"
         ></v-list-item>
 
         <v-list-item
           title="SignOut"
           value="signout"
-          :to="{ name: 'signout' }"
+          :to="{ name: AppRouteNames.authSignout }"
           :exact="true"
         ></v-list-item>
 
         <v-list-item
           title="Home"
           value="home"
-          to="/"
+          :to="{ name: AppRouteNames.home }"
           :exact="true"
         ></v-list-item>
 
         <v-list-item
           title="Users"
           value="users"
-          :to="{ name: 'users' }"
+          :to="{ name: AppRouteNames.users }"
           :exact="true"
         ></v-list-item>
 
-        <v-list-item title="About" value="about" to="/about"></v-list-item>
-
-        <!--
-            <RouterLink to="/">Home</RouterLink>
-            <RouterLink to="/about">About</RouterLink>
-          -->
+        <v-list-item
+          title="About"
+          value="about"
+          :to="{ name: AppRouteNames.about }"
+          :exact="true"
+        ></v-list-item>
       </v-list>
     </v-navigation-drawer>
 

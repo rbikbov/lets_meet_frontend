@@ -1,6 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 
+export enum AppRouteNames {
+  home = 'home',
+
+  authSignin = 'authSignin',
+  authSignout = 'authSignout',
+  authSignup = 'authSignup',
+
+  about = 'about',
+  users = 'users',
+}
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -10,32 +21,32 @@ const router = createRouter({
       children: [
         {
           path: '/',
-          name: 'home',
+          name: AppRouteNames.home,
           component: HomeView,
         },
         {
-          path: '/signin',
-          name: 'signin',
+          path: '/auth/signin',
+          name: AppRouteNames.authSignin,
           component: () => import('@/views/AuthSignin.vue'),
         },
         {
-          path: '/signup',
-          name: 'signup',
-          component: () => import('@/views/AuthSignup.vue'),
-        },
-        {
-          path: '/signout',
-          name: 'signout',
+          path: '/auth/signout',
+          name: AppRouteNames.authSignout,
           component: () => import('@/views/AuthSignout.vue'),
         },
         {
+          path: '/auth/signup',
+          name: AppRouteNames.authSignup,
+          component: () => import('@/views/AuthSignup.vue'),
+        },
+        {
           path: '/about',
-          name: 'about',
+          name: AppRouteNames.about,
           component: () => import('../views/AboutView.vue'),
         },
         {
           path: '/users',
-          name: 'users',
+          name: AppRouteNames.users,
           component: () => import('../views/UsersList.vue'),
         },
       ],
