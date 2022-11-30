@@ -9,10 +9,14 @@ interface MyAxiosRequestConfig extends AxiosRequestConfig {
 
 export const limit = 10;
 
+export function generateAuthorizationHeaders({ token }: { token: string }) {
+  return { Authorization: `Bearer ${token}` };
+}
+
 export const api = new Api({
   baseURL: `${CONFIG.API_HOST}`,
-  securityWorker: (token) =>
-    token ? { headers: { Authorization: `Bearer ${token}` } } : {},
+  securityWorker: (token: string | null) =>
+    token ? { headers: generateAuthorizationHeaders({ token }) } : {},
 });
 
 export function setAuthorizationToken(token: string | null): void {
@@ -78,11 +82,14 @@ export function setRefreshInterceptor({
       ) {
         originalRequest._retry = (originalRequest._retry || 0) + 1;
         await refreshAccessToken();
+        const extraHeaders = accessToken.value
+          ? generateAuthorizationHeaders({ token: accessToken.value })
+          : {};
         return api.instance({
           ...originalRequest,
           headers: {
             ...originalRequest.headers,
-            Authorization: `Bearer ${accessToken.value}`,
+            ...extraHeaders,
           },
         });
       }
