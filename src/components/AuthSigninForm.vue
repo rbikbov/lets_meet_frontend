@@ -10,6 +10,7 @@
           clearable
           label="Email"
           type="email"
+          autocomplete="email"
         ></v-text-field>
 
         <v-text-field
@@ -19,8 +20,10 @@
           clearable
           label="Password"
           type="password"
+          autocomplete="password"
           placeholder="Enter your password"
-        ></v-text-field>
+        >
+        </v-text-field>
 
         <br />
 
@@ -41,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import type { AuthSigninRequest } from '@/types/api/authSigninRequest';
+import type { SigninRequestDataUser } from '@/services/api';
 import { defineComponent, type PropType } from 'vue';
 import { VSheet, VCard, VForm, VTextField, VBtn } from 'vuetify/components';
 
@@ -54,7 +57,7 @@ export default defineComponent({
   },
 
   emits: {
-    submit: (payload: AuthSigninRequest) => {
+    submit: (payload: SigninRequestDataUser) => {
       if (payload.email && payload.password) {
         return true;
       } else {

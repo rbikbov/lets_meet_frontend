@@ -1,7 +1,11 @@
 import { ref, computed, watchSyncEffect } from 'vue';
 import { defineStore } from 'pinia';
 import jwt_decode from 'jwt-decode';
-import type { User } from '@/services/api';
+import type {
+  SigninRequestDataUser,
+  SignupRequestDataUser,
+  User,
+} from '@/services/api';
 import { api, setAuthorizationToken, setRefreshInterceptor } from '@/services';
 
 // type TokenType = string;
@@ -49,10 +53,10 @@ export const useAuthStore = defineStore('auth', () => {
   // user end
 
   // auth methods start
-  async function signUp(user: User) {
+  async function signUp(user: SignupRequestDataUser) {
     await api.api.v1UsersCreate({ user });
   }
-  async function signIn(user: User) {
+  async function signIn(user: SigninRequestDataUser) {
     const result = await api.api.v1SessionsCreate({ user });
     setTokens({
       accessToken: result.data.token!,
@@ -60,7 +64,7 @@ export const useAuthStore = defineStore('auth', () => {
     });
   }
   async function signOut() {
-    await api.api.v1SessionsLogoutDelete();
+    await api.api.v1SessionsLogoutDelete({ token: accessToken.value! });
     removeTokens();
   }
   async function refreshAccessToken() {

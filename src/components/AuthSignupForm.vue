@@ -10,6 +10,7 @@
           clearable
           label="Email"
           type="email"
+          autocomplete="email"
         ></v-text-field>
 
         <v-text-field
@@ -20,6 +21,7 @@
           label="Password"
           type="password"
           placeholder="Enter your password"
+          autocomplete="password"
         ></v-text-field>
 
         <v-text-field
@@ -31,8 +33,8 @@
           ]"
           clearable
           label="Password confirm"
-          type="password"
           placeholder="Enter your password again"
+          autocomplete="none"
         ></v-text-field>
 
         <br />
@@ -53,72 +55,55 @@
   </v-sheet>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
+<script setup lang="ts">
 import { VSheet, VCard, VForm, VTextField, VBtn } from 'vuetify/components';
+import { ref } from 'vue';
+import type { SignupRequestDataUser } from '@/services/api';
 
-import type { AuthSignupRequest } from '@/types/api/authSignupRequest';
+const props = withDefaults(defineProps<{ loading: boolean }>(), {
+  loading: false,
+});
 
-export default defineComponent({
-  props: {
-    loading: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
-  },
-
-  emits: {
-    submit: (payload: AuthSignupRequest) => {
-      if (payload.email && payload.password && payload.password_confirmation) {
-        return true;
-      } else {
-        console.warn(`Invalid submit event payload!`);
-        return false;
-      }
-    },
-  },
-
-  components: {
-    VSheet,
-    VCard,
-    VForm,
-    VTextField,
-    VBtn,
-  },
-
-  data: () => ({
-    form: false,
-    email: '',
-    password: '',
-    password_confirmation: '',
-  }),
-
-  methods: {
-    onSubmit() {
-      if (!this.form) return;
-
-      this.$emit('submit', {
-        email: this.email,
-        password: this.password,
-        password_confirmation: this.password_confirmation,
-      });
-    },
-    required(v: string) {
-      return !!v || 'Field is required';
-    },
-    isEqual({
-      fieldName,
-      fieldValue,
-    }: {
-      fieldName: string;
-      fieldValue: string;
-    }) {
-      return (currentValue: string) => {
-        return (
-          fieldValue === currentValue || `Field is not equal to ${fieldName}`
-        );
-      };
-    },
+const emits = defineEmits({
+  submit: (payload: SignupRequestDataUser) => {
+    if (payload.email && payload.password && payload.password_confirmation) {
+      return true;
+    } else {
+      console.warn(`Invalid submit event payload!`);
+      return false;
+    }
   },
 });
+
+const form = ref(false);
+const email = ref('');
+const password = ref('');
+const password_confirmation = ref('');
+
+const onSubmit = () => {
+  if (props.loading) return;
+  if (!form.value) return;
+
+  emits('submit', {
+    email: email.value,
+    password: password.value,
+    password_confirmation: password_confirmation.value,
+  });
+};
+
+const required = (v: string) => {
+  return !!v || 'Field is required';
+};
+
+const isEqual = ({
+  fieldName,
+  fieldValue,
+}: {
+  fieldName: string;
+  fieldValue: string;
+}) => {
+  return (currentValue: string) => {
+    return fieldValue === currentValue || `Field is not equal to ${fieldName}`;
+  };
+};
 </script>

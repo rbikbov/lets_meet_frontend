@@ -9,28 +9,162 @@
  * ---------------------------------------------------------------
  */
 
-export interface User {
-  id?: number;
+export interface SigninRequestDataUser {
   /** @format email */
-  email?: string;
+  email: string;
+  /** @format password */
+  password: string;
+}
+
+export type SignupRequestDataUser = SigninRequestDataUser & {
+  /** @format password */
+  password_confirmation: string;
+};
+
+export interface User {
+  id: number;
+  /** @format email */
+  email: string;
   /** @format date-time */
-  created_at?: string;
+  created_at: string;
   /** @format date-time */
-  updated_at?: string;
+  updated_at: string;
 }
 
 export interface AccessToken {
-  user_id?: number;
-  token?: string;
+  user_id: number;
+  token: string;
   /** @format date-time */
-  expires_in?: string;
-  refresh?: string;
+  expires_in: string;
+  refresh: string;
 }
 
 export type UsersArray = User[];
 
-import axios from 'axios';
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, HeadersDefaults, ResponseType } from 'axios';
+export interface V1SessionsCreatePayload {
+  user: SigninRequestDataUser;
+}
+
+export type V1SessionsCreateData = AccessToken;
+
+export interface V1SessionsRefreshCreatePayload {
+  token: string;
+}
+
+export type V1SessionsRefreshCreateData = AccessToken;
+
+export interface V1SessionsLogoutDeletePayload {
+  token: string;
+}
+
+export type V1SessionsLogoutDeleteData = any;
+
+export interface V1UsersCreatePayload {
+  user?: SignupRequestDataUser;
+}
+
+export type V1UsersCreateData = any;
+
+export type V1UsersListData = UsersArray;
+
+export type V1UsersIdListData = User;
+
+export namespace Api {
+  /**
+   * No description
+   * @tags Sessions
+   * @name V1SessionsCreate
+   * @summary Creates a session
+   * @request POST:/api/v1/sessions
+   * @secure
+   */
+  export namespace V1SessionsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = V1SessionsCreatePayload;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1SessionsCreateData;
+  }
+  /**
+   * No description
+   * @tags Sessions
+   * @name V1SessionsRefreshCreate
+   * @summary Refresh session
+   * @request POST:/api/v1/sessions/refresh
+   * @secure
+   */
+  export namespace V1SessionsRefreshCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = V1SessionsRefreshCreatePayload;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1SessionsRefreshCreateData;
+  }
+  /**
+   * No description
+   * @tags Sessions
+   * @name V1SessionsLogoutDelete
+   * @summary Delete session
+   * @request DELETE:/api/v1/sessions/logout
+   * @secure
+   */
+  export namespace V1SessionsLogoutDelete {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = V1SessionsLogoutDeletePayload;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1SessionsLogoutDeleteData;
+  }
+  /**
+   * No description
+   * @tags Users
+   * @name V1UsersCreate
+   * @summary Creates a user
+   * @request POST:/api/v1/users
+   * @secure
+   */
+  export namespace V1UsersCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = V1UsersCreatePayload;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1UsersCreateData;
+  }
+  /**
+   * No description
+   * @tags Users
+   * @name V1UsersList
+   * @summary Return users list
+   * @request GET:/api/v1/users
+   * @secure
+   */
+  export namespace V1UsersList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1UsersListData;
+  }
+  /**
+   * No description
+   * @tags Users
+   * @name V1UsersIdList
+   * @summary Return user
+   * @request GET:/api/v1/users/:id
+   * @secure
+   */
+  export namespace V1UsersIdList {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1UsersIdListData;
+  }
+}
+
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, HeadersDefaults, ResponseType } from 'axios';
 
 export type QueryParamsType = Record<string | number, any>;
 
@@ -176,22 +310,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/api/v1/sessions
      * @secure
      */
-    v1SessionsCreate: (
-      data: {
-        user?: {
-          email?: string;
-          password?: string;
-        };
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<AccessToken, void>({
+    v1SessionsCreate: (data: V1SessionsCreatePayload, params: RequestParams = {}) =>
+      this.request<V1SessionsCreateData, void>({
         path: `/api/v1/sessions`,
         method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
-        format: 'json',
         ...params,
       }),
 
@@ -204,19 +329,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/api/v1/sessions/refresh
      * @secure
      */
-    v1SessionsRefreshCreate: (
-      data: {
-        token: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<AccessToken, void>({
+    v1SessionsRefreshCreate: (data: V1SessionsRefreshCreatePayload, params: RequestParams = {}) =>
+      this.request<V1SessionsRefreshCreateData, void>({
         path: `/api/v1/sessions/refresh`,
         method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
-        format: 'json',
         ...params,
       }),
 
@@ -229,13 +348,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/api/v1/sessions/logout
      * @secure
      */
-    v1SessionsLogoutDelete: (
-      data: {
-        token: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<void, void>({
+    v1SessionsLogoutDelete: (data: V1SessionsLogoutDeletePayload, params: RequestParams = {}) =>
+      this.request<V1SessionsLogoutDeleteData, void>({
         path: `/api/v1/sessions/logout`,
         method: 'DELETE',
         body: data,
@@ -253,23 +367,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/api/v1/users
      * @secure
      */
-    v1UsersCreate: (
-      data: {
-        user?: {
-          email?: string;
-          password?: string;
-          password_confirmation?: string;
-        };
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<void, void>({
+    v1UsersCreate: (data: V1UsersCreatePayload, params: RequestParams = {}) =>
+      this.request<V1UsersCreateData, void>({
         path: `/api/v1/users`,
         method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
-        format: 'json',
         ...params,
       }),
 
@@ -283,11 +387,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     v1UsersList: (params: RequestParams = {}) =>
-      this.request<UsersArray, any>({
+      this.request<V1UsersListData, any>({
         path: `/api/v1/users`,
         method: 'GET',
         secure: true,
-        format: 'json',
         ...params,
       }),
 
@@ -301,11 +404,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     v1UsersIdList: (id: string, params: RequestParams = {}) =>
-      this.request<User, void>({
+      this.request<V1UsersIdListData, void>({
         path: `/api/v1/users/${id}`,
         method: 'GET',
         secure: true,
-        format: 'json',
         ...params,
       }),
   };

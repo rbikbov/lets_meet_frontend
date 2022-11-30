@@ -4,16 +4,16 @@ import { useRouter } from 'vue-router';
 
 import { AppRouteNames } from '@/router';
 import { useAuthStore } from '@/stores/auth';
-import type { User } from '@/services/api';
+import type { SignupRequestDataUser } from '@/services/api';
 import { mungeEmailAddress } from '@/helpers/mungeEmailAddress';
 
-import UserCreateForm from '@/components/UserCreateForm.vue';
+import UserCreateForm from '@/components/AuthSignupForm.vue';
 
 const router = useRouter();
 const { signUp } = useAuthStore();
 
 const userCreateFormIsLoading = ref(false);
-const onUserCreateFormSubmit = async (user: User) => {
+const onUserCreateFormSubmit = async (user: SignupRequestDataUser) => {
   userCreateFormIsLoading.value = true;
   try {
     await signUp(user);

@@ -33,16 +33,9 @@ paths:
               type: object
               properties:
                 user:
-                  type: object
-                  properties:
-                    email:
-                      type: string
-                    password:
-                      type: string
+                  "$ref": "#/components/schemas/signin_request_data_user"
               required:
-              - email
-              - password
-              - password_confirmation
+              - user
   "/api/v1/sessions/refresh":
     post:
       summary: Refresh session
@@ -132,18 +125,7 @@ paths:
               type: object
               properties:
                 user:
-                  type: object
-                  properties:
-                    email:
-                      type: string
-                    password:
-                      type: string
-                    password_confirmation:
-                      type: string
-              required:
-              - email
-              - password
-              - password_confirmation
+                  "$ref": "#/components/schemas/signup_request_data_user"
     get:
       summary: Return users list
       tags:
@@ -195,6 +177,28 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    signin_request_data_user:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required:
+      - email
+      - password
+    signup_request_data_user:
+      allOf:
+      - "$ref": "#/components/schemas/signin_request_data_user"
+      - type: object
+        properties:
+          password_confirmation:
+            type: string
+            format: password
+        required:
+        - password_confirmation
     user:
       type: object
       properties:
@@ -209,6 +213,11 @@ components:
         updated_at:
           type: string
           format: date-time
+      required:
+      - id
+      - email
+      - created_at
+      - updated_at
     access_token:
       type: object
       properties:
@@ -221,6 +230,11 @@ components:
           format: date-time
         refresh:
           type: string
+      required:
+      - user_id
+      - token
+      - expires_in
+      - refresh
     users_array:
       type: array
       items:

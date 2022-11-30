@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 
 import { AppRouteNames } from '@/router';
 import { useAuthStore } from '@/stores/auth';
-import type { User } from '@/services/api';
+import type { SigninRequestDataUser } from '@/services/api';
 
 import AuthSigninForm from '@/components/AuthSigninForm.vue';
 
@@ -12,7 +12,7 @@ const router = useRouter();
 const { signIn } = useAuthStore();
 
 const authSigninFormIsLoading = ref(false);
-const onAuthSigninFormSubmit = async (user: User) => {
+const onAuthSigninFormSubmit = async (user: SigninRequestDataUser) => {
   authSigninFormIsLoading.value = true;
   try {
     await signIn(user);

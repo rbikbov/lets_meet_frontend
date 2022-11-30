@@ -2,7 +2,8 @@
   "name": "base_app_frontend",
   "version": "0.0.0",
   "scripts": {
-    "generate:api": "sta -p ./docs/swagger.yaml -o ./src/services -n api.ts --axios",
+    "generate:api": "sta -p ./docs/swagger.yaml -o ./src/services -n api.ts --axios --add-readonly --route-types --extract-request-params --extract-request-body --extract-response-body --extract-response-error --extract-enums",
+    "generate:api:simple": "sta -p ./docs/swagger.yaml -o ./src/services -n api.ts --axios",
     "dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
