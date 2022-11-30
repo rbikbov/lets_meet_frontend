@@ -41,14 +41,17 @@ export const useAuthStore = defineStore('auth', () => {
     getTokens();
   }
 
-  watchSyncEffect(() => setAuthorizationToken(accessToken.value));
+  watchSyncEffect(() => {
+    setUserInfoFromDecodedToken();
+    setAuthorizationToken(accessToken.value);
+  });
   // tokens end
 
   // user start
   const user = ref<UserType>(null);
 
   function setUserInfoFromDecodedToken() {
-    user.value = jwt_decode<User>(accessToken.value!);
+    user.value = accessToken.value ? jwt_decode<User>(accessToken.value) : null;
   }
   // user end
 
@@ -83,10 +86,6 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() =>
     Boolean(accessToken.value && refreshToken.value)
   );
-
-  if (isAuthenticated.value) {
-    setUserInfoFromDecodedToken();
-  }
   // initialize end
 
   setRefreshInterceptor({

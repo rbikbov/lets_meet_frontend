@@ -57,38 +57,41 @@ const toggleTheme = () => {
 
         <v-divider></v-divider>
 
-        <v-list-item
-          title="SignUp"
-          value="signup"
-          :to="{ name: AppRouteNames.authSignup }"
-          :exact="true"
-        ></v-list-item>
+        <template v-if="!isAuthenticated">
+          <v-list-item
+            title="SignUp"
+            value="signup"
+            :to="{ name: AppRouteNames.authSignup }"
+            :exact="true"
+          ></v-list-item>
 
-        <v-list-item
-          title="SignIn"
-          value="signin"
-          :to="{ name: AppRouteNames.authSignin }"
-          :exact="true"
-        ></v-list-item>
+          <v-list-item
+            title="SignIn"
+            value="signin"
+            :to="{ name: AppRouteNames.authSignin }"
+            :exact="true"
+          ></v-list-item>
+        </template>
+        <template v-else>
+          <v-list-item
+            title="SignOut"
+            value="signout"
+            :to="{ name: AppRouteNames.authSignout }"
+            :exact="true"
+          ></v-list-item>
 
-        <v-list-item
-          title="SignOut"
-          value="signout"
-          :to="{ name: AppRouteNames.authSignout }"
-          :exact="true"
-        ></v-list-item>
+          <v-list-item
+            title="Users"
+            value="users"
+            :to="{ name: AppRouteNames.users }"
+            :exact="true"
+          ></v-list-item>
+        </template>
 
         <v-list-item
           title="Home"
           value="home"
           :to="{ name: AppRouteNames.home }"
-          :exact="true"
-        ></v-list-item>
-
-        <v-list-item
-          title="Users"
-          value="users"
-          :to="{ name: AppRouteNames.users }"
           :exact="true"
         ></v-list-item>
 
