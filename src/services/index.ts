@@ -56,7 +56,8 @@ export function setRefreshInterceptor({
 
       if (
         (isRefreshRequest || isLogoutRequest) &&
-        error.response?.status === 401
+        error.response?.status &&
+        [400, 401].includes(error.response.status)
       ) {
         removeTokens();
       }
@@ -65,7 +66,8 @@ export function setRefreshInterceptor({
         !isRefreshRequest &&
         !isLogoutRequest &&
         isAuthenticated.value &&
-        error.response?.status === 401 &&
+        error.response?.status &&
+        [401].includes(error.response.status) &&
         originalRequest._retry === 5
       ) {
         await signOut();

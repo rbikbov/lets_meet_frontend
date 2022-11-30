@@ -50,14 +50,14 @@ paths:
               schema:
                 type: object
                 "$ref": "#/components/schemas/access_token"
-        '401':
-          description: Unauthorized
+        '400':
+          description: Bad request
           content:
             application/json:
               examples:
                 example_1:
                   value:
-                    message: Access denied
+                    message: Something went wrong. Please try again
       requestBody:
         content:
           application/json:
@@ -73,28 +73,17 @@ paths:
       summary: Delete session
       tags:
       - Sessions
-      parameters: []
       responses:
         '204':
           description: No content
-        '401':
-          description: Unauthorized
+        '400':
+          description: Bad request
           content:
             application/json:
               examples:
                 example_1:
                   value:
-                    message: Access denied
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
-              required:
-              - token
+                    message: Something went wrong. Please try again
   "/api/v1/users":
     post:
       summary: Creates a user
@@ -157,6 +146,34 @@ paths:
               schema:
                 type: object
                 "$ref": "#/components/schemas/user"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Something went wrong, please try again
+  "/api/v1/users/:id/confirm_account":
+    get:
+      summary: Confirm account
+      tags:
+      - Users
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Welcome to the Sample App! Your email has been confirmed
         '400':
           description: Bad request
           content:

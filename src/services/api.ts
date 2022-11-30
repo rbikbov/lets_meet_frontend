@@ -53,10 +53,6 @@ export interface V1SessionsRefreshCreatePayload {
 
 export type V1SessionsRefreshCreateData = AccessToken;
 
-export interface V1SessionsLogoutDeletePayload {
-  token: string;
-}
-
 export type V1SessionsLogoutDeleteData = any;
 
 export interface V1UsersCreatePayload {
@@ -68,6 +64,8 @@ export type V1UsersCreateData = any;
 export type V1UsersListData = UsersArray;
 
 export type V1UsersIdListData = User;
+
+export type V1UsersIdConfirmAccountListData = any;
 
 export namespace Api {
   /**
@@ -111,7 +109,7 @@ export namespace Api {
   export namespace V1SessionsLogoutDelete {
     export type RequestParams = {};
     export type RequestQuery = {};
-    export type RequestBody = V1SessionsLogoutDeletePayload;
+    export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = V1SessionsLogoutDeleteData;
   }
@@ -161,6 +159,23 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = V1UsersIdListData;
+  }
+  /**
+   * No description
+   * @tags Users
+   * @name V1UsersIdConfirmAccountList
+   * @summary Confirm account
+   * @request GET:/api/v1/users/:id/confirm_account
+   * @secure
+   */
+  export namespace V1UsersIdConfirmAccountList {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1UsersIdConfirmAccountListData;
   }
 }
 
@@ -348,13 +363,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/api/v1/sessions/logout
      * @secure
      */
-    v1SessionsLogoutDelete: (data: V1SessionsLogoutDeletePayload, params: RequestParams = {}) =>
+    v1SessionsLogoutDelete: (params: RequestParams = {}) =>
       this.request<V1SessionsLogoutDeleteData, void>({
         path: `/api/v1/sessions/logout`,
         method: 'DELETE',
-        body: data,
         secure: true,
-        type: ContentType.Json,
         ...params,
       }),
 
@@ -406,6 +419,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     v1UsersIdList: (id: string, params: RequestParams = {}) =>
       this.request<V1UsersIdListData, void>({
         path: `/api/v1/users/${id}`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Users
+     * @name V1UsersIdConfirmAccountList
+     * @summary Confirm account
+     * @request GET:/api/v1/users/:id/confirm_account
+     * @secure
+     */
+    v1UsersIdConfirmAccountList: (id: string, params: RequestParams = {}) =>
+      this.request<V1UsersIdConfirmAccountListData, void>({
+        path: `/api/v1/users/${id}/confirm_account`,
         method: 'GET',
         secure: true,
         ...params,

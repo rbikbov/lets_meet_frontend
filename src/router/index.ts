@@ -8,6 +8,7 @@ export enum AppRouteNames {
   authSignout = 'authSignout',
   authSignup = 'authSignup',
   authSignupThanks = 'authSignupThanks',
+  authSignupConfirmation = 'authSignupConfirmation',
 
   about = 'about',
   users = 'users',
@@ -48,6 +49,17 @@ const router = createRouter({
             const email = route.query?.email || '';
             return {
               email,
+            };
+          },
+        },
+        {
+          path: '/auth/signup-confirmation/:confirmationCode',
+          name: AppRouteNames.authSignupConfirmation,
+          component: () => import('@/views/AuthSignupConfirmation.vue'),
+          props: (route) => {
+            const confirmationCode = route.params.confirmationCode || '';
+            return {
+              confirmationCode,
             };
           },
         },

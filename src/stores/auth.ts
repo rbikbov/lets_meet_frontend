@@ -16,6 +16,14 @@ const ACCESS_TOKEN_KEY = 'at_key';
 const REFRESH_TOKEN_KEY = 'rt_key';
 
 export const useAuthStore = defineStore('auth', () => {
+  // user start
+  const user = ref<UserType>(null);
+
+  function setUserInfoFromDecodedToken(token: TokenType) {
+    user.value = token ? jwt_decode<User>(token) : null;
+  }
+  // user end
+
   // tokens start
   const accessToken = ref<TokenType>('');
   const refreshToken = ref<TokenType>('');
@@ -42,18 +50,10 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   watchSyncEffect(() => {
-    setUserInfoFromDecodedToken();
+    setUserInfoFromDecodedToken(accessToken.value);
     setAuthorizationToken(accessToken.value);
   });
   // tokens end
-
-  // user start
-  const user = ref<UserType>(null);
-
-  function setUserInfoFromDecodedToken() {
-    user.value = accessToken.value ? jwt_decode<User>(accessToken.value) : null;
-  }
-  // user end
 
   // auth methods start
   async function signUp(user: SignupRequestDataUser) {
@@ -67,7 +67,7 @@ export const useAuthStore = defineStore('auth', () => {
     });
   }
   async function signOut() {
-    await api.api.v1SessionsLogoutDelete({ token: accessToken.value! });
+    await api.api.v1SessionsLogoutDelete();
     removeTokens();
   }
   async function refreshAccessToken() {

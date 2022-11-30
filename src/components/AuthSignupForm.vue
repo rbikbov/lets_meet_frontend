@@ -33,6 +33,7 @@
           ]"
           clearable
           label="Password confirm"
+          type="password"
           placeholder="Enter your password again"
           autocomplete="none"
         ></v-text-field>
