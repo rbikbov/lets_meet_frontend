@@ -7,8 +7,6 @@ interface MyAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: number;
 }
 
-export const limit = 10;
-
 export function generateAuthorizationHeaders({ token }: { token: string }) {
   return { Authorization: `Bearer ${token}` };
 }
@@ -99,6 +97,9 @@ export function setRefreshInterceptor({
   );
 }
 
+/* pagintion prepares
+export const limit = 10;
+
 export function pageToOffset(
   page: number = 1,
   localLimit = limit
@@ -106,3 +107,4 @@ export function pageToOffset(
   const offset = (page - 1) * localLimit;
   return { limit: localLimit, offset };
 }
+*/
