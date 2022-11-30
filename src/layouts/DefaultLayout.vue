@@ -102,12 +102,9 @@ const toggleTheme = () => {
       <v-spacer></v-spacer>
 
       <v-btn
-        :prepend-icon="
-          theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'
-        "
+        :icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
         @click="toggleTheme"
-        >Toggle Theme</v-btn
-      >
+      ></v-btn>
     </v-app-bar>
 
     <v-main>
