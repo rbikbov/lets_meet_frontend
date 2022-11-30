@@ -7,6 +7,7 @@ export enum AppRouteNames {
   authSignin = 'authSignin',
   authSignout = 'authSignout',
   authSignup = 'authSignup',
+  authSignupThanks = 'authSignupThanks',
 
   about = 'about',
   users = 'users',
@@ -38,6 +39,17 @@ const router = createRouter({
           path: '/auth/signup',
           name: AppRouteNames.authSignup,
           component: () => import('@/views/AuthSignup.vue'),
+        },
+        {
+          path: '/auth/signup-thanks',
+          name: AppRouteNames.authSignupThanks,
+          component: () => import('@/views/AuthSignupThanks.vue'),
+          props: (route) => {
+            const email = route.query?.email || '';
+            return {
+              email,
+            };
+          },
         },
         {
           path: '/about',
