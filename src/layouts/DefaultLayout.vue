@@ -96,7 +96,7 @@ const toggleTheme = () => {
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar title="Car Select">
+    <v-app-bar title="Base App Frontend">
       <div>{{ userTitle }}</div>
 
       <v-spacer></v-spacer>

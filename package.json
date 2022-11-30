@@ -1,5 +1,5 @@
 {
-  "name": "car_select",
+  "name": "base_app_frontend",
   "version": "0.0.0",
   "scripts": {
     "generate:api": "sta -p ./docs/swagger.yaml -o ./src/services -n api.ts --axios",
