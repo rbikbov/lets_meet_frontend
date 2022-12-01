@@ -3,24 +3,57 @@ import { defineStore } from 'pinia';
 import jwt_decode from 'jwt-decode';
 import type {
   JwtPayload,
+  ProfileDataUser,
   SigninRequestDataUser,
   SignupRequestDataUser,
+  User,
 } from '@/services/api';
 import { api, setAuthorizationToken, setRefreshInterceptor } from '@/services';
 
 // type TokenType = string;
 type TokenType = string | null;
-type UserType = JwtPayload | null;
+type JWTPayloadType = JwtPayload | null;
+type UserType = User | null;
 
 const ACCESS_TOKEN_KEY = 'at_key';
 const REFRESH_TOKEN_KEY = 'rt_key';
 
 export const useAuthStore = defineStore('auth', () => {
   // user start
+  const jwtPayload = ref<JWTPayloadType>(null);
+
+  function getTokenPayload(token: TokenType) {
+    jwtPayload.value = token ? jwt_decode<JwtPayload>(token) : null;
+  }
+
   const user = ref<UserType>(null);
 
-  function setUserInfoFromDecodedToken(token: TokenType) {
-    user.value = token ? jwt_decode<JwtPayload>(token) : null;
+  async function fetchUserInfo() {
+    if (!jwtPayload.value) {
+      throw new Error("Can't fetch anonymous user data.");
+    }
+
+    try {
+      const result = await api.api.v1UsersDetail(String(jwtPayload.value.id));
+      user.value = result.data;
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  async function updateUserInfo(profile: ProfileDataUser) {
+    if (!jwtPayload.value) {
+      throw new Error("Can't update anonymous user profile.");
+    }
+    try {
+      const result = await api.api.v1UsersPartialUpdate(
+        String(jwtPayload.value.id),
+        { profile }
+      );
+      user.value = result.data;
+    } catch (e) {
+      console.warn(e);
+    }
   }
   // user end
 
@@ -50,8 +83,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   watchSyncEffect(() => {
-    setUserInfoFromDecodedToken(accessToken.value);
+    getTokenPayload(accessToken.value);
     setAuthorizationToken(accessToken.value);
+    if (accessToken.value) {
+      fetchUserInfo();
+    }
   });
   // tokens end
 
@@ -87,7 +123,7 @@ export const useAuthStore = defineStore('auth', () => {
     Boolean(accessToken.value && refreshToken.value)
   );
   const isAdmin = computed(() =>
-    Boolean(isAuthenticated.value && user.value?.admin)
+    Boolean(isAuthenticated.value && jwtPayload.value?.admin)
   );
   // initialize end
 
@@ -103,9 +139,13 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken,
     refreshToken,
 
+    jwtPayload,
     user,
     isAuthenticated,
     isAdmin,
+
+    fetchUserInfo,
+    updateUserInfo,
 
     signUp,
     signIn,

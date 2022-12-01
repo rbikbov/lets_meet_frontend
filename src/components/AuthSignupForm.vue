@@ -57,8 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import { VSheet, VCard, VForm, VTextField, VBtn } from 'vuetify/components';
 import { ref } from 'vue';
+
 import type { SignupRequestDataUser } from '@/services/api';
 
 const props = withDefaults(defineProps<{ loading: boolean }>(), {

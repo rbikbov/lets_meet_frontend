@@ -19,7 +19,6 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import { VSheet, VCard, VForm, VBtn } from 'vuetify/components';
 
 export default defineComponent({
   props: {
@@ -32,15 +31,6 @@ export default defineComponent({
   emits: {
     submit: null,
   },
-
-  components: {
-    VSheet,
-    VCard,
-    VForm,
-    VBtn,
-  },
-
-  // data: () => ({}),
 
   methods: {
     onSubmit() {

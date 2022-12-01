@@ -2,8 +2,6 @@
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { VBtn, VCard, VList, VListItem } from 'vuetify/components';
-
 import { useUsersStore } from '@/stores/users';
 
 const { users } = storeToRefs(useUsersStore());
@@ -24,8 +22,9 @@ getUsers();
 </script>
 
 <template>
-  <v-card class="mx-auto">
-    <v-btn
+  <v-container fluid>
+    <!--
+      <v-btn
       class="mx-auto"
       color="success"
       type="button"
@@ -34,18 +33,18 @@ getUsers();
     >
       Fetch users
     </v-btn>
+    -->
 
-    <br />
-
-    <v-list lines="three">
-      <v-list-item
-        v-for="user in users"
-        :key="user.id"
-        :title="user.email"
-        :subtitle="`User id is ${user.id}`"
-      ></v-list-item>
-    </v-list>
-  </v-card>
+    <v-row dense>
+      <v-col v-for="user in users" :key="user.id" cols="12">
+        <v-card
+          :title="user.email"
+          :subtitle="`User id is ${user.id}`"
+          text="Lorem ipsum dolor sit amet consectetur, adipisicing elit.?"
+        ></v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style></style>

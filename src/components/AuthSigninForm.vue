@@ -44,9 +44,9 @@
 </template>
 
 <script lang="ts">
-import type { SigninRequestDataUser } from '@/services/api';
 import { defineComponent, type PropType } from 'vue';
-import { VSheet, VCard, VForm, VTextField, VBtn } from 'vuetify/components';
+
+import type { SigninRequestDataUser } from '@/services/api';
 
 export default defineComponent({
   props: {
@@ -65,14 +65,6 @@ export default defineComponent({
         return false;
       }
     },
-  },
-
-  components: {
-    VSheet,
-    VCard,
-    VForm,
-    VTextField,
-    VBtn,
   },
 
   data: () => ({

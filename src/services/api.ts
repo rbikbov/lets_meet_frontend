@@ -31,14 +31,24 @@ export type SignupRequestDataUser = SigninRequestDataUser & {
   password_confirmation: string;
 };
 
+export interface ProfileDataUser {
+  first_name?: string;
+  last_name?: string;
+  age?: number;
+}
+
+export interface AvatarFile {
+  avatar?: File;
+}
+
 export interface User {
   id: number;
   /** @format email */
   email: string;
-  /** @format date-time */
-  created_at: string;
-  /** @format date-time */
-  updated_at: string;
+  first_name?: string;
+  last_name?: string;
+  age?: number;
+  avatar?: string;
 }
 
 export interface InvalidUser {
@@ -82,9 +92,17 @@ export type V1UsersCreateError = {
 
 export type V1UsersListData = UsersArray;
 
-export type V1UsersIdListData = User;
+export type V1UsersDetailData = User;
 
-export type V1UsersIdConfirmAccountListData = any;
+export interface V1UsersPartialUpdatePayload {
+  profile?: ProfileDataUser;
+}
+
+export type V1UsersPartialUpdateData = User;
+
+export type V1UsersConfirmAccountDetailData = any;
+
+export type V1UsersLoadAvatarPartialUpdateData = User;
 
 export namespace Api {
   /**
@@ -165,36 +183,70 @@ export namespace Api {
   /**
    * No description
    * @tags Users
-   * @name V1UsersIdList
+   * @name V1UsersDetail
    * @summary Return user
-   * @request GET:/api/v1/users/:id
+   * @request GET:/api/v1/users/{id}
    * @secure
    */
-  export namespace V1UsersIdList {
+  export namespace V1UsersDetail {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersIdListData;
+    export type ResponseBody = V1UsersDetailData;
   }
   /**
    * No description
    * @tags Users
-   * @name V1UsersIdConfirmAccountList
-   * @summary Confirm account
-   * @request GET:/api/v1/users/:id/confirm_account
+   * @name V1UsersPartialUpdate
+   * @summary Update user
+   * @request PATCH:/api/v1/users/{id}
    * @secure
    */
-  export namespace V1UsersIdConfirmAccountList {
+  export namespace V1UsersPartialUpdate {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = V1UsersPartialUpdatePayload;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1UsersPartialUpdateData;
+  }
+  /**
+   * No description
+   * @tags Users
+   * @name V1UsersConfirmAccountDetail
+   * @summary Confirm account
+   * @request GET:/api/v1/users/{id}/confirm_account
+   * @secure
+   */
+  export namespace V1UsersConfirmAccountDetail {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersIdConfirmAccountListData;
+    export type ResponseBody = V1UsersConfirmAccountDetailData;
+  }
+  /**
+   * No description
+   * @tags Users
+   * @name V1UsersLoadAvatarPartialUpdate
+   * @summary Load user avatar
+   * @request PATCH:/api/v1/users/{id}/load_avatar
+   * @secure
+   */
+  export namespace V1UsersLoadAvatarPartialUpdate {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AvatarFile;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1UsersLoadAvatarPartialUpdateData;
   }
 }
 
@@ -430,13 +482,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Users
-     * @name V1UsersIdList
+     * @name V1UsersDetail
      * @summary Return user
-     * @request GET:/api/v1/users/:id
+     * @request GET:/api/v1/users/{id}
      * @secure
      */
-    v1UsersIdList: (id: string, params: RequestParams = {}) =>
-      this.request<V1UsersIdListData, void>({
+    v1UsersDetail: (id: string, params: RequestParams = {}) =>
+      this.request<V1UsersDetailData, void>({
         path: `/api/v1/users/${id}`,
         method: 'GET',
         secure: true,
@@ -447,16 +499,54 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Users
-     * @name V1UsersIdConfirmAccountList
-     * @summary Confirm account
-     * @request GET:/api/v1/users/:id/confirm_account
+     * @name V1UsersPartialUpdate
+     * @summary Update user
+     * @request PATCH:/api/v1/users/{id}
      * @secure
      */
-    v1UsersIdConfirmAccountList: (id: string, params: RequestParams = {}) =>
-      this.request<V1UsersIdConfirmAccountListData, void>({
+    v1UsersPartialUpdate: (id: string, data: V1UsersPartialUpdatePayload, params: RequestParams = {}) =>
+      this.request<V1UsersPartialUpdateData, any>({
+        path: `/api/v1/users/${id}`,
+        method: 'PATCH',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Users
+     * @name V1UsersConfirmAccountDetail
+     * @summary Confirm account
+     * @request GET:/api/v1/users/{id}/confirm_account
+     * @secure
+     */
+    v1UsersConfirmAccountDetail: (id: string, params: RequestParams = {}) =>
+      this.request<V1UsersConfirmAccountDetailData, void>({
         path: `/api/v1/users/${id}/confirm_account`,
         method: 'GET',
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Users
+     * @name V1UsersLoadAvatarPartialUpdate
+     * @summary Load user avatar
+     * @request PATCH:/api/v1/users/{id}/load_avatar
+     * @secure
+     */
+    v1UsersLoadAvatarPartialUpdate: (id: string, data: AvatarFile, params: RequestParams = {}) =>
+      this.request<V1UsersLoadAvatarPartialUpdateData, any>({
+        path: `/api/v1/users/${id}/load_avatar`,
+        method: 'PATCH',
+        body: data,
+        secure: true,
+        type: ContentType.FormData,
         ...params,
       }),
   };

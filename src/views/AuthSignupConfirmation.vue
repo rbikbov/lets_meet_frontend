@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { AppRouteNames } from '@/router';
-import { api } from '@/services';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { VProgressCircular } from 'vuetify/components';
+
+import { AppRouteNames } from '@/router';
+import { api } from '@/services';
 
 const props = defineProps<{ confirmationCode: string }>();
 
@@ -32,7 +32,7 @@ const authSignupConfimationInProcess = ref(false);
 onMounted(async () => {
   authSignupConfimationInProcess.value = true;
   try {
-    const result = await api.api.v1UsersIdConfirmAccountList(
+    const result = await api.api.v1UsersConfirmAccountDetail(
       props.confirmationCode
     );
     message.value = result.data.message;

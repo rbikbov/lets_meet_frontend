@@ -2,17 +2,6 @@
 import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { RouterView } from 'vue-router';
-import {
-  VApp,
-  VNavigationDrawer,
-  VListItem,
-  VDivider,
-  VList,
-  VAppBar,
-  VSpacer,
-  VBtn,
-  VMain,
-} from 'vuetify/components';
 import { usePreferredDark } from '@vueuse/core';
 
 import { useAuthStore } from '@/stores/auth';
