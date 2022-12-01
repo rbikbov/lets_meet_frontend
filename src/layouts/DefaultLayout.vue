@@ -70,6 +70,13 @@ const toggleTheme = () => {
           ></v-list-item>
 
           <v-list-item
+            title="Profile update"
+            value="profileUpdate"
+            :to="{ name: AppRouteNames.accountProfileUpdate }"
+            :exact="true"
+          ></v-list-item>
+
+          <v-list-item
             title="Users"
             value="users"
             :to="{ name: AppRouteNames.users }"
@@ -103,7 +110,11 @@ const toggleTheme = () => {
     </v-app-bar>
 
     <v-main>
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <v-fade-transition mode="out-in">
+          <component :is="Component" />
+        </v-fade-transition>
+      </RouterView>
     </v-main>
   </v-app>
 </template>

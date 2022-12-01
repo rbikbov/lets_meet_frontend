@@ -128,7 +128,7 @@ paths:
               schema:
                 type: object
                 "$ref": "#/components/schemas/users_array"
-  "/api/v1/users/:id":
+  "/api/v1/users/{id}":
     get:
       summary: Return user
       tags:
@@ -155,7 +155,33 @@ paths:
                 example_1:
                   value:
                     message: Something went wrong, please try again
-  "/api/v1/users/:id/confirm_account":
+    patch:
+      summary: Update user
+      tags:
+      - Users
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/user"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile:
+                  "$ref": "#/components/schemas/profile_data_user"
+  "/api/v1/users/{id}/confirm_account":
     get:
       summary: Confirm account
       tags:
@@ -183,6 +209,35 @@ paths:
                 example_1:
                   value:
                     message: Something went wrong, please try again
+  "/api/v1/users/{id}/load_avatar":
+    patch:
+      summary: Load user avatar
+      tags:
+      - Users
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/user"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              "$ref": "#/components/schemas/avatar_file"
+              encoding:
+                avatar:
+                  contentType:
+                  - image/png
+                  - image/jpeg
 servers:
 - url: http://{defaultHost}
   variables:
@@ -238,6 +293,20 @@ components:
             format: password
         required:
         - password_confirmation
+    profile_data_user:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        age:
+          type: integer
+    avatar_file:
+      type: object
+      properties:
+        avatar:
+          type: file
     user:
       type: object
       properties:
@@ -246,12 +315,14 @@ components:
         email:
           type: string
           format: email
-        created_at:
+        first_name:
           type: string
-          format: date-time
-        updated_at:
+        last_name:
           type: string
-          format: date-time
+        age:
+          type: integer
+        avatar:
+          type: string
       required:
       - id
       - email

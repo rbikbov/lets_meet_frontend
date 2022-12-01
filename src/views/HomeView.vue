@@ -3,5 +3,7 @@ import TheWelcome from '../components/TheWelcome.vue';
 </script>
 
 <template>
-  <TheWelcome />
+  <div>
+    <TheWelcome />
+  </div>
 </template>
