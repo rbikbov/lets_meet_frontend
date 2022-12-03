@@ -130,7 +130,6 @@ const formNotChanged = computed(() => {
 });
 
 watch(props, ({ user }) => {
-  form.value = false;
   firstName.value = user?.first_name || '';
   lastName.value = user?.last_name || '';
   age.value = user?.age || 18;

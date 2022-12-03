@@ -3,7 +3,8 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { AppRouteNames } from '@/router';
-import { api } from '@/services';
+import { useMutation } from '@tanstack/vue-query';
+import { signUpConfirm } from '@/services/auth';
 
 const props = defineProps<{ confirmationCode: string }>();
 
@@ -16,37 +17,37 @@ const redirectMessage = computed(
 );
 const message = ref('');
 
+const redirectTimeoutInProcess = ref(false);
 const redirectTimeUpdate = (): Promise<void> => {
+  redirectTimeoutInProcess.value = true;
   return new Promise((resolve) => {
     const intervalId = setInterval(() => {
       secondsToRedirect.value--;
       if (!secondsToRedirect.value) {
         clearInterval(intervalId);
+        redirectTimeoutInProcess.value = false;
         resolve();
       }
     }, 1000);
   });
 };
 
-const authSignupConfimationInProcess = ref(false);
-onMounted(async () => {
-  authSignupConfimationInProcess.value = true;
-  try {
-    const result = await api.api.v1UsersConfirmAccountDetail(
-      props.confirmationCode
-    );
-    message.value = result.data.message;
-    authSignupConfimationInProcess.value = false;
-    await redirectTimeUpdate();
-    router.push({
-      name: AppRouteNames.authSignin,
-      replace: true,
-    });
-  } catch (e) {
-    console.warn(e);
-  } finally {
-    authSignupConfimationInProcess.value = false;
+const signupConfirmMutation = useMutation(
+  (confirmationCode: string) => signUpConfirm(confirmationCode),
+  {
+    onSuccess: async (response) => {
+      message.value = response.data.message;
+      await redirectTimeUpdate();
+      router.push({
+        name: AppRouteNames.authSignin,
+        replace: true,
+      });
+    },
   }
+);
+
+onMounted(() => {
+  signupConfirmMutation.mutate(props.confirmationCode);
 });
 </script>
 
@@ -55,10 +56,10 @@ onMounted(async () => {
     <h1>{{ title }}</h1>
     <div>
       <v-progress-circular
-        v-if="authSignupConfimationInProcess"
+        v-if="signupConfirmMutation.isLoading"
         indeterminate
       ></v-progress-circular>
-      <template v-else>
+      <template v-if="redirectTimeoutInProcess">
         <p>{{ message }}</p>
         <p>{{ redirectMessage }}</p>
       </template>

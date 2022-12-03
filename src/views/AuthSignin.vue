@@ -1,29 +1,57 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useMutation } from '@tanstack/vue-query';
 
 import { AppRouteNames } from '@/router';
 import { useAuthStore } from '@/stores/auth';
 import type { SigninRequestDataUser } from '@/services/api';
 
 import AuthSigninForm from '@/components/AuthSigninForm.vue';
+import { signIn } from '@/services/auth';
 
 const router = useRouter();
-const { signIn } = useAuthStore();
+const authStore = useAuthStore();
 
-const authSigninFormIsLoading = ref(false);
-const onAuthSigninFormSubmit = async (user: SigninRequestDataUser) => {
-  authSigninFormIsLoading.value = true;
-  try {
-    await signIn(user);
-    router.push({
-      name: AppRouteNames.home,
-    });
-  } catch (error) {
-    console.warn({ error });
-  } finally {
-    authSigninFormIsLoading.value = false;
+// const createToast = console.log;
+
+const { isLoading: authSigninFormIsLoading, mutate } = useMutation(
+  (credentials: SigninRequestDataUser) => signIn(credentials),
+  {
+    // onError: (error) => {
+    //   if (Array.isArray((error as any).response.data.error)) {
+    //     (error as any).response.data.error.forEach((el: any) =>
+    //       createToast(el.message, {
+    //         position: 'top-right',
+    //         type: 'warning',
+    //       })
+    //     );
+    //   } else {
+    //     createToast((error as any).response.data.message, {
+    //       position: 'top-right',
+    //       type: 'danger',
+    //     });
+    //   }
+    // },
+    onSuccess: (response) => {
+      // createToast('Successfully logged in', {
+      //   position: 'top-right',
+      // });
+      authStore.setTokens({
+        accessToken: response.data.token,
+        refreshToken: response.data.refresh,
+      });
+      router.push({
+        name: AppRouteNames.home,
+      });
+    },
   }
+);
+
+const onAuthSigninFormSubmit = async (user: SigninRequestDataUser) => {
+  mutate({
+    email: user.email,
+    password: user.password,
+  });
 };
 </script>
 

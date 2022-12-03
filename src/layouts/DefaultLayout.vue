@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useIsFetching } from '@tanstack/vue-query';
 import { storeToRefs } from 'pinia';
 import { RouterView } from 'vue-router';
 import { usePreferredDark } from '@vueuse/core';
 
 import { useAuthStore } from '@/stores/auth';
 import { AppRouteNames } from '@/router';
+
+const isFetching = useIsFetching();
 
 const { user, isAuthenticated } = storeToRefs(useAuthStore());
 const userTitle = computed(() =>
@@ -25,7 +28,9 @@ const toggleTheme = () => {
     <v-navigation-drawer rail permanent>
       <v-list-item
         nav
-        prepend-avatar="https://randomuser.me/api/portraits/men/75.jpg"
+        :prepend-avatar="
+          user?.avatar || `https://randomuser.me/api/portraits/lego/3.jpg`
+        "
       ></v-list-item>
 
       <v-divider></v-divider>
@@ -107,6 +112,12 @@ const toggleTheme = () => {
         :icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
         @click="toggleTheme"
       ></v-btn>
+
+      <v-btn>
+        <v-progress-circular
+          :indeterminate="!!isFetching"
+        ></v-progress-circular>
+      </v-btn>
     </v-app-bar>
 
     <v-main>

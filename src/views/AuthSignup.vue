@@ -1,40 +1,39 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { AppRouteNames } from '@/router';
-import { useAuthStore } from '@/stores/auth';
 import type { SignupRequestDataUser } from '@/services/api';
 import { mungeEmailAddress } from '@/helpers/mungeEmailAddress';
 
 import UserCreateForm from '@/components/AuthSignupForm.vue';
+import { signUp } from '@/services/auth';
+import { useMutation } from '@tanstack/vue-query';
 
 const router = useRouter();
-const { signUp } = useAuthStore();
 
-const userCreateFormIsLoading = ref(false);
-const onUserCreateFormSubmit = async (user: SignupRequestDataUser) => {
-  userCreateFormIsLoading.value = true;
-  try {
-    await signUp(user);
-    const mungedEmail = mungeEmailAddress(user.email!);
-    router.push({
-      name: AppRouteNames.authSignupThanks,
-      query: {
-        email: mungedEmail,
-      },
-    });
-  } catch (e) {
-    console.error({ e });
-  } finally {
-    userCreateFormIsLoading.value = false;
+const signUpMutation = useMutation(
+  (credentials: SignupRequestDataUser) => signUp(credentials),
+  {
+    onSuccess: (response) => {
+      const mungedEmail = mungeEmailAddress(response.data.user.email!);
+      router.push({
+        name: AppRouteNames.authSignupThanks,
+        query: {
+          email: mungedEmail,
+        },
+      });
+    },
   }
+);
+
+const onUserCreateFormSubmit = (credentials: SignupRequestDataUser) => {
+  signUpMutation.mutate(credentials);
 };
 </script>
 
 <template>
   <UserCreateForm
-    :loading="userCreateFormIsLoading"
+    :loading="signUpMutation.isLoading.value"
     @submit="onUserCreateFormSubmit"
   />
 </template>

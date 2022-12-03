@@ -1,35 +1,36 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { AppRouteNames } from '@/router';
 import { useAuthStore } from '@/stores/auth';
 
 import AuthSignoutForm from '@/components/AuthSignoutForm.vue';
+import { signOut } from '@/services/auth';
+import { useMutation } from '@tanstack/vue-query';
 
 const router = useRouter();
 
-const { signOut } = useAuthStore();
+const { logOut } = useAuthStore();
 
-const authSignoutFormIsLoading = ref(false);
-
-const onAuthSignoutFormSubmit = async () => {
-  authSignoutFormIsLoading.value = true;
-  try {
-    await signOut();
+const signOutMutation = useMutation(() => signOut(), {
+  onSuccess: () => {
+    logOut();
     router.push({
       name: AppRouteNames.authSignin,
     });
-  } catch (error) {
-    console.warn({ error });
-  } finally {
-    authSignoutFormIsLoading.value = false;
-  }
+  },
+});
+
+const onAuthSignoutFormSubmit = () => {
+  signOutMutation.mutate();
 };
 </script>
 
 <template>
-  <AuthSignoutForm @click="onAuthSignoutFormSubmit" />
+  <AuthSignoutForm
+    :loading="signOutMutation.isLoading.value"
+    @click="onAuthSignoutFormSubmit"
+  />
 </template>
 
 <style></style>

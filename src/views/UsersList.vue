@@ -1,39 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useQuery } from '@tanstack/vue-query';
 
 import { useUsersStore } from '@/stores/users';
+import { USERS } from '@/services/queries/keys';
+import { fetchUsers } from '@/services/users';
 
 const { users } = storeToRefs(useUsersStore());
-const { fetchUsers } = useUsersStore();
+const { setUsers } = useUsersStore();
 
-const usersIsLoading = ref(false);
-const getUsers = async () => {
-  try {
-    usersIsLoading.value = true;
-    await fetchUsers();
-  } catch (e) {
-    console.warn({ e });
-  } finally {
-    usersIsLoading.value = false;
-  }
-};
-getUsers();
+const usersQuery = useQuery({
+  queryKey: [USERS],
+  queryFn: () => fetchUsers(),
+  onSuccess: (response) => {
+    setUsers(response.data);
+  },
+});
 </script>
 
 <template>
   <v-container fluid>
-    <!--
-      <v-btn
+    <v-btn
       class="mx-auto"
       color="success"
       type="button"
       variant="elevated"
-      @click="getUsers"
+      @click="usersQuery.refetch"
     >
       Fetch users
     </v-btn>
-    -->
 
     <v-row dense>
       <v-col v-for="user in users" :key="user.id" cols="12">

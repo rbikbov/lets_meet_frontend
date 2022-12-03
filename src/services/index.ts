@@ -1,7 +1,9 @@
 import { Api } from '@/services/api';
 import { CONFIG } from '@/config';
-import type { Ref } from 'vue';
+import { refreshAccessToken, signOut } from './auth';
+
 import type { AxiosError, AxiosRequestConfig } from 'axios';
+import { useAuthStore } from '@/stores/auth';
 
 interface MyAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: number;
@@ -18,22 +20,13 @@ export const api = new Api({
 });
 
 export function setAuthorizationToken(token: string | null): void {
+  console.log(`New accessToken = ${token}`);
   api.setSecurityData(token);
 }
 
-export function setRefreshInterceptor({
-  isAuthenticated,
-  accessToken,
-  refreshAccessToken,
-  signOut,
-  removeTokens,
-}: {
-  isAuthenticated: Ref<boolean>;
-  accessToken: Ref<string | null>;
-  refreshAccessToken: () => Promise<void>;
-  signOut: () => Promise<void>;
-  removeTokens: () => void;
-}) {
+export function setApiInterceptors() {
+  const authStore = useAuthStore();
+
   api.instance.interceptors.response.use(
     (response) => {
       return response;
@@ -59,31 +52,36 @@ export function setRefreshInterceptor({
         error.response?.status &&
         [400, 401].includes(error.response.status)
       ) {
-        removeTokens();
+        authStore.logOut();
       }
 
       if (
         !isRefreshRequest &&
         !isLogoutRequest &&
-        isAuthenticated.value &&
+        authStore.isAuthenticated &&
         error.response?.status &&
         [401].includes(error.response.status) &&
         originalRequest._retry === 5
       ) {
         await signOut();
+        authStore.logOut();
       }
 
       if (
         !isRefreshRequest &&
         !isLogoutRequest &&
-        isAuthenticated.value &&
+        authStore.isAuthenticated &&
         error.response?.status === 401 &&
         !originalRequest._retry
       ) {
         originalRequest._retry = (originalRequest._retry || 0) + 1;
-        await refreshAccessToken();
-        const extraHeaders = accessToken.value
-          ? generateAuthorizationHeaders({ token: accessToken.value })
+        const refreshResult = await refreshAccessToken(authStore.refreshToken!);
+        authStore.setTokens({
+          accessToken: refreshResult.data.token,
+          refreshToken: refreshResult.data.refresh,
+        });
+        const extraHeaders = refreshResult.data.token
+          ? generateAuthorizationHeaders({ token: refreshResult.data.token })
           : {};
         return api.instance({
           ...originalRequest,
@@ -98,15 +96,3 @@ export function setRefreshInterceptor({
     }
   );
 }
-
-/* pagintion prepares
-export const limit = 10;
-
-export function pageToOffset(
-  page: number = 1,
-  localLimit = limit
-): { limit: number; offset: number } {
-  const offset = (page - 1) * localLimit;
-  return { limit: localLimit, offset };
-}
-*/
