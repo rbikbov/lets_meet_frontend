@@ -8,6 +8,8 @@ import { usePreferredDark } from '@vueuse/core';
 import { useAuthStore } from '@/stores/auth';
 import { AppRouteNames } from '@/router';
 
+import BaseAvatarWrapper from '@/components/BaseAvatarWrapper.vue';
+
 const isFetching = useIsFetching();
 
 const { user, isAuthenticated } = storeToRefs(useAuthStore());
@@ -26,12 +28,9 @@ const toggleTheme = () => {
 <template>
   <v-app :theme="theme">
     <v-navigation-drawer rail permanent>
-      <v-list-item
-        nav
-        :prepend-avatar="
-          user?.avatar || `https://randomuser.me/api/portraits/lego/3.jpg`
-        "
-      ></v-list-item>
+      <BaseAvatarWrapper v-slot="{ url }">
+        <v-list-item nav :prepend-avatar="url"></v-list-item>
+      </BaseAvatarWrapper>
 
       <v-divider></v-divider>
 
