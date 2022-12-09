@@ -10,6 +10,7 @@ export enum AppRouteNames {
   authSignupThanks = 'authSignupThanks',
   authSignupConfirmation = 'authSignupConfirmation',
 
+  accountProfile = 'accountProfile',
   accountProfileUpdate = 'accountProfileUpdate',
 
   about = 'about',
@@ -64,6 +65,11 @@ const router = createRouter({
               confirmationCode,
             };
           },
+        },
+        {
+          path: '/account/profile',
+          name: AppRouteNames.accountProfile,
+          component: () => import('../views/AccountProfile.vue'),
         },
         {
           path: '/account/profile-update',

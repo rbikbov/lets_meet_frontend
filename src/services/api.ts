@@ -31,14 +31,21 @@ export type SignupRequestDataUser = SigninRequestDataUser & {
   password_confirmation: string;
 };
 
+export enum Gender {
+  Male = 'male',
+  Female = 'female',
+}
+
 export interface ProfileDataUser {
   first_name?: string;
   last_name?: string;
   age?: number;
+  gender?: Gender;
 }
 
 export interface AvatarFile {
-  avatar?: File;
+  /** @format binary */
+  avatar: File;
 }
 
 export interface User {
@@ -48,6 +55,7 @@ export interface User {
   first_name?: string;
   last_name?: string;
   age?: number;
+  gender?: Gender;
   avatar?: string;
 }
 

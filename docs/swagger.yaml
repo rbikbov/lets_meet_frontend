@@ -16,7 +16,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 "$ref": "#/components/schemas/access_token"
         '400':
           description: Bad request
@@ -48,7 +47,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 "$ref": "#/components/schemas/access_token"
         '400':
           description: Bad request
@@ -126,7 +124,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 "$ref": "#/components/schemas/users_array"
   "/api/v1/users/{id}":
     get:
@@ -145,7 +142,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 "$ref": "#/components/schemas/user"
         '400':
           description: Bad request
@@ -171,7 +167,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 "$ref": "#/components/schemas/user"
       requestBody:
         content:
@@ -226,7 +221,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 "$ref": "#/components/schemas/user"
       requestBody:
         content:
@@ -293,6 +287,11 @@ components:
             format: password
         required:
         - password_confirmation
+    gender:
+      type: string
+      enum:
+      - male
+      - female
     profile_data_user:
       type: object
       properties:
@@ -302,11 +301,16 @@ components:
           type: string
         age:
           type: integer
+        gender:
+          "$ref": "#/components/schemas/gender"
     avatar_file:
       type: object
       properties:
         avatar:
-          type: file
+          type: string
+          format: binary
+      required:
+      - avatar
     user:
       type: object
       properties:
@@ -321,6 +325,8 @@ components:
           type: string
         age:
           type: integer
+        gender:
+          "$ref": "#/components/schemas/gender"
         avatar:
           type: string
       required:

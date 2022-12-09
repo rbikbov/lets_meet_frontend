@@ -55,6 +55,7 @@ const toggleTheme = () => {
             title="SignUp"
             value="signup"
             :to="{ name: AppRouteNames.authSignup }"
+            :link="true"
             :exact="true"
           ></v-list-item>
 
@@ -62,6 +63,7 @@ const toggleTheme = () => {
             title="SignIn"
             value="signin"
             :to="{ name: AppRouteNames.authSignin }"
+            :link="true"
             :exact="true"
           ></v-list-item>
         </template>
@@ -70,13 +72,15 @@ const toggleTheme = () => {
             title="SignOut"
             value="signout"
             :to="{ name: AppRouteNames.authSignout }"
+            :link="true"
             :exact="true"
           ></v-list-item>
 
           <v-list-item
-            title="Profile update"
-            value="profileUpdate"
-            :to="{ name: AppRouteNames.accountProfileUpdate }"
+            title="Profile"
+            value="profile"
+            :to="{ name: AppRouteNames.accountProfile }"
+            :link="true"
             :exact="true"
           ></v-list-item>
 
@@ -84,6 +88,7 @@ const toggleTheme = () => {
             title="Users"
             value="users"
             :to="{ name: AppRouteNames.users }"
+            :link="true"
             :exact="true"
           ></v-list-item>
         </template>
@@ -92,6 +97,7 @@ const toggleTheme = () => {
           title="Home"
           value="home"
           :to="{ name: AppRouteNames.home }"
+          :link="true"
           :exact="true"
         ></v-list-item>
 
@@ -99,6 +105,7 @@ const toggleTheme = () => {
           title="About"
           value="about"
           :to="{ name: AppRouteNames.about }"
+          :link="true"
           :exact="true"
         ></v-list-item>
       </v-list>

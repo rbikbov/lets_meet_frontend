@@ -1,3 +1,4 @@
+import type { AxiosProgressEvent } from 'axios';
 import { api } from '.';
 import type {
   ProfileDataUser,
@@ -37,4 +38,16 @@ export function refreshAccessToken(refreshToken: string) {
 
 export function updateUserInfo(id: UserId, profile: ProfileDataUser) {
   return api.api.v1UsersPartialUpdate(String(id), { profile });
+}
+
+export function updateUserAvatar(
+  id: UserId,
+  avatar: File,
+  options?: { onUploadProgress: (progressEvent: AxiosProgressEvent) => void }
+) {
+  return api.api.v1UsersLoadAvatarPartialUpdate(
+    String(id),
+    { avatar },
+    options
+  );
 }
