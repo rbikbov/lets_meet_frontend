@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import { VueQueryPlugin } from '@tanstack/vue-query';
+import { VueQueryPlugin, VueQueryPluginOptions } from '@tanstack/vue-query';
 
 import App from './App.vue';
 import router from './router';
@@ -27,6 +27,15 @@ app.use(createPinia());
 
 app.use(router);
 
-app.use(VueQueryPlugin, {});
+const vueQueryConfig: VueQueryPluginOptions = {
+  queryClientConfig: {
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+      },
+    },
+  },
+};
+app.use(VueQueryPlugin, vueQueryConfig);
 
 app.mount('#app');
