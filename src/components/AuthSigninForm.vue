@@ -3,7 +3,8 @@ import { defineComponent, type PropType } from 'vue';
 
 import type { SigninRequestDataUser } from '@/services/api';
 
-import BaseFormWrapper from './BaseFormWrapper.vue';
+import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
+import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
 
 export default defineComponent({
   props: {
@@ -53,28 +54,34 @@ export default defineComponent({
 <template>
   <BaseFormWrapper>
     <v-form v-model="form" @submit.prevent="onSubmit">
-      <v-text-field
-        v-model="email"
-        :readonly="loading"
-        :rules="[required]"
-        class="mb-2"
-        clearable
-        label="Email"
-        type="email"
-        autocomplete="email"
-      ></v-text-field>
+      <BaseInputWrapper v-slot="{ inputProps }">
+        <v-text-field
+          v-bind="inputProps"
+          v-model="email"
+          :readonly="loading"
+          :rules="[required]"
+          class="mb-2"
+          clearable
+          label="Email"
+          type="email"
+          autocomplete="email"
+        ></v-text-field>
+      </BaseInputWrapper>
 
-      <v-text-field
-        v-model="password"
-        :readonly="loading"
-        :rules="[required]"
-        clearable
-        label="Password"
-        type="password"
-        autocomplete="password"
-        placeholder="Enter your password"
-      >
-      </v-text-field>
+      <BaseInputWrapper v-slot="{ inputProps }">
+        <v-text-field
+          v-bind="inputProps"
+          v-model="password"
+          :readonly="loading"
+          :rules="[required]"
+          clearable
+          label="Password"
+          type="password"
+          autocomplete="password"
+          placeholder="Enter your password"
+        >
+        </v-text-field>
+      </BaseInputWrapper>
 
       <br />
 

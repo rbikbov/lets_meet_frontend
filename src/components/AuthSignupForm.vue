@@ -3,7 +3,8 @@ import { ref } from 'vue';
 
 import type { SignupRequestDataUser } from '@/services/api';
 
-import BaseFormWrapper from './BaseFormWrapper.vue';
+import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
+import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
 
 const props = withDefaults(defineProps<{ loading: boolean }>(), {
   loading: false,
@@ -56,41 +57,50 @@ const isEqual = ({
 <template>
   <BaseFormWrapper>
     <v-form v-model="form" @submit.prevent="onSubmit">
-      <v-text-field
-        v-model="email"
-        :readonly="loading"
-        :rules="[required]"
-        class="mb-2"
-        clearable
-        label="Email"
-        type="email"
-        autocomplete="email"
-      ></v-text-field>
+      <BaseInputWrapper v-slot="{ inputProps }">
+        <v-text-field
+          v-bind="inputProps"
+          v-model="email"
+          :readonly="loading"
+          :rules="[required]"
+          class="mb-2"
+          clearable
+          label="Email"
+          type="email"
+          autocomplete="email"
+        ></v-text-field>
+      </BaseInputWrapper>
 
-      <v-text-field
-        v-model="password"
-        :readonly="loading"
-        :rules="[required]"
-        clearable
-        label="Password"
-        type="password"
-        placeholder="Enter your password"
-        autocomplete="password"
-      ></v-text-field>
+      <BaseInputWrapper v-slot="{ inputProps }">
+        <v-text-field
+          v-bind="inputProps"
+          v-model="password"
+          :readonly="loading"
+          :rules="[required]"
+          clearable
+          label="Password"
+          type="password"
+          placeholder="Enter your password"
+          autocomplete="password"
+        ></v-text-field>
+      </BaseInputWrapper>
 
-      <v-text-field
-        v-model="password_confirmation"
-        :readonly="loading"
-        :rules="[
-          required,
-          isEqual({ fieldName: 'password', fieldValue: password }),
-        ]"
-        clearable
-        label="Password confirm"
-        type="password"
-        placeholder="Enter your password again"
-        autocomplete="none"
-      ></v-text-field>
+      <BaseInputWrapper v-slot="{ inputProps }">
+        <v-text-field
+          v-bind="inputProps"
+          v-model="password_confirmation"
+          :readonly="loading"
+          :rules="[
+            required,
+            isEqual({ fieldName: 'password', fieldValue: password }),
+          ]"
+          clearable
+          label="Password confirm"
+          type="password"
+          placeholder="Enter your password again"
+          autocomplete="none"
+        ></v-text-field>
+      </BaseInputWrapper>
 
       <br />
 

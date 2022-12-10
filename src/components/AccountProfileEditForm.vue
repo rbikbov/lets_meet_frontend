@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue';
 import { type ProfileDataUser, Gender } from '@/services/api';
 
 import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
+import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
 
 const props = withDefaults(
   defineProps<{
@@ -84,43 +85,55 @@ const max = (maxValue: number) => {
     <slot :formProps="formProps"></slot>
 
     <v-form v-model="formIsValid" @submit.prevent="onSubmit">
-      <v-text-field
-        v-model="formData.first_name"
-        :readonly="loading"
-        :rules="[required]"
-        label="Firstname"
-        type="text"
-        autocomplete="first-name"
-      ></v-text-field>
+      <BaseInputWrapper v-slot="{ inputProps }">
+        <v-text-field
+          v-bind="inputProps"
+          v-model="formData.first_name"
+          :readonly="loading"
+          :rules="[required]"
+          label="Firstname"
+          type="text"
+          autocomplete="first-name"
+        ></v-text-field>
+      </BaseInputWrapper>
 
-      <v-text-field
-        v-model="formData.last_name"
-        :readonly="loading"
-        :rules="[required]"
-        label="Lastname"
-        type="text"
-        autocomplete="last-name"
-      ></v-text-field>
+      <BaseInputWrapper v-slot="{ inputProps }">
+        <v-text-field
+          v-bind="inputProps"
+          v-model="formData.last_name"
+          :readonly="loading"
+          :rules="[required]"
+          label="Lastname"
+          type="text"
+          autocomplete="last-name"
+        ></v-text-field>
+      </BaseInputWrapper>
 
-      <v-text-field
-        v-model.number="formData.age"
-        :readonly="loading"
-        :rules="[required, min(16), max(60)]"
-        :min="16"
-        :max="60"
-        label="Age"
-        type="number"
-      ></v-text-field>
+      <BaseInputWrapper v-slot="{ inputProps }">
+        <v-text-field
+          v-bind="inputProps"
+          v-model.number="formData.age"
+          :readonly="loading"
+          :rules="[required, min(16), max(60)]"
+          :min="16"
+          :max="60"
+          label="Age"
+          type="number"
+        ></v-text-field>
+      </BaseInputWrapper>
 
-      <v-radio-group
-        v-model="formData.gender"
-        :readonly="loading"
-        label="Gender"
-        :rules="[required]"
-      >
-        <v-radio label="Female" :value="Gender.Female"></v-radio>
-        <v-radio label="Male" :value="Gender.Male"></v-radio>
-      </v-radio-group>
+      <BaseInputWrapper v-slot="{ inputProps }">
+        <v-radio-group
+          v-bind="inputProps"
+          v-model="formData.gender"
+          :readonly="loading"
+          label="Gender"
+          :rules="[required]"
+        >
+          <v-radio label="Female" :value="Gender.Female"></v-radio>
+          <v-radio label="Male" :value="Gender.Male"></v-radio>
+        </v-radio-group>
+      </BaseInputWrapper>
 
       <br />
 

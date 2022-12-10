@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 
+import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
+
 export type AvatarModelValueItem = {
   previewUrl: string;
   file: File;
@@ -89,38 +91,50 @@ const rules = [
 </script>
 
 <template>
-  <v-file-input
-    v-model="avatarFiles"
-    accept="image/*"
-    prepend-icon=""
-    placeholder="Pick a new avatar"
-    label="Pick a new avatar"
-    clearable
-    show-size
-    :rules="rules"
-    :disabled="loading"
-  >
-    <template v-slot:prepend-inner>
-      <v-progress-circular v-if="loading" :model-value="progress" :size="24">
-        <!-- <span>{{ progress }}</span> -->
-      </v-progress-circular>
-      <v-icon v-else icon="mdi-camera" />
-    </template>
-    <template v-slot:selection="{ fileNames }">
-      <template v-if="fileNames && fileNames.length">
-        <template v-for="fileName in fileNames" :key="fileName">
-          <v-chip size="small" label color="primary" class="mr-2">
-            {{ fileName }}
-          </v-chip>
-        </template>
+  <BaseInputWrapper v-slot="{ inputProps }">
+    <v-file-input
+      v-bind="inputProps"
+      v-model="avatarFiles"
+      accept="image/*"
+      prepend-icon=""
+      placeholder="Pick a new avatar"
+      label="Pick a new avatar"
+      clearable
+      show-size
+      :rules="rules"
+      :disabled="loading"
+    >
+      <template v-slot:prepend-inner>
+        <v-progress-circular v-if="loading" :model-value="progress" :size="24">
+          <!-- <span>{{ progress }}</span> -->
+        </v-progress-circular>
+        <v-icon v-else icon="mdi-camera" />
       </template>
-      <!--
-        <template v-else>
-          <v-chip size="small" label color="primary" class="mr-2">
-            {{ fileName }}
-          </v-chip>
+      <template v-slot:selection="{ fileNames }">
+        <template v-if="fileNames && fileNames.length">
+          <template v-for="fileName in fileNames" :key="fileName">
+            <v-chip size="small" label color="primary" class="mr-2">
+              {{ fileName }}
+            </v-chip>
+          </template>
         </template>
-        -->
-    </template>
-  </v-file-input>
+        <!--
+          <template v-else>
+            <v-chip size="small" label color="primary" class="mr-2">
+              {{ fileName }}
+            </v-chip>
+          </template>
+          -->
+      </template>
+      <template v-slot:loader>
+        <v-progress-linear
+          :active="loading"
+          :model-value="progress"
+          absolute
+          height="5"
+          indeterminate
+        ></v-progress-linear>
+      </template>
+    </v-file-input>
+  </BaseInputWrapper>
 </template>
