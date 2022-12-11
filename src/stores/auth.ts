@@ -54,21 +54,23 @@ export const useAuthStore = defineStore('authStore', () => {
     setAuthUser(null);
   }
 
-  const fetchMe = useQuery({
-    queryKey: [AUTH_USER],
-    queryFn: () => fetchUserInfo(jwtPayload.value!.id),
-    enabled: false,
-    onSuccess: (result) => {
-      setAuthUser(result.data);
-    },
-  });
-
   watchSyncEffect(() => {
     jwtPayload.value = accessToken.value
       ? jwt_decode<JwtPayload>(accessToken.value)
       : null;
     setAuthorizationToken(accessToken.value);
     if (accessToken.value) {
+      // fetchUserInfo(jwtPayload.value!.id).then((result) => {
+      //   setAuthUser(result.data);
+      // });
+      const fetchMe = useQuery({
+        queryKey: [AUTH_USER],
+        queryFn: () => fetchUserInfo(jwtPayload.value!.id),
+        enabled: false,
+        onSuccess: (result) => {
+          setAuthUser(result.data);
+        },
+      });
       fetchMe.refetch();
     } else {
       setAuthUser(null);

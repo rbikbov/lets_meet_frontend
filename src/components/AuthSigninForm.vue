@@ -27,6 +27,7 @@ export default defineComponent({
 
   components: {
     BaseFormWrapper,
+    BaseInputWrapper,
   },
 
   data: () => ({

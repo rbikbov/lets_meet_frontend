@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 
-import BaseFormWrapper from './BaseFormWrapper.vue';
+import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
 
 export default defineComponent({
   props: {

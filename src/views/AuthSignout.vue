@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import { useMutation } from '@tanstack/vue-query';
 
 import { AppRouteNames } from '@/router';
 import { useAuthStore } from '@/stores/auth';
 
 import AuthSignoutForm from '@/components/AuthSignoutForm.vue';
 import { signOut } from '@/services/auth';
-import { useMutation } from '@tanstack/vue-query';
 
 const router = useRouter();
 
@@ -29,7 +29,7 @@ const onAuthSignoutFormSubmit = () => {
 <template>
   <AuthSignoutForm
     :loading="signOutMutation.isLoading.value"
-    @click="onAuthSignoutFormSubmit"
+    @submit="onAuthSignoutFormSubmit"
   />
 </template>
 
