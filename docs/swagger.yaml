@@ -4,6 +4,246 @@ info:
   title: API V1
   version: v1
 paths:
+  "/api/v1/cities":
+    get:
+      summary: return cities by country
+      tags:
+      - Cities
+      parameters:
+      - name: country
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+  "/api/v1/cities/country":
+    get:
+      summary: return all countries
+      tags:
+      - Cities
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+  "/api/v1/dialogs/{id}/send_message":
+    post:
+      summary: creates message
+      tags:
+      - Dialogs
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/message"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Access denied
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text_message:
+                  type: string
+              required:
+              - text_message
+  "/api/v1/users/{id}/dialogs":
+    get:
+      summary: return dialogs
+      tags:
+      - Dialogs
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/dialogs_array"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Access denied
+  "/api/v1/dialogs/{id}/messages":
+    get:
+      summary: return dialog messages
+      tags:
+      - Dialogs
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/messages_array"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Access denied
+  "/api/v1/meets":
+    get:
+      summary: Search persons
+      tags:
+      - Meets
+      parameters:
+      - name: search
+        in: query
+        schema:
+          type: object
+          properties:
+            age_min:
+              type: integer
+            age_max:
+              type: integer
+            gender:
+              "$ref": "#/components/schemas/gender_type"
+            city:
+              type: string
+            page:
+              type: integer
+            per:
+              type: integer
+        required:
+        - search
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    "$ref": "#/components/schemas/users_array"
+  "/api/v1/meets/{id}/like_person":
+    post:
+      summary: likes person
+      tags:
+      - Meets
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: You're liked this person!
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Access denied
+  "/api/v1/meets/{id}/confirm":
+    post:
+      summary: likes person
+      tags:
+      - Meets
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Dialog opened
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Access denied
+  "/api/v1/users/{id}/notifications":
+    get:
+      summary: return notifications
+      tags:
+      - Notifications
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/notifications_array"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Access denied
   "/api/v1/sessions":
     post:
       summary: Creates a session
@@ -16,6 +256,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/access_token"
         '400':
           description: Bad request
@@ -47,6 +288,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/access_token"
         '400':
           description: Bad request
@@ -124,6 +366,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/users_array"
   "/api/v1/users/{id}":
     get:
@@ -142,6 +385,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/user"
         '400':
           description: Bad request
@@ -167,6 +411,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/user"
       requestBody:
         content:
@@ -221,6 +466,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/user"
       requestBody:
         content:
@@ -244,11 +490,18 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    id_number:
+      type: integer
+    gender_type:
+      type: string
+      enum:
+      - male
+      - female
     jwt_payload:
       type: object
       properties:
         id:
-          type: integer
+          "$ref": "#/components/schemas/id_number"
         email:
           type: string
           format: email
@@ -287,11 +540,6 @@ components:
             format: password
         required:
         - password_confirmation
-    gender:
-      type: string
-      enum:
-      - male
-      - female
     profile_data_user:
       type: object
       properties:
@@ -302,20 +550,17 @@ components:
         age:
           type: integer
         gender:
-          "$ref": "#/components/schemas/gender"
+          "$ref": "#/components/schemas/gender_type"
     avatar_file:
       type: object
       properties:
         avatar:
-          type: string
-          format: binary
-      required:
-      - avatar
+          type: file
     user:
       type: object
       properties:
         id:
-          type: integer
+          "$ref": "#/components/schemas/id_number"
         email:
           type: string
           format: email
@@ -326,9 +571,13 @@ components:
         age:
           type: integer
         gender:
-          "$ref": "#/components/schemas/gender"
+          "$ref": "#/components/schemas/gender_type"
         avatar:
           type: string
+        likes:
+          type: array
+          items:
+            "$ref": "#/components/schemas/id_number"
       required:
       - id
       - email
@@ -349,7 +598,7 @@ components:
       type: object
       properties:
         user_id:
-          type: integer
+          "$ref": "#/components/schemas/id_number"
         token:
           type: string
         expires_in:
@@ -362,9 +611,69 @@ components:
       - token
       - expires_in
       - refresh
+    dialog:
+      type: object
+      properties:
+        id:
+          "$ref": "#/components/schemas/id_number"
+        incoming_id:
+          "$ref": "#/components/schemas/id_number"
+        outgoing_id:
+          "$ref": "#/components/schemas/id_number"
+        confirmed:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - incoming_id
+      - outgoing_id
+    message:
+      type: object
+      properties:
+        dialog_id:
+          "$ref": "#/components/schemas/id_number"
+        user_id:
+          "$ref": "#/components/schemas/id_number"
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    notification:
+      type: object
+      properties:
+        user_id:
+          "$ref": "#/components/schemas/id_number"
+        content:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     users_array:
       type: array
       items:
         "$ref": "#/components/schemas/user"
+    dialogs_array:
+      type: array
+      items:
+        "$ref": "#/components/schemas/dialog"
+    messages_array:
+      type: array
+      items:
+        "$ref": "#/components/schemas/message"
+    notifications_array:
+      type: array
+      items:
+        "$ref": "#/components/schemas/notification"
 security:
 - bearerAuth: []

@@ -85,6 +85,22 @@ const toggleTheme = () => {
           ></v-list-item>
 
           <v-list-item
+            title="Meets"
+            value="meets"
+            :to="{ name: AppRouteNames.meets }"
+            :link="true"
+            :exact="true"
+          ></v-list-item>
+
+          <v-list-item
+            title="Dialogs"
+            value="dialogs"
+            :to="{ name: AppRouteNames.dialogs }"
+            :link="true"
+            :exact="true"
+          ></v-list-item>
+
+          <v-list-item
             title="Users"
             value="users"
             :to="{ name: AppRouteNames.users }"

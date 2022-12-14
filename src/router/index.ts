@@ -25,6 +25,11 @@ export enum AppRouteNames {
   accountProfile = 'accountProfile',
   accountProfileUpdate = 'accountProfileUpdate',
 
+  meets = 'meets',
+
+  dialogs = 'dialogs',
+  dialogDetail = 'dialogDetail',
+
   about = 'about',
   users = 'users',
 }
@@ -119,6 +124,41 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         component: () => import('../views/AccountProfileUpdate.vue'),
         meta: {
           middlewares: [requireAuth],
+        },
+      },
+      {
+        path: '/meets',
+        name: AppRouteNames.meets,
+        component: () => import('../views/MeetsList.vue'),
+        meta: {
+          middlewares: [requireAuth],
+        },
+      },
+      {
+        path: '/dialogs',
+        name: AppRouteNames.dialogs,
+        component: () => import('../views/DialogsList.vue'),
+        meta: {
+          middlewares: [requireAuth],
+        },
+      },
+      {
+        path: '/dialogs/:id', // TODO: int
+        name: AppRouteNames.dialogDetail,
+        component: () => import('../views/DialogDetail.vue'),
+        meta: {
+          middlewares: [requireAuth],
+        },
+        props: (route) => {
+          const rawDialogId = route.params.id;
+          if (!(typeof rawDialogId === 'string')) {
+            throw new Error('Wrong param "id'); // TODO: error
+          }
+
+          const dialogId = parseInt(rawDialogId, 10);
+          return {
+            dialogId,
+          };
         },
       },
       {

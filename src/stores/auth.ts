@@ -1,12 +1,12 @@
 import { ref, computed, watchSyncEffect } from 'vue';
 import { defineStore } from 'pinia';
 import jwt_decode from 'jwt-decode';
-import { useQuery } from '@tanstack/vue-query';
+// import { useQuery } from '@tanstack/vue-query';
 
 import type { JwtPayload, User } from '@/services/api';
 import { setApiInterceptors, setAuthorizationToken } from '@/services';
 import { fetchUserInfo } from '@/services/auth';
-import { AUTH_USER } from '@/services/queries/keys';
+// import { AUTH_USER } from '@/services/queries/keys';
 
 type TokenType = string | null;
 type JWTPayloadType = JwtPayload | null;
@@ -60,18 +60,18 @@ export const useAuthStore = defineStore('authStore', () => {
       : null;
     setAuthorizationToken(accessToken.value);
     if (accessToken.value) {
-      // fetchUserInfo(jwtPayload.value!.id).then((result) => {
-      //   setAuthUser(result.data);
-      // });
-      const fetchMe = useQuery({
-        queryKey: [AUTH_USER],
-        queryFn: () => fetchUserInfo(jwtPayload.value!.id),
-        enabled: false,
-        onSuccess: (result) => {
-          setAuthUser(result.data);
-        },
+      fetchUserInfo(jwtPayload.value!.id).then((result) => {
+        setAuthUser(result.data);
       });
-      fetchMe.refetch();
+      // const fetchMe = useQuery({
+      //   queryKey: [AUTH_USER],
+      //   queryFn: () => fetchUserInfo(jwtPayload.value!.id),
+      //   enabled: false,
+      //   onSuccess: (result) => {
+      //     setAuthUser(result.data);
+      //   },
+      // });
+      // fetchMe.refetch();
     } else {
       setAuthUser(null);
     }
