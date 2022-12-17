@@ -1,0 +1,1 @@
+import{b0 as a}from"./index.be0786c9.js";function t(s){return a.api.v1UsersDialogsDetail(String(s))}function n(s){return a.api.v1DialogsMessagesDetail(String(s))}function r(s,e){return a.api.v1DialogsSendMessageCreate(String(s),e)}export{n as a,t as f,r as s};

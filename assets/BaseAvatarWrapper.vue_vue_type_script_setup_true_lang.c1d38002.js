@@ -1,0 +1,1 @@
+import{N as s,O as t,P as o,c as u,Z as n,S as p}from"./index.be0786c9.js";import{d as c}from"./defaultAvatar.ec510896.js";const d=s({__name:"BaseAvatarWrapper",setup(f){const{user:a}=t(o()),e=u(()=>{var r;return((r=a.value)==null?void 0:r.avatar)||c});return(r,l)=>n(r.$slots,"default",{url:p(e)})}});export{d as _};
