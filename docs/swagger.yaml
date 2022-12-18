@@ -16,6 +16,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/access_token"
         '400':
           description: Bad request
@@ -47,6 +48,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/access_token"
         '400':
           description: Bad request
@@ -124,6 +126,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/users_array"
   "/api/v1/users/{id}":
     get:
@@ -142,6 +145,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/user"
         '400':
           description: Bad request
@@ -167,6 +171,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/user"
       requestBody:
         content:
@@ -221,6 +226,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 "$ref": "#/components/schemas/user"
       requestBody:
         content:
@@ -244,11 +250,18 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    id_number:
+      type: integer
+    gender_type:
+      type: string
+      enum:
+      - male
+      - female
     jwt_payload:
       type: object
       properties:
         id:
-          type: integer
+          "$ref": "#/components/schemas/id_number"
         email:
           type: string
           format: email
@@ -287,11 +300,6 @@ components:
             format: password
         required:
         - password_confirmation
-    gender:
-      type: string
-      enum:
-      - male
-      - female
     profile_data_user:
       type: object
       properties:
@@ -302,20 +310,17 @@ components:
         age:
           type: integer
         gender:
-          "$ref": "#/components/schemas/gender"
+          "$ref": "#/components/schemas/gender_type"
     avatar_file:
       type: object
       properties:
         avatar:
-          type: string
-          format: binary
-      required:
-      - avatar
+          type: file
     user:
       type: object
       properties:
         id:
-          type: integer
+          "$ref": "#/components/schemas/id_number"
         email:
           type: string
           format: email
@@ -326,9 +331,13 @@ components:
         age:
           type: integer
         gender:
-          "$ref": "#/components/schemas/gender"
+          "$ref": "#/components/schemas/gender_type"
         avatar:
           type: string
+        likes:
+          type: array
+          items:
+            "$ref": "#/components/schemas/id_number"
       required:
       - id
       - email
@@ -349,7 +358,7 @@ components:
       type: object
       properties:
         user_id:
-          type: integer
+          "$ref": "#/components/schemas/id_number"
         token:
           type: string
         expires_in:

@@ -1,12 +1,14 @@
 import type { AxiosProgressEvent } from 'axios';
 import { api } from '.';
 import type {
+  IdNumber,
   ProfileDataUser,
   SigninRequestDataUser,
   SignupRequestDataUser,
 } from './api';
 
-type UserId = number | string;
+// export type UserId = number | string;
+type UserId = IdNumber;
 
 export function signUp(user: SignupRequestDataUser) {
   return api.api.v1UsersCreate({ user });

@@ -9,8 +9,15 @@
  * ---------------------------------------------------------------
  */
 
+export type IdNumber = number;
+
+export enum GenderType {
+  Male = 'male',
+  Female = 'female',
+}
+
 export interface JwtPayload {
-  id: number;
+  id: IdNumber;
   /** @format email */
   email: string;
   admin: boolean;
@@ -31,32 +38,27 @@ export type SignupRequestDataUser = SigninRequestDataUser & {
   password_confirmation: string;
 };
 
-export enum Gender {
-  Male = 'male',
-  Female = 'female',
-}
-
 export interface ProfileDataUser {
   first_name?: string;
   last_name?: string;
   age?: number;
-  gender?: Gender;
+  gender?: GenderType;
 }
 
 export interface AvatarFile {
-  /** @format binary */
-  avatar: File;
+  avatar?: File;
 }
 
 export interface User {
-  id: number;
+  id: IdNumber;
   /** @format email */
   email: string;
   first_name?: string;
   last_name?: string;
   age?: number;
-  gender?: Gender;
+  gender?: GenderType;
   avatar?: string;
+  likes?: IdNumber[];
 }
 
 export interface InvalidUser {
@@ -65,7 +67,7 @@ export interface InvalidUser {
 }
 
 export interface AccessToken {
-  user_id: number;
+  user_id: IdNumber;
   token: string;
   /** @format date-time */
   expires_in: string;
