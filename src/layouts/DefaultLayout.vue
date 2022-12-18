@@ -12,9 +12,9 @@ import BaseAvatarWrapper from '@/components/BaseAvatarWrapper.vue';
 
 const isFetching = useIsFetching();
 
-const { user, isAuthenticated } = storeToRefs(useAuthStore());
+const { authUser, isAuthenticated } = storeToRefs(useAuthStore());
 const userTitle = computed(() =>
-  isAuthenticated.value ? user.value?.email : 'Anonymous'
+  isAuthenticated.value ? authUser.value?.email : 'Anonymous'
 );
 
 const prefersDark = usePreferredDark();

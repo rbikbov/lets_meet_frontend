@@ -14,7 +14,8 @@ const authStore = useAuthStore();
 
 // const createToast = console.log;
 
-const { isLoading: authSigninFormIsLoading, mutate } = useMutation(
+const authSigninMutation = useMutation(
+  // mutationKey: [],
   (credentials: SigninRequestDataUser) => signIn(credentials),
   {
     // onError: (error) => {
@@ -48,7 +49,7 @@ const { isLoading: authSigninFormIsLoading, mutate } = useMutation(
 );
 
 const onAuthSigninFormSubmit = async (user: SigninRequestDataUser) => {
-  mutate({
+  authSigninMutation.mutate({
     email: user.email,
     password: user.password,
   });
@@ -57,7 +58,7 @@ const onAuthSigninFormSubmit = async (user: SigninRequestDataUser) => {
 
 <template>
   <AuthSigninForm
-    :loading="authSigninFormIsLoading"
+    :loading="authSigninMutation.isLoading.value"
     @submit="onAuthSigninFormSubmit"
   />
 </template>

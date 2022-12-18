@@ -6,22 +6,22 @@ import { AppRouteNames } from '@/router';
 import { useAuthStore } from '@/stores/auth';
 
 import { AUTH_USER } from '@/services/queries/keys';
-import { fetchUserInfo } from '@/services/auth';
+import { fetchMe } from '@/services/auth';
 
 import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
 import BaseAvatarWrapper from '@/components/BaseAvatarWrapper.vue';
 
-const { jwtPayload, user } = storeToRefs(useAuthStore());
+const { authUser } = storeToRefs(useAuthStore());
 
-const fetchMe = useQuery({
+const fetchMeQuery = useQuery({
   queryKey: [AUTH_USER],
-  queryFn: () => fetchUserInfo(jwtPayload.value!.id),
+  queryFn: () => fetchMe(),
 });
 </script>
 
 <template>
   <div>
-    <BaseFormWrapper v-if="user">
+    <BaseFormWrapper v-if="authUser">
       <BaseAvatarWrapper v-slot="{ url }">
         <v-img :src="url" aspect-ratio="1" cover></v-img>
       </BaseAvatarWrapper>
@@ -31,9 +31,9 @@ const fetchMe = useQuery({
       <v-row dense>
         <v-col cols="9">
           <v-card-title>
-            {{ user.first_name }}
+            {{ authUser.first_name }}
             <br />
-            {{ user.last_name }}
+            {{ authUser.last_name }}
           </v-card-title>
         </v-col>
 
@@ -54,11 +54,11 @@ const fetchMe = useQuery({
         </v-col>
       </v-row>
 
-      <v-card-subtitle> {{ user.email }} </v-card-subtitle>
+      <v-card-subtitle> {{ authUser.email }} </v-card-subtitle>
 
-      <v-card-subtitle> Age: {{ user.age }} </v-card-subtitle>
+      <v-card-subtitle> Age: {{ authUser.age }} </v-card-subtitle>
 
-      <v-card-subtitle> Gender: {{ user.gender }} </v-card-subtitle>
+      <v-card-subtitle> Gender: {{ authUser.gender }} </v-card-subtitle>
 
       <!-- <v-divider></v-divider> -->
 

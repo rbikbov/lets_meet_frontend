@@ -14,12 +14,8 @@ export function signUp(user: SignupRequestDataUser) {
   return api.api.v1UsersCreate({ user });
 }
 
-export function fetchUserInfo(id: UserId) {
-  return api.api.v1UsersDetail(String(id));
-}
-
-export function editUserInfo(id: UserId, data: ProfileDataUser) {
-  return api.api.v1UsersPartialUpdate(String(id), { profile: data });
+export function fetchMe() {
+  return api.api.v1UsersMeList();
 }
 
 export function signOut() {

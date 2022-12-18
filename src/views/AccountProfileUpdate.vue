@@ -9,11 +9,7 @@ import { AppRouteNames } from '@/router';
 import { useAuthStore } from '@/stores/auth';
 import type { ProfileDataUser, User } from '@/services/api';
 import { AUTH_USER } from '@/services/queries/keys';
-import {
-  fetchUserInfo,
-  updateUserAvatar,
-  updateUserInfo,
-} from '@/services/auth';
+import { fetchMe, updateUserAvatar, updateUserInfo } from '@/services/auth';
 
 import AccountProfileEditForm from '@/components/AccountProfileEditForm.vue';
 import AccountProfileAvatarInput, {
@@ -23,14 +19,15 @@ import BaseAvatarWrapper from '@/components/BaseAvatarWrapper.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
-const { jwtPayload, user } = storeToRefs(useAuthStore());
+const { jwtPayload, authUser } = storeToRefs(useAuthStore());
 
-const fetchMe = useQuery({
+const fetchMeQuery = useQuery({
   queryKey: [AUTH_USER],
-  queryFn: () => fetchUserInfo(jwtPayload.value!.id),
+  queryFn: () => fetchMe(),
 });
 
 const updateUserInfoMutation = useMutation(
+  // mutationKey: [],
   (profile: ProfileDataUser) => updateUserInfo(jwtPayload.value!.id, profile),
   {
     onSuccess: (response) => {
@@ -54,7 +51,7 @@ const getEditableFieldsFromInitialData = (
 };
 
 const initialData = computed<ProfileDataUser>({
-  get: () => getEditableFieldsFromInitialData(user.value),
+  get: () => getEditableFieldsFromInitialData(authUser.value),
   set: (newVal: ProfileDataUser) => {
     (Object.keys(newVal) as Array<keyof Required<ProfileDataUser>>).forEach(
       (key) => {
@@ -83,7 +80,7 @@ const onAccountProfileEditFormSubmit = async (profile: ProfileDataUser) => {
 };
 
 const onAccountProfileEditFormCancel = () => {
-  router.push({ name: AppRouteNames.home });
+  router.push({ name: AppRouteNames.accountProfile });
 };
 
 const avatarUploadingProgress = ref(0);
@@ -94,6 +91,7 @@ const onAvatarUploadProgress = (progressEvent: AxiosProgressEvent) => {
 };
 
 const updateUserAvatarMutation = useMutation(
+  // mutationKey: [],
   (avatar: File) =>
     updateUserAvatar(jwtPayload.value!.id, avatar, {
       onUploadProgress: onAvatarUploadProgress,
@@ -117,7 +115,7 @@ const isAvatarChanged = computed(() => Boolean(avatars.value.length));
   <div>
     <AccountProfileEditForm
       :loading="
-        updateUserInfoMutation.isLoading.value || fetchMe.isLoading.value
+        updateUserInfoMutation.isLoading.value || fetchMeQuery.isLoading.value
       "
       :initialData="initialData"
       :isAvatarChanged="isAvatarChanged"

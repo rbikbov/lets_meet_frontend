@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-
-import { useAuthStore } from '@/stores/auth';
 import { storeToRefs } from 'pinia';
 
-const { user } = storeToRefs(useAuthStore());
+import { useAuthStore } from '@/stores/auth';
+import { defaultAvatarUrl } from '@/helpers/defaultAvatar';
 
-const defaultAvatarUrl = new URL(
-  '../assets/blank-profile-picture.webp',
-  import.meta.url
-).href;
+const { authUser } = storeToRefs(useAuthStore());
 
-const url = computed(() => user.value?.avatar || defaultAvatarUrl);
+const url = computed(() => authUser.value?.avatar || defaultAvatarUrl);
 </script>
 
 <template>

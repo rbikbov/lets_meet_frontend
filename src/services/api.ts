@@ -51,15 +51,18 @@ export interface AvatarFile {
 
 export interface User {
   id: IdNumber;
-  /** @format email */
-  email: string;
-  first_name?: string;
+  first_name: string;
   last_name?: string;
   age?: number;
   gender?: GenderType;
   avatar?: string;
   likes?: IdNumber[];
 }
+
+export type Me = User & {
+  /** @format email */
+  email: string;
+};
 
 export interface InvalidUser {
   email?: string[];
@@ -108,11 +111,13 @@ export interface V1UsersPartialUpdatePayload {
   profile?: ProfileDataUser;
 }
 
-export type V1UsersPartialUpdateData = User;
+export type V1UsersPartialUpdateData = Me;
 
 export type V1UsersConfirmAccountDetailData = any;
 
-export type V1UsersLoadAvatarPartialUpdateData = User;
+export type V1UsersMeListData = Me;
+
+export type V1UsersLoadAvatarPartialUpdateData = Me;
 
 export namespace Api {
   /**
@@ -240,6 +245,21 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = V1UsersConfirmAccountDetailData;
+  }
+  /**
+   * No description
+   * @tags Users
+   * @name V1UsersMeList
+   * @summary Return current user
+   * @request GET:/api/v1/users/me
+   * @secure
+   */
+  export namespace V1UsersMeList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1UsersMeListData;
   }
   /**
    * No description
@@ -536,6 +556,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     v1UsersConfirmAccountDetail: (id: string, params: RequestParams = {}) =>
       this.request<V1UsersConfirmAccountDetailData, void>({
         path: `/api/v1/users/${id}/confirm_account`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Users
+     * @name V1UsersMeList
+     * @summary Return current user
+     * @request GET:/api/v1/users/me
+     * @secure
+     */
+    v1UsersMeList: (params: RequestParams = {}) =>
+      this.request<V1UsersMeListData, void>({
+        path: `/api/v1/users/me`,
         method: 'GET',
         secure: true,
         ...params,

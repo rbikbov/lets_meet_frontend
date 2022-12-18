@@ -12,6 +12,7 @@ import { useMutation } from '@tanstack/vue-query';
 const router = useRouter();
 
 const signUpMutation = useMutation(
+  // mutationKey: [],
   (credentials: SignupRequestDataUser) => signUp(credentials),
   {
     onSuccess: (response) => {

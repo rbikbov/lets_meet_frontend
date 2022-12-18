@@ -13,6 +13,7 @@ const router = useRouter();
 const { logOut } = useAuthStore();
 
 const signOutMutation = useMutation(() => signOut(), {
+  // mutationKey: [],
   onSuccess: () => {
     logOut();
     router.push({

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 
-import { type ProfileDataUser, Gender } from '@/services/api';
+import { type ProfileDataUser, GenderType } from '@/services/api';
 
 import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
@@ -130,8 +130,8 @@ const max = (maxValue: number) => {
           label="Gender"
           :rules="[required]"
         >
-          <v-radio label="Female" :value="Gender.Female"></v-radio>
-          <v-radio label="Male" :value="Gender.Male"></v-radio>
+          <v-radio label="Female" :value="GenderType.Female"></v-radio>
+          <v-radio label="Male" :value="GenderType.Male"></v-radio>
         </v-radio-group>
       </BaseInputWrapper>
 

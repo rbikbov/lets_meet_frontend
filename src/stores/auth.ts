@@ -3,14 +3,14 @@ import { defineStore } from 'pinia';
 import jwt_decode from 'jwt-decode';
 // import { useQuery } from '@tanstack/vue-query';
 
-import type { JwtPayload, User } from '@/services/api';
+import type { JwtPayload, Me } from '@/services/api';
 import { setApiInterceptors, setAuthorizationToken } from '@/services';
-import { fetchUserInfo } from '@/services/auth';
+import { fetchMe } from '@/services/auth';
 // import { AUTH_USER } from '@/services/queries/keys';
 
 type TokenType = string | null;
 type JWTPayloadType = JwtPayload | null;
-type AuthUserType = User | null;
+type AuthUserType = Me | null;
 
 const ACCESS_TOKEN_KEY = 'at_key';
 const REFRESH_TOKEN_KEY = 'rt_key';
@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('authStore', () => {
   const accessToken = ref<TokenType>('');
   const refreshToken = ref<TokenType>('');
   const jwtPayload = ref<JWTPayloadType>(null);
-  const user = ref<AuthUserType>(null);
+  const authUser = ref<AuthUserType>(null);
 
   const isAuthenticated = computed(() =>
     Boolean(accessToken.value && refreshToken.value)
@@ -29,7 +29,7 @@ export const useAuthStore = defineStore('authStore', () => {
   );
 
   const setAuthUser = (data: AuthUserType) => {
-    user.value = data;
+    authUser.value = data;
   };
 
   function _loadTokens() {
@@ -52,6 +52,7 @@ export const useAuthStore = defineStore('authStore', () => {
   function logOut() {
     removeTokens();
     setAuthUser(null);
+    window.location.reload();
   }
 
   watchSyncEffect(() => {
@@ -60,12 +61,12 @@ export const useAuthStore = defineStore('authStore', () => {
       : null;
     setAuthorizationToken(accessToken.value);
     if (accessToken.value) {
-      fetchUserInfo(jwtPayload.value!.id).then((result) => {
+      fetchMe().then((result) => {
         setAuthUser(result.data);
       });
-      // const fetchMe = useQuery({
+      // const fetchMeQuery = useQuery({
       //   queryKey: [AUTH_USER],
-      //   queryFn: () => fetchUserInfo(jwtPayload.value!.id),
+      //   queryFn: () => fetchMe(),
       //   enabled: false,
       //   onSuccess: (result) => {
       //     setAuthUser(result.data);
@@ -86,7 +87,7 @@ export const useAuthStore = defineStore('authStore', () => {
     refreshToken,
 
     jwtPayload,
-    user,
+    authUser,
     isAuthenticated,
     isAdmin,
 
