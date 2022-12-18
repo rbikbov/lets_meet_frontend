@@ -36,10 +36,11 @@ export interface SigninRequestDataUser {
 export type SignupRequestDataUser = SigninRequestDataUser & {
   /** @format password */
   password_confirmation: string;
+  first_name: string;
 };
 
 export interface ProfileDataUser {
-  first_name?: string;
+  first_name: string;
   last_name?: string;
   age?: number;
   gender?: GenderType;

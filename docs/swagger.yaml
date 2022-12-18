@@ -313,8 +313,11 @@ components:
           password_confirmation:
             type: string
             format: password
+          first_name:
+            type: string
         required:
         - password_confirmation
+        - first_name
     profile_data_user:
       type: object
       properties:
@@ -326,6 +329,8 @@ components:
           type: integer
         gender:
           "$ref": "#/components/schemas/gender_type"
+      required:
+      - first_name
     avatar_file:
       type: object
       properties:
@@ -354,6 +359,7 @@ components:
       - id
       - created_at
       - updated_at
+      - first_name
     me:
       allOf:
       - "$ref": "#/components/schemas/user"

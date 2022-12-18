@@ -25,6 +25,7 @@ const form = ref(false);
 const email = ref('');
 const password = ref('');
 const password_confirmation = ref('');
+const firstName = ref('');
 
 const onSubmit = () => {
   if (props.loading) return;
@@ -34,6 +35,7 @@ const onSubmit = () => {
     email: email.value,
     password: password.value,
     password_confirmation: password_confirmation.value,
+    first_name: firstName.value,
   });
 };
 
@@ -57,6 +59,18 @@ const isEqual = ({
 <template>
   <BaseFormWrapper>
     <v-form v-model="form" @submit.prevent="onSubmit">
+      <BaseInputWrapper v-slot="{ inputProps }">
+        <v-text-field
+          v-bind="inputProps"
+          v-model="firstName"
+          :readonly="loading"
+          :rules="[required]"
+          label="Firstname"
+          type="text"
+          autocomplete="first-name"
+        ></v-text-field>
+      </BaseInputWrapper>
+
       <BaseInputWrapper v-slot="{ inputProps }">
         <v-text-field
           v-bind="inputProps"

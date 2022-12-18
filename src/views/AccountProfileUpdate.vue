@@ -43,7 +43,7 @@ const getEditableFieldsFromInitialData = (
   data: User | null
 ): ProfileDataUser => {
   return {
-    first_name: data?.first_name,
+    first_name: data?.first_name || '',
     last_name: data?.last_name,
     age: data?.age,
     gender: data?.gender,
