@@ -20,7 +20,6 @@ export const api = new Api({
 });
 
 export function setAuthorizationToken(token: string | null): void {
-  console.log(`New accessToken = ${token}`);
   api.setSecurityData(token);
 }
 
