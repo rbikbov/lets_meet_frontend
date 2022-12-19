@@ -26,6 +26,13 @@ export enum AppRouteNames {
   accountProfile = 'accountProfile',
   accountProfileUpdate = 'accountProfileUpdate',
 
+  meets = 'meets',
+
+  notifications = 'notifications',
+
+  dialogs = 'dialogs',
+  dialogDetail = 'dialogDetail',
+
   about = 'about',
   users = 'users',
 }
@@ -54,6 +61,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
           middlewares: [],
         },
       },
+
       {
         path: '/auth/signin',
         name: AppRouteNames.authSignin,
@@ -62,6 +70,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
           middlewares: [requireNotAuth],
         },
       },
+
       {
         path: '/auth/signout',
         name: AppRouteNames.authSignout,
@@ -70,6 +79,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
           middlewares: [requireAuth],
         },
       },
+
       {
         path: '/auth/signup',
         name: AppRouteNames.authSignup,
@@ -78,6 +88,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
           middlewares: [requireNotAuth],
         },
       },
+
       {
         path: '/auth/signup-thanks',
         name: AppRouteNames.authSignupThanks,
@@ -92,6 +103,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
           };
         },
       },
+
       {
         path: '/auth/signup-confirmation/:confirmationCode',
         name: AppRouteNames.authSignupConfirmation,
@@ -106,6 +118,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
           };
         },
       },
+
       {
         path: '/account/profile',
         name: AppRouteNames.accountProfile,
@@ -114,6 +127,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
           middlewares: [requireAuth],
         },
       },
+
       {
         path: '/account/profile-update',
         name: AppRouteNames.accountProfileUpdate,
@@ -122,6 +136,54 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
           middlewares: [requireAuth],
         },
       },
+
+      {
+        path: '/meets',
+        name: AppRouteNames.meets,
+        component: () => import('../views/MeetsList.vue'),
+        meta: {
+          middlewares: [requireAuth],
+        },
+      },
+
+      {
+        path: '/notifications',
+        name: AppRouteNames.notifications,
+        component: () => import('../views/NotificationsList.vue'),
+        meta: {
+          middlewares: [requireAuth],
+        },
+      },
+
+      {
+        path: '/dialogs',
+        name: AppRouteNames.dialogs,
+        component: () => import('../views/DialogsList.vue'),
+        meta: {
+          middlewares: [requireAuth],
+        },
+      },
+
+      {
+        path: '/dialogs/:id', // TODO: int
+        name: AppRouteNames.dialogDetail,
+        component: () => import('../views/DialogDetail.vue'),
+        meta: {
+          middlewares: [requireAuth],
+        },
+        props: (route) => {
+          const rawDialogId = route.params.id;
+          if (!(typeof rawDialogId === 'string')) {
+            throw new Error('Wrong param "id'); // TODO: error
+          }
+
+          const dialogId = parseInt(rawDialogId, 10);
+          return {
+            dialogId,
+          };
+        },
+      },
+
       {
         path: '/about',
         name: AppRouteNames.about,
@@ -130,6 +192,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
           middlewares: [],
         },
       },
+
       {
         path: '/users',
         name: AppRouteNames.users,

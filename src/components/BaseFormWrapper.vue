@@ -6,7 +6,7 @@ const formProps = {
 
 <template>
   <v-sheet class="pa-12" rounded>
-    <v-card class="mx-auto px-6 py-8" max-width="344" variant="outlined">
+    <v-card class="mx-auto px-6 py-8" variant="outlined">
       <slot :formProps="formProps"></slot>
     </v-card>
   </v-sheet>

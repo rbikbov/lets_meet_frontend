@@ -16,6 +16,14 @@ export enum GenderType {
   Female = 'female',
 }
 
+export enum NotificationType {
+  System = 'system',
+  Like = 'like',
+  Confirm = 'confirm',
+  Visited = 'visited',
+  Mutuality = 'mutuality',
+}
+
 export interface JwtPayload {
   id: IdNumber;
   /** @format email */
@@ -78,7 +86,84 @@ export interface AccessToken {
   refresh: string;
 }
 
+export interface Dialog {
+  id: IdNumber;
+  incoming_id: IdNumber;
+  outgoing_id: IdNumber;
+  confirmed?: boolean;
+  /** @format date-time */
+  created_at?: string;
+  /** @format date-time */
+  updated_at?: string;
+  users: UsersArray;
+  last_message?: Message;
+}
+
+export interface Message {
+  id?: IdNumber;
+  dialog_id?: IdNumber;
+  user_id?: IdNumber;
+  description?: string;
+  /** @format date-time */
+  created_at?: string;
+  /** @format date-time */
+  updated_at?: string;
+}
+
+export interface Notification {
+  user_id?: IdNumber;
+  content?: object;
+  /** @format date-time */
+  created_at?: string;
+  /** @format date-time */
+  updated_at?: string;
+  notification_type?: NotificationType;
+}
+
 export type UsersArray = User[];
+
+export type DialogsArray = Dialog[];
+
+export type MessagesArray = Message[];
+
+export type NotificationsArray = Notification[];
+
+export type V1CitiesListData = any[];
+
+export type V1CitiesCountryListData = object;
+
+export interface V1DialogsSendMessageCreatePayload {
+  text_message: string;
+}
+
+export type V1DialogsSendMessageCreateData = Message;
+
+export type V1UsersDialogsDetailData = DialogsArray;
+
+export type V1DialogsDetailData = Dialog;
+
+export type V1DialogsMessagesDetailData = MessagesArray;
+
+export interface V1MeetsListParams {
+  search?: {
+    age_min?: number;
+    age_max?: number;
+    gender?: GenderType;
+    city?: string;
+    page?: number;
+    per?: number;
+  };
+}
+
+export interface V1MeetsListData {
+  users?: UsersArray;
+}
+
+export type V1MeetsLikePersonCreateData = any;
+
+export type V1MeetsConfirmCreateData = any;
+
+export type V1UsersNotificationsDetailData = NotificationsArray;
 
 export interface V1SessionsCreatePayload {
   user: SigninRequestDataUser;
@@ -121,6 +206,181 @@ export type V1UsersMeListData = Me;
 export type V1UsersLoadAvatarPartialUpdateData = Me;
 
 export namespace Api {
+  /**
+   * No description
+   * @tags Cities
+   * @name V1CitiesList
+   * @summary return cities by country
+   * @request GET:/api/v1/cities
+   * @secure
+   */
+  export namespace V1CitiesList {
+    export type RequestParams = {
+      country: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1CitiesListData;
+  }
+  /**
+   * No description
+   * @tags Cities
+   * @name V1CitiesCountryList
+   * @summary return all countries
+   * @request GET:/api/v1/cities/country
+   * @secure
+   */
+  export namespace V1CitiesCountryList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1CitiesCountryListData;
+  }
+  /**
+   * No description
+   * @tags Dialogs
+   * @name V1DialogsSendMessageCreate
+   * @summary creates message
+   * @request POST:/api/v1/dialogs/{id}/send_message
+   * @secure
+   */
+  export namespace V1DialogsSendMessageCreate {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = V1DialogsSendMessageCreatePayload;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1DialogsSendMessageCreateData;
+  }
+  /**
+   * No description
+   * @tags Dialogs
+   * @name V1UsersDialogsDetail
+   * @summary return dialogs
+   * @request GET:/api/v1/users/{id}/dialogs
+   * @secure
+   */
+  export namespace V1UsersDialogsDetail {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1UsersDialogsDetailData;
+  }
+  /**
+   * No description
+   * @tags Dialogs
+   * @name V1DialogsDetail
+   * @summary return dialog
+   * @request GET:/api/v1/dialogs/{id}
+   * @secure
+   */
+  export namespace V1DialogsDetail {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1DialogsDetailData;
+  }
+  /**
+   * No description
+   * @tags Dialogs
+   * @name V1DialogsMessagesDetail
+   * @summary return dialog messages
+   * @request GET:/api/v1/dialogs/{id}/messages
+   * @secure
+   */
+  export namespace V1DialogsMessagesDetail {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1DialogsMessagesDetailData;
+  }
+  /**
+   * No description
+   * @tags Meets
+   * @name V1MeetsList
+   * @summary Search persons
+   * @request GET:/api/v1/meets
+   * @secure
+   */
+  export namespace V1MeetsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      search?: {
+        age_min?: number;
+        age_max?: number;
+        gender?: GenderType;
+        city?: string;
+        page?: number;
+        per?: number;
+      };
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1MeetsListData;
+  }
+  /**
+   * No description
+   * @tags Meets
+   * @name V1MeetsLikePersonCreate
+   * @summary likes person
+   * @request POST:/api/v1/meets/{id}/like_person
+   * @secure
+   */
+  export namespace V1MeetsLikePersonCreate {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1MeetsLikePersonCreateData;
+  }
+  /**
+   * No description
+   * @tags Meets
+   * @name V1MeetsConfirmCreate
+   * @summary likes person
+   * @request POST:/api/v1/meets/{id}/confirm
+   * @secure
+   */
+  export namespace V1MeetsConfirmCreate {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1MeetsConfirmCreateData;
+  }
+  /**
+   * No description
+   * @tags Notifications
+   * @name V1UsersNotificationsDetail
+   * @summary return notifications
+   * @request GET:/api/v1/users/{id}/notifications
+   * @secure
+   */
+  export namespace V1UsersNotificationsDetail {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1UsersNotificationsDetailData;
+  }
   /**
    * No description
    * @tags Sessions
@@ -418,6 +678,179 @@ export class HttpClient<SecurityDataType = unknown> {
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   api = {
+    /**
+     * No description
+     *
+     * @tags Cities
+     * @name V1CitiesList
+     * @summary return cities by country
+     * @request GET:/api/v1/cities
+     * @secure
+     */
+    v1CitiesList: (country: string, params: RequestParams = {}) =>
+      this.request<V1CitiesListData, any>({
+        path: `/api/v1/cities`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Cities
+     * @name V1CitiesCountryList
+     * @summary return all countries
+     * @request GET:/api/v1/cities/country
+     * @secure
+     */
+    v1CitiesCountryList: (params: RequestParams = {}) =>
+      this.request<V1CitiesCountryListData, any>({
+        path: `/api/v1/cities/country`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Dialogs
+     * @name V1DialogsSendMessageCreate
+     * @summary creates message
+     * @request POST:/api/v1/dialogs/{id}/send_message
+     * @secure
+     */
+    v1DialogsSendMessageCreate: (id: string, data: V1DialogsSendMessageCreatePayload, params: RequestParams = {}) =>
+      this.request<V1DialogsSendMessageCreateData, void>({
+        path: `/api/v1/dialogs/${id}/send_message`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Dialogs
+     * @name V1UsersDialogsDetail
+     * @summary return dialogs
+     * @request GET:/api/v1/users/{id}/dialogs
+     * @secure
+     */
+    v1UsersDialogsDetail: (id: string, params: RequestParams = {}) =>
+      this.request<V1UsersDialogsDetailData, void>({
+        path: `/api/v1/users/${id}/dialogs`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Dialogs
+     * @name V1DialogsDetail
+     * @summary return dialog
+     * @request GET:/api/v1/dialogs/{id}
+     * @secure
+     */
+    v1DialogsDetail: (id: string, params: RequestParams = {}) =>
+      this.request<V1DialogsDetailData, void>({
+        path: `/api/v1/dialogs/${id}`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Dialogs
+     * @name V1DialogsMessagesDetail
+     * @summary return dialog messages
+     * @request GET:/api/v1/dialogs/{id}/messages
+     * @secure
+     */
+    v1DialogsMessagesDetail: (id: string, params: RequestParams = {}) =>
+      this.request<V1DialogsMessagesDetailData, void>({
+        path: `/api/v1/dialogs/${id}/messages`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Meets
+     * @name V1MeetsList
+     * @summary Search persons
+     * @request GET:/api/v1/meets
+     * @secure
+     */
+    v1MeetsList: (query: V1MeetsListParams, params: RequestParams = {}) =>
+      this.request<V1MeetsListData, any>({
+        path: `/api/v1/meets`,
+        method: 'GET',
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Meets
+     * @name V1MeetsLikePersonCreate
+     * @summary likes person
+     * @request POST:/api/v1/meets/{id}/like_person
+     * @secure
+     */
+    v1MeetsLikePersonCreate: (id: string, params: RequestParams = {}) =>
+      this.request<V1MeetsLikePersonCreateData, void>({
+        path: `/api/v1/meets/${id}/like_person`,
+        method: 'POST',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Meets
+     * @name V1MeetsConfirmCreate
+     * @summary likes person
+     * @request POST:/api/v1/meets/{id}/confirm
+     * @secure
+     */
+    v1MeetsConfirmCreate: (id: string, params: RequestParams = {}) =>
+      this.request<V1MeetsConfirmCreateData, void>({
+        path: `/api/v1/meets/${id}/confirm`,
+        method: 'POST',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Notifications
+     * @name V1UsersNotificationsDetail
+     * @summary return notifications
+     * @request GET:/api/v1/users/{id}/notifications
+     * @secure
+     */
+    v1UsersNotificationsDetail: (id: string, params: RequestParams = {}) =>
+      this.request<V1UsersNotificationsDetailData, void>({
+        path: `/api/v1/users/${id}/notifications`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
     /**
      * No description
      *
