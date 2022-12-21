@@ -22,6 +22,7 @@ export enum AppRouteNames {
   authSignup = 'authSignup',
   authSignupThanks = 'authSignupThanks',
   authSignupConfirmation = 'authSignupConfirmation',
+  authSignupConfirmationResend = 'authSignupConfirmationResend',
 
   accountProfile = 'accountProfile',
   accountProfileUpdate = 'accountProfileUpdate',
@@ -48,7 +49,7 @@ type RouteRecordRawWithMeta = RouteRecordRaw & {
 const routes: Readonly<RouteRecordRawWithMeta[]> = [
   {
     path: '/',
-    component: () => import('../layouts/DefaultLayout.vue'),
+    component: () => import('@/layouts/DefaultLayout.vue'),
     meta: {
       middlewares: [],
     },
@@ -105,7 +106,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
       },
 
       {
-        path: '/auth/signup-confirmation/:confirmationCode',
+        path: '/auth/signup-confirmation/:confirmationCode+',
         name: AppRouteNames.authSignupConfirmation,
         component: () => import('@/views/AuthSignupConfirmation.vue'),
         meta: {
@@ -120,9 +121,18 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
       },
 
       {
+        path: '/auth/signup-confirmation-resend',
+        name: AppRouteNames.authSignupConfirmationResend,
+        component: () => import('@/views/AuthSignupConfirmationResend.vue'),
+        meta: {
+          middlewares: [requireNotAuth],
+        },
+      },
+
+      {
         path: '/account/profile',
         name: AppRouteNames.accountProfile,
-        component: () => import('../views/AccountProfile.vue'),
+        component: () => import('@/views/AccountProfile.vue'),
         meta: {
           middlewares: [requireAuth],
         },
@@ -131,7 +141,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
       {
         path: '/account/profile-update',
         name: AppRouteNames.accountProfileUpdate,
-        component: () => import('../views/AccountProfileUpdate.vue'),
+        component: () => import('@/views/AccountProfileUpdate.vue'),
         meta: {
           middlewares: [requireAuth],
         },
@@ -140,7 +150,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
       {
         path: '/meets',
         name: AppRouteNames.meets,
-        component: () => import('../views/MeetsList.vue'),
+        component: () => import('@/views/MeetsList.vue'),
         meta: {
           middlewares: [requireAuth],
         },
@@ -149,7 +159,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
       {
         path: '/notifications',
         name: AppRouteNames.notifications,
-        component: () => import('../views/NotificationsList.vue'),
+        component: () => import('@/views/NotificationsList.vue'),
         meta: {
           middlewares: [requireAuth],
         },
@@ -158,16 +168,16 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
       {
         path: '/dialogs',
         name: AppRouteNames.dialogs,
-        component: () => import('../views/DialogsList.vue'),
+        component: () => import('@/views/DialogsList.vue'),
         meta: {
           middlewares: [requireAuth],
         },
       },
 
       {
-        path: '/dialogs/:id', // TODO: int
+        path: '/dialogs/:id(\\d+)+',
         name: AppRouteNames.dialogDetail,
-        component: () => import('../views/DialogDetail.vue'),
+        component: () => import('@/views/DialogDetail.vue'),
         meta: {
           middlewares: [requireAuth],
         },
@@ -187,7 +197,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
       {
         path: '/about',
         name: AppRouteNames.about,
-        component: () => import('../views/AboutView.vue'),
+        component: () => import('@/views/AboutView.vue'),
         meta: {
           middlewares: [],
         },
@@ -196,7 +206,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
       {
         path: '/users',
         name: AppRouteNames.users,
-        component: () => import('../views/UsersList.vue'),
+        component: () => import('@/views/UsersList.vue'),
         meta: {
           middlewares: [requireAuth],
         },

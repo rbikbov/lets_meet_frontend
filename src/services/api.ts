@@ -189,6 +189,13 @@ export type V1UsersCreateError = {
 
 export type V1UsersListData = UsersArray;
 
+export interface V1UsersResendConfirmationCreatePayload {
+  /** @format email */
+  email: string;
+}
+
+export type V1UsersResendConfirmationCreateData = any;
+
 export type V1UsersDetailData = User;
 
 export interface V1UsersPartialUpdatePayload {
@@ -453,6 +460,21 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = V1UsersListData;
+  }
+  /**
+   * No description
+   * @tags Users
+   * @name V1UsersResendConfirmationCreate
+   * @summary Resend confirmation mail
+   * @request POST:/api/v1/users/resend_confirmation
+   * @secure
+   */
+  export namespace V1UsersResendConfirmationCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = V1UsersResendConfirmationCreatePayload;
+    export type RequestHeaders = {};
+    export type ResponseBody = V1UsersResendConfirmationCreateData;
   }
   /**
    * No description
@@ -937,6 +959,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/v1/users`,
         method: 'GET',
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Users
+     * @name V1UsersResendConfirmationCreate
+     * @summary Resend confirmation mail
+     * @request POST:/api/v1/users/resend_confirmation
+     * @secure
+     */
+    v1UsersResendConfirmationCreate: (data: V1UsersResendConfirmationCreatePayload, params: RequestParams = {}) =>
+      this.request<V1UsersResendConfirmationCreateData, void>({
+        path: `/api/v1/users/resend_confirmation`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 

@@ -393,6 +393,42 @@ paths:
               schema:
                 type: object
                 "$ref": "#/components/schemas/users_array"
+  "/api/v1/users/resend_confirmation":
+    post:
+      summary: Resend confirmation mail
+      tags:
+      - Users
+      parameters: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    type: object
+                    properties:
+                      message: Confirmation mail sended again!
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Something went wrong, please try again
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+              required:
+              - email
   "/api/v1/users/{id}":
     get:
       summary: Return user

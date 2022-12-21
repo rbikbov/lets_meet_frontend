@@ -5,6 +5,7 @@ import type {
   ProfileDataUser,
   SigninRequestDataUser,
   SignupRequestDataUser,
+  V1UsersResendConfirmationCreatePayload,
 } from './api';
 
 // export type UserId = number | string;
@@ -28,6 +29,12 @@ export function signIn(user: SigninRequestDataUser) {
 
 export function signUpConfirm(confirmationCode: string) {
   return api.api.v1UsersConfirmAccountDetail(confirmationCode);
+}
+
+export function signUpConfirmationEmailResend(
+  data: V1UsersResendConfirmationCreatePayload
+) {
+  return api.api.v1UsersResendConfirmationCreate(data);
 }
 
 export function refreshAccessToken(refreshToken: string) {

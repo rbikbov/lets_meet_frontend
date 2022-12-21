@@ -23,6 +23,138 @@ const theme = computed(() => (isDark.value ? 'dark' : 'light'));
 const toggleTheme = () => {
   isDark.value = !isDark.value;
 };
+
+type NavLinkItem = {
+  title: string;
+  to: { name: AppRouteNames };
+  link: true;
+  exact: true;
+  meta: {
+    visibleForAuth: boolean;
+    visibleForNotAuth: boolean;
+  };
+};
+
+const navLinks: NavLinkItem[] = [
+  {
+    title: 'SignUp',
+    to: { name: AppRouteNames.authSignup },
+    link: true,
+    exact: true,
+    meta: {
+      visibleForAuth: false,
+      visibleForNotAuth: true,
+    },
+  },
+  {
+    title: 'SignUp Confirmation Resend',
+    to: { name: AppRouteNames.authSignupConfirmationResend },
+    link: true,
+    exact: true,
+    meta: {
+      visibleForAuth: false,
+      visibleForNotAuth: true,
+    },
+  },
+  {
+    title: 'SignIn',
+    to: { name: AppRouteNames.authSignin },
+    link: true,
+    exact: true,
+    meta: {
+      visibleForAuth: false,
+      visibleForNotAuth: true,
+    },
+  },
+  {
+    title: 'SignOut',
+    to: { name: AppRouteNames.authSignout },
+    link: true,
+    exact: true,
+    meta: {
+      visibleForAuth: true,
+      visibleForNotAuth: false,
+    },
+  },
+  {
+    title: 'Profile',
+    to: { name: AppRouteNames.accountProfile },
+    link: true,
+    exact: true,
+    meta: {
+      visibleForAuth: true,
+      visibleForNotAuth: false,
+    },
+  },
+  {
+    title: 'Meets',
+    to: { name: AppRouteNames.meets },
+    link: true,
+    exact: true,
+    meta: {
+      visibleForAuth: true,
+      visibleForNotAuth: false,
+    },
+  },
+  {
+    title: 'Notifications',
+    to: { name: AppRouteNames.notifications },
+    link: true,
+    exact: true,
+    meta: {
+      visibleForAuth: true,
+      visibleForNotAuth: false,
+    },
+  },
+  {
+    title: 'Dialogs',
+    to: { name: AppRouteNames.dialogs },
+    link: true,
+    exact: true,
+    meta: {
+      visibleForAuth: true,
+      visibleForNotAuth: false,
+    },
+  },
+  {
+    title: 'Users',
+    to: { name: AppRouteNames.users },
+    link: true,
+    exact: true,
+    meta: {
+      visibleForAuth: true,
+      visibleForNotAuth: false,
+    },
+  },
+  {
+    title: 'Home',
+    to: { name: AppRouteNames.home },
+    link: true,
+    exact: true,
+    meta: {
+      visibleForAuth: true,
+      visibleForNotAuth: true,
+    },
+  },
+  {
+    title: 'About',
+    to: { name: AppRouteNames.about },
+    link: true,
+    exact: true,
+    meta: {
+      visibleForAuth: true,
+      visibleForNotAuth: true,
+    },
+  },
+];
+
+const filteredNavLinks = computed(() =>
+  navLinks.filter(
+    (l) =>
+      (isAuthenticated.value && l.meta.visibleForAuth) ||
+      (!isAuthenticated.value && l.meta.visibleForNotAuth)
+  )
+);
 </script>
 
 <template>
@@ -50,92 +182,18 @@ const toggleTheme = () => {
 
         <v-divider></v-divider>
 
-        <template v-if="!isAuthenticated">
-          <v-list-item
-            title="SignUp"
-            value="signup"
-            :to="{ name: AppRouteNames.authSignup }"
-            :link="true"
-            :exact="true"
-          ></v-list-item>
-
-          <v-list-item
-            title="SignIn"
-            value="signin"
-            :to="{ name: AppRouteNames.authSignin }"
-            :link="true"
-            :exact="true"
-          ></v-list-item>
-        </template>
-        <template v-else>
-          <v-list-item
-            title="SignOut"
-            value="signout"
-            :to="{ name: AppRouteNames.authSignout }"
-            :link="true"
-            :exact="true"
-          ></v-list-item>
-
-          <v-list-item
-            title="Profile"
-            value="profile"
-            :to="{ name: AppRouteNames.accountProfile }"
-            :link="true"
-            :exact="true"
-          ></v-list-item>
-
-          <v-list-item
-            title="Meets"
-            value="meets"
-            :to="{ name: AppRouteNames.meets }"
-            :link="true"
-            :exact="true"
-          ></v-list-item>
-
-          <v-list-item
-            title="Notifications"
-            value="notifications"
-            :to="{ name: AppRouteNames.notifications }"
-            :link="true"
-            :exact="true"
-          ></v-list-item>
-
-          <v-list-item
-            title="Dialogs"
-            value="dialogs"
-            :to="{ name: AppRouteNames.dialogs }"
-            :link="true"
-            :exact="true"
-          ></v-list-item>
-
-          <v-list-item
-            title="Users"
-            value="users"
-            :to="{ name: AppRouteNames.users }"
-            :link="true"
-            :exact="true"
-          ></v-list-item>
-        </template>
-
         <v-list-item
-          title="Home"
-          value="home"
-          :to="{ name: AppRouteNames.home }"
-          :link="true"
-          :exact="true"
-        ></v-list-item>
-
-        <v-list-item
-          title="About"
-          value="about"
-          :to="{ name: AppRouteNames.about }"
-          :link="true"
-          :exact="true"
+          v-for="linkInfo in filteredNavLinks"
+          :key="linkInfo.to.name"
+          :title="linkInfo.title"
+          :to="linkInfo.to"
+          :link="linkInfo.link"
+          :exact="linkInfo.exact"
         ></v-list-item>
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar title="Base App Frontend">
+    <v-app-bar title="Lets Meet">
       <v-spacer></v-spacer>
 
       <v-btn
