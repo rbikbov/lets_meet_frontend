@@ -46,7 +46,7 @@ const meetsQuery = useQuery({
   queryKey: [MEETS],
   queryFn: () => fetchMeets(meetsQueryParams.value),
   onSuccess: (response) => {
-    setMeets(response.data.users || []);
+    setMeets(response.data || []);
   },
 });
 
@@ -55,7 +55,6 @@ const likePersonMutation = useMutation({
   mutationFn: (id: number) => likePerson(id).then(() => id),
   onSuccess: (id) => {
     console.log(`likePerson(${id})`);
-    // setMeets(response.data.users || []);
   },
 });
 
@@ -64,7 +63,6 @@ const confirmLikePersonMutation = useMutation({
   mutationFn: (id: number) => confirmLikePerson(id).then(() => id),
   onSuccess: (id) => {
     console.log(`confirmLikePerson(${id})`);
-    // setMeets(response.data.users || []);
   },
 });
 </script>
@@ -118,19 +116,19 @@ const confirmLikePersonMutation = useMutation({
     <v-divider></v-divider>
 
     <v-row dense>
-      <v-col v-for="users in meets" :key="users.id" cols="12">
+      <v-col v-for="user in meets" :key="user.id" cols="12">
         <v-card
-          :title="getFullName(users)"
-          :subtitle="`${users.gender}, ${users.age}`"
-          :text="`Meet likes: ${users.likes}`"
-          :prepend-avatar="users.avatar"
+          :title="getFullName(user)"
+          :subtitle="`${user.gender}, ${user.age}`"
+          :text="`Meet likes: ${user.likes}`"
+          :prepend-avatar="user.avatar"
         >
-          <v-btn type="button" @click="likePersonMutation.mutate(users.id)">
+          <v-btn type="button" @click="likePersonMutation.mutate(user.id)">
             likePerson
           </v-btn>
           <v-btn
             type="button"
-            @click="confirmLikePersonMutation.mutate(users.id)"
+            @click="confirmLikePersonMutation.mutate(user.id)"
           >
             confirmLikePerson
           </v-btn>

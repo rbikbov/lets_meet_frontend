@@ -100,14 +100,14 @@ export interface Dialog {
 }
 
 export interface Message {
-  id?: IdNumber;
-  dialog_id?: IdNumber;
-  user_id?: IdNumber;
-  description?: string;
+  id: IdNumber;
+  dialog_id: IdNumber;
+  user_id: IdNumber;
+  description: string;
   /** @format date-time */
-  created_at?: string;
+  created_at: string;
   /** @format date-time */
-  updated_at?: string;
+  updated_at: string;
 }
 
 export interface Notification {
@@ -155,9 +155,7 @@ export interface V1MeetsListParams {
   };
 }
 
-export interface V1MeetsListData {
-  users?: UsersArray;
-}
+export type V1MeetsListData = UsersArray;
 
 export type V1MeetsLikePersonCreateData = any;
 

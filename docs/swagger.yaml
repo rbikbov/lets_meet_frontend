@@ -185,9 +185,7 @@ paths:
             application/json:
               schema:
                 type: object
-                properties:
-                  users:
-                    "$ref": "#/components/schemas/users_array"
+                "$ref": "#/components/schemas/users_array"
   "/api/v1/meets/{id}/like_person":
     post:
       summary: likes person
@@ -716,6 +714,13 @@ components:
         updated_at:
           type: string
           format: date-time
+      required:
+      - id
+      - dialog_id
+      - user_id
+      - description
+      - created_at
+      - updated_at
     notification:
       type: object
       properties:
