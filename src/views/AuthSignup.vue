@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { AppRouteNames } from '@/router';
@@ -12,14 +11,13 @@ import { useMutation } from '@tanstack/vue-query';
 
 const router = useRouter();
 
-const email = ref('');
-
 const signUpMutation = useMutation(
   // mutationKey: [],
-  (credentials: SignupRequestDataUser) => signUp(credentials),
+  (credentials: SignupRequestDataUser) =>
+    signUp(credentials).then(() => credentials.email),
   {
-    onSuccess: () => {
-      const mungedEmail = mungeEmailAddress(email.value);
+    onSuccess: (email: string) => {
+      const mungedEmail = mungeEmailAddress(email);
       router.push({
         name: AppRouteNames.authSignupThanks,
         query: {
@@ -31,7 +29,6 @@ const signUpMutation = useMutation(
 );
 
 const onUserCreateFormSubmit = (credentials: SignupRequestDataUser) => {
-  email.value = credentials.email;
   signUpMutation.mutate(credentials);
 };
 </script>
