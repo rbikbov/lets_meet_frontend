@@ -8,7 +8,7 @@ import { usePreferredDark } from '@vueuse/core';
 import { useAuthStore } from '@/stores/auth';
 import { AppRouteNames } from '@/router';
 
-import BaseAvatarWrapper from '@/components/BaseAvatarWrapper.vue';
+import BaseAuthUserAvatarWrapper from '@/components/BaseAuthUserAvatarWrapper.vue';
 
 const isFetching = useIsFetching();
 
@@ -160,9 +160,9 @@ const filteredNavLinks = computed(() =>
 <template>
   <v-app :theme="theme">
     <v-navigation-drawer rail permanent>
-      <BaseAvatarWrapper v-slot="{ url }">
+      <BaseAuthUserAvatarWrapper v-slot="{ url }">
         <v-list-item nav :prepend-avatar="url"></v-list-item>
-      </BaseAvatarWrapper>
+      </BaseAuthUserAvatarWrapper>
 
       <v-divider></v-divider>
 

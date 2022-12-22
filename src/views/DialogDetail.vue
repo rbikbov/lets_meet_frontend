@@ -3,17 +3,21 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useMutation, useQuery } from '@tanstack/vue-query';
 
+import type { Dialog, Message, User } from '@/services/api';
+import { useActionCable } from '@/services/actionCable';
 import {
   fetchDialogMessages,
   fetchDialogDetails,
   sendMessage,
 } from '@/services/dialogs';
 import { DIALOGS, DIALOGS_MESSAGES } from '@/services/queries/keys';
-import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
-import { useActionCable } from '@/services/actionCable';
+
 import { useAuthStore } from '@/stores/auth';
-import type { Dialog, Message, User } from '@/services/api';
 import { getFullName } from '@/helpers/fullName';
+import { getFullDateTime } from '@/helpers/dateFormatter';
+
+import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
+import BaseDefaultAvatarWrapper from '@/components/BaseDefaultAvatarWrapper.vue';
 
 const props = defineProps<{
   dialogId: number;
@@ -127,10 +131,6 @@ const required = (v: string) => {
   return !!v || 'Field is required';
 };
 
-const getReadableDate = (date: Date) => {
-  return date.toLocaleString();
-};
-
 const formatMessageTitle = (title: string) => `${title}:`;
 
 const interlocutorUser = computed<User | null>(() => {
@@ -152,10 +152,10 @@ const getMessageTitle = (msg: Message): string => {
 };
 
 const getMessageSubtitle = (msg: Message): string => {
-  const parts: string[] = [getReadableDate(new Date(msg.created_at!))];
+  const parts: string[] = [getFullDateTime(msg.created_at)];
 
   if (msg.updated_at !== msg.created_at) {
-    parts.push(`Edited at ${getReadableDate(new Date(msg.updated_at!))}`);
+    parts.push(`Edited at ${getFullDateTime(msg.updated_at)}`);
   }
 
   return parts.join(' ');
@@ -200,19 +200,20 @@ const isMyMsg = (msg: Message) => {
             max-width="85%"
             min-width="35%"
           >
-            <template v-slot:prepend>
-              <v-avatar
-                v-if="messages[index - 1]?.user_id !== item.user_id"
-                :size="40"
+            <template
+              v-if="messages[index - 1]?.user_id !== item.user_id"
+              v-slot:prepend
+            >
+              <BaseDefaultAvatarWrapper
+                v-slot="{ url }"
+                :avatar-url="
+                  isMyMsg(item) ? authUser?.avatar : interlocutorUser?.avatar
+                "
               >
-                <v-img
-                  alt="Avatar"
-                  cover
-                  :src="
-                    isMyMsg(item) ? authUser?.avatar : interlocutorUser?.avatar
-                  "
-                ></v-img>
-              </v-avatar>
+                <v-avatar :size="40">
+                  <v-img alt="Avatar" cover :src="url"></v-img>
+                </v-avatar>
+              </BaseDefaultAvatarWrapper>
             </template>
           </v-card>
           <!-- <div
@@ -226,7 +227,7 @@ const isMyMsg = (msg: Message) => {
             <div>{{ item.description }}</div>
           </div>
           <v-avatar
-          v-if="messages[index - 1]?.user_id !== item.user_id"
+            v-if="messages[index - 1]?.user_id !== item.user_id"
            :size="36">
             <v-img
               alt="Avatar"

@@ -15,7 +15,7 @@ import AccountProfileEditForm from '@/components/AccountProfileEditForm.vue';
 import AccountProfileAvatarInput, {
   AvatarModelValueList,
 } from '@/components/AccountProfileAvatarInput.vue';
-import BaseAvatarWrapper from '@/components/BaseAvatarWrapper.vue';
+import BaseAuthUserAvatarWrapper from '@/components/BaseAuthUserAvatarWrapper.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -133,7 +133,7 @@ const isAvatarChanged = computed(() => Boolean(avatars.value.length));
             >
               <v-img
                 :src="img.previewUrl"
-                aspect-ratio="1"
+                alt="Avatar"
                 cover
                 class="bg-grey-lighten-2"
               >
@@ -153,13 +153,8 @@ const isAvatarChanged = computed(() => Boolean(avatars.value.length));
             </v-col>
           </template>
           <v-col v-else class="d-flex child-flex" cols="12">
-            <BaseAvatarWrapper v-slot="{ url }">
-              <v-img
-                :src="url"
-                aspect-ratio="1"
-                cover
-                class="bg-grey-lighten-2"
-              >
+            <BaseAuthUserAvatarWrapper v-slot="{ url }">
+              <v-img :src="url" alt="Avatar" cover class="bg-grey-lighten-2">
                 <template v-slot:placeholder>
                   <v-row
                     class="fill-height ma-0"
@@ -173,7 +168,7 @@ const isAvatarChanged = computed(() => Boolean(avatars.value.length));
                   </v-row>
                 </template>
               </v-img>
-            </BaseAvatarWrapper>
+            </BaseAuthUserAvatarWrapper>
           </v-col>
         </v-row>
 

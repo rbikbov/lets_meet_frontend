@@ -7,9 +7,10 @@ import { useDialogsStore } from '@/stores/dialogs';
 import { DIALOGS } from '@/services/queries/keys';
 import { fetchDialogs } from '@/services/dialogs';
 import { AppRouteNames } from '@/router';
-import { defaultAvatarUrl } from '@/helpers/defaultAvatar';
 import { getFullName } from '@/helpers/fullName';
 import type { Dialog } from '@/services/api';
+
+import BaseDefaultAvatarWrapper from '@/components/BaseDefaultAvatarWrapper.vue';
 
 const { dialogs } = storeToRefs(useDialogsStore());
 const { setDialogs } = useDialogsStore();
@@ -19,7 +20,7 @@ const { dialogIdToInterlocutorUserMap } = storeToRefs(useDialogsStore());
 
 const dialogsQuery = useQuery({
   queryKey: [DIALOGS],
-  queryFn: () => fetchDialogs(authUser.value?.id!),
+  queryFn: () => fetchDialogs(authUser.value!.id),
   onSuccess: (response) => {
     setDialogs(response.data);
   },
@@ -69,16 +70,14 @@ const getDialogLastMessagePreview = (dialog: Dialog) => {
         }"
       >
         <template v-slot:prepend>
-          <v-avatar :size="50">
-            <v-img
-              alt="Avatar"
-              cover
-              :src="
-                dialogIdToInterlocutorUserMap[dialog.id].avatar ||
-                defaultAvatarUrl
-              "
-            ></v-img>
-          </v-avatar>
+          <BaseDefaultAvatarWrapper
+            v-slot="{ url }"
+            :avatar-url="dialogIdToInterlocutorUserMap[dialog.id].avatar"
+          >
+            <v-avatar :size="50">
+              <v-img alt="Avatar" cover :src="url"></v-img>
+            </v-avatar>
+          </BaseDefaultAvatarWrapper>
         </template>
       </v-list-item>
     </v-list>
