@@ -65,7 +65,7 @@ export interface User {
   age?: number;
   gender?: GenderType;
   avatar?: string;
-  likes?: IdNumber[];
+  initiates?: IdNumber[];
 }
 
 export type Me = User & {
@@ -92,9 +92,9 @@ export interface Dialog {
   outgoing_id: IdNumber;
   confirmed?: boolean;
   /** @format date-time */
-  created_at?: string;
+  created_at: string;
   /** @format date-time */
-  updated_at?: string;
+  updated_at: string;
   users: UsersArray;
   last_message?: Message;
 }
@@ -111,13 +111,14 @@ export interface Message {
 }
 
 export interface Notification {
-  user_id?: IdNumber;
+  id: IdNumber;
+  user_id: IdNumber;
   content?: object;
   /** @format date-time */
-  created_at?: string;
+  created_at: string;
   /** @format date-time */
-  updated_at?: string;
-  notification_type?: NotificationType;
+  updated_at: string;
+  notification_type: NotificationType;
 }
 
 export type UsersArray = User[];
@@ -128,23 +129,23 @@ export type MessagesArray = Message[];
 
 export type NotificationsArray = Notification[];
 
-export type V1CitiesListData = any[];
+export type FetchCountryCitiesData = any[];
 
-export type V1CitiesCountryListData = object;
+export type FetchCountriesData = object;
 
-export interface V1DialogsSendMessageCreatePayload {
+export interface DialogSendMessagePayload {
   text_message: string;
 }
 
-export type V1DialogsSendMessageCreateData = Message;
+export type DialogSendMessageData = Message;
 
-export type V1UsersDialogsDetailData = DialogsArray;
+export type FetchUserDialogsData = DialogsArray;
 
-export type V1DialogsDetailData = Dialog;
+export type FetchDialogData = Dialog;
 
-export type V1DialogsMessagesDetailData = MessagesArray;
+export type FetchDialogMessagesData = MessagesArray;
 
-export interface V1MeetsListParams {
+export interface FetchMeetsParams {
   search?: {
     age_min?: number;
     age_max?: number;
@@ -155,171 +156,173 @@ export interface V1MeetsListParams {
   };
 }
 
-export type V1MeetsListData = UsersArray;
+export type FetchMeetsData = UsersArray;
 
-export type V1MeetsLikePersonCreateData = any;
+export type InitiateMeetData = any;
 
-export type V1MeetsConfirmCreateData = any;
+export type ConfirmMeetData = any;
 
-export type V1UsersNotificationsDetailData = NotificationsArray;
+export type DeclineMeetData = any;
 
-export interface V1SessionsCreatePayload {
+export type FetchUserNotificationsData = NotificationsArray;
+
+export interface OpenSessionPayload {
   user: SigninRequestDataUser;
 }
 
-export type V1SessionsCreateData = AccessToken;
+export type OpenSessionData = AccessToken;
 
-export interface V1SessionsRefreshCreatePayload {
+export interface RefreshSessionPayload {
   token: string;
 }
 
-export type V1SessionsRefreshCreateData = AccessToken;
+export type RefreshSessionData = AccessToken;
 
-export type V1SessionsLogoutDeleteData = any;
+export type CloseSessionData = any;
 
-export interface V1UsersCreatePayload {
+export interface CreateUserPayload {
   user?: SignupRequestDataUser;
 }
 
-export type V1UsersCreateData = any;
+export type CreateUserData = any;
 
-export type V1UsersCreateError = {
+export type CreateUserError = {
   errors?: InvalidUser;
 };
 
-export type V1UsersListData = UsersArray;
+export type FetchUsersData = UsersArray;
 
-export interface V1UsersResendConfirmationCreatePayload {
+export interface ResendConfirmMailPayload {
   /** @format email */
   email: string;
 }
 
-export type V1UsersResendConfirmationCreateData = any;
+export type ResendConfirmMailData = any;
 
-export type V1UsersDetailData = User;
+export type FetchUserData = User;
 
-export interface V1UsersPartialUpdatePayload {
+export interface UpdateUserPayload {
   profile?: ProfileDataUser;
 }
 
-export type V1UsersPartialUpdateData = Me;
+export type UpdateUserData = Me;
 
-export type V1UsersConfirmAccountDetailData = any;
+export type ConfirmAccountData = any;
 
-export type V1UsersMeListData = Me;
+export type FetchCurrentUserData = Me;
 
-export type V1UsersLoadAvatarPartialUpdateData = Me;
+export type LoadAvatarData = Me;
 
 export namespace Api {
   /**
    * No description
    * @tags Cities
-   * @name V1CitiesList
+   * @name FetchCountryCities
    * @summary return cities by country
    * @request GET:/api/v1/cities
    * @secure
    */
-  export namespace V1CitiesList {
+  export namespace FetchCountryCities {
     export type RequestParams = {
       country: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1CitiesListData;
+    export type ResponseBody = FetchCountryCitiesData;
   }
   /**
    * No description
    * @tags Cities
-   * @name V1CitiesCountryList
+   * @name FetchCountries
    * @summary return all countries
    * @request GET:/api/v1/cities/country
    * @secure
    */
-  export namespace V1CitiesCountryList {
+  export namespace FetchCountries {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1CitiesCountryListData;
+    export type ResponseBody = FetchCountriesData;
   }
   /**
    * No description
    * @tags Dialogs
-   * @name V1DialogsSendMessageCreate
+   * @name DialogSendMessage
    * @summary creates message
    * @request POST:/api/v1/dialogs/{id}/send_message
    * @secure
    */
-  export namespace V1DialogsSendMessageCreate {
+  export namespace DialogSendMessage {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
-    export type RequestBody = V1DialogsSendMessageCreatePayload;
+    export type RequestBody = DialogSendMessagePayload;
     export type RequestHeaders = {};
-    export type ResponseBody = V1DialogsSendMessageCreateData;
+    export type ResponseBody = DialogSendMessageData;
   }
   /**
    * No description
    * @tags Dialogs
-   * @name V1UsersDialogsDetail
+   * @name FetchUserDialogs
    * @summary return dialogs
    * @request GET:/api/v1/users/{id}/dialogs
    * @secure
    */
-  export namespace V1UsersDialogsDetail {
+  export namespace FetchUserDialogs {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersDialogsDetailData;
+    export type ResponseBody = FetchUserDialogsData;
   }
   /**
    * No description
    * @tags Dialogs
-   * @name V1DialogsDetail
+   * @name FetchDialog
    * @summary return dialog
    * @request GET:/api/v1/dialogs/{id}
    * @secure
    */
-  export namespace V1DialogsDetail {
+  export namespace FetchDialog {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1DialogsDetailData;
+    export type ResponseBody = FetchDialogData;
   }
   /**
    * No description
    * @tags Dialogs
-   * @name V1DialogsMessagesDetail
+   * @name FetchDialogMessages
    * @summary return dialog messages
    * @request GET:/api/v1/dialogs/{id}/messages
    * @secure
    */
-  export namespace V1DialogsMessagesDetail {
+  export namespace FetchDialogMessages {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1DialogsMessagesDetailData;
+    export type ResponseBody = FetchDialogMessagesData;
   }
   /**
    * No description
    * @tags Meets
-   * @name V1MeetsList
+   * @name FetchMeets
    * @summary Search persons
    * @request GET:/api/v1/meets
    * @secure
    */
-  export namespace V1MeetsList {
+  export namespace FetchMeets {
     export type RequestParams = {};
     export type RequestQuery = {
       search?: {
@@ -333,231 +336,248 @@ export namespace Api {
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1MeetsListData;
+    export type ResponseBody = FetchMeetsData;
   }
   /**
    * No description
    * @tags Meets
-   * @name V1MeetsLikePersonCreate
-   * @summary likes person
-   * @request POST:/api/v1/meets/{id}/like_person
+   * @name InitiateMeet
+   * @summary initiate meet
+   * @request POST:/api/v1/meets/{id}/initiate
    * @secure
    */
-  export namespace V1MeetsLikePersonCreate {
+  export namespace InitiateMeet {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1MeetsLikePersonCreateData;
+    export type ResponseBody = InitiateMeetData;
   }
   /**
    * No description
    * @tags Meets
-   * @name V1MeetsConfirmCreate
-   * @summary likes person
+   * @name ConfirmMeet
+   * @summary confirm meet
    * @request POST:/api/v1/meets/{id}/confirm
    * @secure
    */
-  export namespace V1MeetsConfirmCreate {
+  export namespace ConfirmMeet {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1MeetsConfirmCreateData;
+    export type ResponseBody = ConfirmMeetData;
+  }
+  /**
+   * No description
+   * @tags Meets
+   * @name DeclineMeet
+   * @summary decline meet
+   * @request DELETE:/api/v1/meets/{id}/decline
+   * @secure
+   */
+  export namespace DeclineMeet {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = DeclineMeetData;
   }
   /**
    * No description
    * @tags Notifications
-   * @name V1UsersNotificationsDetail
+   * @name FetchUserNotifications
    * @summary return notifications
    * @request GET:/api/v1/users/{id}/notifications
    * @secure
    */
-  export namespace V1UsersNotificationsDetail {
+  export namespace FetchUserNotifications {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersNotificationsDetailData;
+    export type ResponseBody = FetchUserNotificationsData;
   }
   /**
    * No description
    * @tags Sessions
-   * @name V1SessionsCreate
+   * @name OpenSession
    * @summary Creates a session
    * @request POST:/api/v1/sessions
    * @secure
    */
-  export namespace V1SessionsCreate {
+  export namespace OpenSession {
     export type RequestParams = {};
     export type RequestQuery = {};
-    export type RequestBody = V1SessionsCreatePayload;
+    export type RequestBody = OpenSessionPayload;
     export type RequestHeaders = {};
-    export type ResponseBody = V1SessionsCreateData;
+    export type ResponseBody = OpenSessionData;
   }
   /**
    * No description
    * @tags Sessions
-   * @name V1SessionsRefreshCreate
+   * @name RefreshSession
    * @summary Refresh session
    * @request POST:/api/v1/sessions/refresh
    * @secure
    */
-  export namespace V1SessionsRefreshCreate {
+  export namespace RefreshSession {
     export type RequestParams = {};
     export type RequestQuery = {};
-    export type RequestBody = V1SessionsRefreshCreatePayload;
+    export type RequestBody = RefreshSessionPayload;
     export type RequestHeaders = {};
-    export type ResponseBody = V1SessionsRefreshCreateData;
+    export type ResponseBody = RefreshSessionData;
   }
   /**
    * No description
    * @tags Sessions
-   * @name V1SessionsLogoutDelete
+   * @name CloseSession
    * @summary Delete session
    * @request DELETE:/api/v1/sessions/logout
    * @secure
    */
-  export namespace V1SessionsLogoutDelete {
+  export namespace CloseSession {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1SessionsLogoutDeleteData;
+    export type ResponseBody = CloseSessionData;
   }
   /**
    * No description
    * @tags Users
-   * @name V1UsersCreate
+   * @name CreateUser
    * @summary Creates a user
    * @request POST:/api/v1/users
    * @secure
    */
-  export namespace V1UsersCreate {
+  export namespace CreateUser {
     export type RequestParams = {};
     export type RequestQuery = {};
-    export type RequestBody = V1UsersCreatePayload;
+    export type RequestBody = CreateUserPayload;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersCreateData;
+    export type ResponseBody = CreateUserData;
   }
   /**
    * No description
    * @tags Users
-   * @name V1UsersList
+   * @name FetchUsers
    * @summary Return users list
    * @request GET:/api/v1/users
    * @secure
    */
-  export namespace V1UsersList {
+  export namespace FetchUsers {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersListData;
+    export type ResponseBody = FetchUsersData;
   }
   /**
    * No description
    * @tags Users
-   * @name V1UsersResendConfirmationCreate
+   * @name ResendConfirmMail
    * @summary Resend confirmation mail
    * @request POST:/api/v1/users/resend_confirmation
    * @secure
    */
-  export namespace V1UsersResendConfirmationCreate {
+  export namespace ResendConfirmMail {
     export type RequestParams = {};
     export type RequestQuery = {};
-    export type RequestBody = V1UsersResendConfirmationCreatePayload;
+    export type RequestBody = ResendConfirmMailPayload;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersResendConfirmationCreateData;
+    export type ResponseBody = ResendConfirmMailData;
   }
   /**
    * No description
    * @tags Users
-   * @name V1UsersDetail
+   * @name FetchUser
    * @summary Return user
    * @request GET:/api/v1/users/{id}
    * @secure
    */
-  export namespace V1UsersDetail {
+  export namespace FetchUser {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersDetailData;
+    export type ResponseBody = FetchUserData;
   }
   /**
    * No description
    * @tags Users
-   * @name V1UsersPartialUpdate
+   * @name UpdateUser
    * @summary Update user
    * @request PATCH:/api/v1/users/{id}
    * @secure
    */
-  export namespace V1UsersPartialUpdate {
+  export namespace UpdateUser {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
-    export type RequestBody = V1UsersPartialUpdatePayload;
+    export type RequestBody = UpdateUserPayload;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersPartialUpdateData;
+    export type ResponseBody = UpdateUserData;
   }
   /**
    * No description
    * @tags Users
-   * @name V1UsersConfirmAccountDetail
+   * @name ConfirmAccount
    * @summary Confirm account
    * @request GET:/api/v1/users/{id}/confirm_account
    * @secure
    */
-  export namespace V1UsersConfirmAccountDetail {
+  export namespace ConfirmAccount {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersConfirmAccountDetailData;
+    export type ResponseBody = ConfirmAccountData;
   }
   /**
    * No description
    * @tags Users
-   * @name V1UsersMeList
+   * @name FetchCurrentUser
    * @summary Return current user
    * @request GET:/api/v1/users/me
    * @secure
    */
-  export namespace V1UsersMeList {
+  export namespace FetchCurrentUser {
     export type RequestParams = {};
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersMeListData;
+    export type ResponseBody = FetchCurrentUserData;
   }
   /**
    * No description
    * @tags Users
-   * @name V1UsersLoadAvatarPartialUpdate
+   * @name LoadAvatar
    * @summary Load user avatar
    * @request PATCH:/api/v1/users/{id}/load_avatar
    * @secure
    */
-  export namespace V1UsersLoadAvatarPartialUpdate {
+  export namespace LoadAvatar {
     export type RequestParams = {
       id: string;
     };
     export type RequestQuery = {};
     export type RequestBody = AvatarFile;
     export type RequestHeaders = {};
-    export type ResponseBody = V1UsersLoadAvatarPartialUpdateData;
+    export type ResponseBody = LoadAvatarData;
   }
 }
 
@@ -702,13 +722,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Cities
-     * @name V1CitiesList
+     * @name FetchCountryCities
      * @summary return cities by country
      * @request GET:/api/v1/cities
      * @secure
      */
-    v1CitiesList: (country: string, params: RequestParams = {}) =>
-      this.request<V1CitiesListData, any>({
+    fetchCountryCities: (country: string, params: RequestParams = {}) =>
+      this.request<FetchCountryCitiesData, any>({
         path: `/api/v1/cities`,
         method: 'GET',
         secure: true,
@@ -719,13 +739,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Cities
-     * @name V1CitiesCountryList
+     * @name FetchCountries
      * @summary return all countries
      * @request GET:/api/v1/cities/country
      * @secure
      */
-    v1CitiesCountryList: (params: RequestParams = {}) =>
-      this.request<V1CitiesCountryListData, any>({
+    fetchCountries: (params: RequestParams = {}) =>
+      this.request<FetchCountriesData, any>({
         path: `/api/v1/cities/country`,
         method: 'GET',
         secure: true,
@@ -736,13 +756,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Dialogs
-     * @name V1DialogsSendMessageCreate
+     * @name DialogSendMessage
      * @summary creates message
      * @request POST:/api/v1/dialogs/{id}/send_message
      * @secure
      */
-    v1DialogsSendMessageCreate: (id: string, data: V1DialogsSendMessageCreatePayload, params: RequestParams = {}) =>
-      this.request<V1DialogsSendMessageCreateData, void>({
+    dialogSendMessage: (id: string, data: DialogSendMessagePayload, params: RequestParams = {}) =>
+      this.request<DialogSendMessageData, void>({
         path: `/api/v1/dialogs/${id}/send_message`,
         method: 'POST',
         body: data,
@@ -755,13 +775,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Dialogs
-     * @name V1UsersDialogsDetail
+     * @name FetchUserDialogs
      * @summary return dialogs
      * @request GET:/api/v1/users/{id}/dialogs
      * @secure
      */
-    v1UsersDialogsDetail: (id: string, params: RequestParams = {}) =>
-      this.request<V1UsersDialogsDetailData, void>({
+    fetchUserDialogs: (id: string, params: RequestParams = {}) =>
+      this.request<FetchUserDialogsData, void>({
         path: `/api/v1/users/${id}/dialogs`,
         method: 'GET',
         secure: true,
@@ -772,13 +792,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Dialogs
-     * @name V1DialogsDetail
+     * @name FetchDialog
      * @summary return dialog
      * @request GET:/api/v1/dialogs/{id}
      * @secure
      */
-    v1DialogsDetail: (id: string, params: RequestParams = {}) =>
-      this.request<V1DialogsDetailData, void>({
+    fetchDialog: (id: string, params: RequestParams = {}) =>
+      this.request<FetchDialogData, void>({
         path: `/api/v1/dialogs/${id}`,
         method: 'GET',
         secure: true,
@@ -789,13 +809,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Dialogs
-     * @name V1DialogsMessagesDetail
+     * @name FetchDialogMessages
      * @summary return dialog messages
      * @request GET:/api/v1/dialogs/{id}/messages
      * @secure
      */
-    v1DialogsMessagesDetail: (id: string, params: RequestParams = {}) =>
-      this.request<V1DialogsMessagesDetailData, void>({
+    fetchDialogMessages: (id: string, params: RequestParams = {}) =>
+      this.request<FetchDialogMessagesData, void>({
         path: `/api/v1/dialogs/${id}/messages`,
         method: 'GET',
         secure: true,
@@ -806,13 +826,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Meets
-     * @name V1MeetsList
+     * @name FetchMeets
      * @summary Search persons
      * @request GET:/api/v1/meets
      * @secure
      */
-    v1MeetsList: (query: V1MeetsListParams, params: RequestParams = {}) =>
-      this.request<V1MeetsListData, any>({
+    fetchMeets: (query: FetchMeetsParams, params: RequestParams = {}) =>
+      this.request<FetchMeetsData, any>({
         path: `/api/v1/meets`,
         method: 'GET',
         query: query,
@@ -824,14 +844,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Meets
-     * @name V1MeetsLikePersonCreate
-     * @summary likes person
-     * @request POST:/api/v1/meets/{id}/like_person
+     * @name InitiateMeet
+     * @summary initiate meet
+     * @request POST:/api/v1/meets/{id}/initiate
      * @secure
      */
-    v1MeetsLikePersonCreate: (id: string, params: RequestParams = {}) =>
-      this.request<V1MeetsLikePersonCreateData, void>({
-        path: `/api/v1/meets/${id}/like_person`,
+    initiateMeet: (id: string, params: RequestParams = {}) =>
+      this.request<InitiateMeetData, void>({
+        path: `/api/v1/meets/${id}/initiate`,
         method: 'POST',
         secure: true,
         ...params,
@@ -841,13 +861,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Meets
-     * @name V1MeetsConfirmCreate
-     * @summary likes person
+     * @name ConfirmMeet
+     * @summary confirm meet
      * @request POST:/api/v1/meets/{id}/confirm
      * @secure
      */
-    v1MeetsConfirmCreate: (id: string, params: RequestParams = {}) =>
-      this.request<V1MeetsConfirmCreateData, void>({
+    confirmMeet: (id: string, params: RequestParams = {}) =>
+      this.request<ConfirmMeetData, void>({
         path: `/api/v1/meets/${id}/confirm`,
         method: 'POST',
         secure: true,
@@ -857,14 +877,31 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags Meets
+     * @name DeclineMeet
+     * @summary decline meet
+     * @request DELETE:/api/v1/meets/{id}/decline
+     * @secure
+     */
+    declineMeet: (id: string, params: RequestParams = {}) =>
+      this.request<DeclineMeetData, void>({
+        path: `/api/v1/meets/${id}/decline`,
+        method: 'DELETE',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags Notifications
-     * @name V1UsersNotificationsDetail
+     * @name FetchUserNotifications
      * @summary return notifications
      * @request GET:/api/v1/users/{id}/notifications
      * @secure
      */
-    v1UsersNotificationsDetail: (id: string, params: RequestParams = {}) =>
-      this.request<V1UsersNotificationsDetailData, void>({
+    fetchUserNotifications: (id: string, params: RequestParams = {}) =>
+      this.request<FetchUserNotificationsData, void>({
         path: `/api/v1/users/${id}/notifications`,
         method: 'GET',
         secure: true,
@@ -875,13 +912,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Sessions
-     * @name V1SessionsCreate
+     * @name OpenSession
      * @summary Creates a session
      * @request POST:/api/v1/sessions
      * @secure
      */
-    v1SessionsCreate: (data: V1SessionsCreatePayload, params: RequestParams = {}) =>
-      this.request<V1SessionsCreateData, void>({
+    openSession: (data: OpenSessionPayload, params: RequestParams = {}) =>
+      this.request<OpenSessionData, void>({
         path: `/api/v1/sessions`,
         method: 'POST',
         body: data,
@@ -894,13 +931,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Sessions
-     * @name V1SessionsRefreshCreate
+     * @name RefreshSession
      * @summary Refresh session
      * @request POST:/api/v1/sessions/refresh
      * @secure
      */
-    v1SessionsRefreshCreate: (data: V1SessionsRefreshCreatePayload, params: RequestParams = {}) =>
-      this.request<V1SessionsRefreshCreateData, void>({
+    refreshSession: (data: RefreshSessionPayload, params: RequestParams = {}) =>
+      this.request<RefreshSessionData, void>({
         path: `/api/v1/sessions/refresh`,
         method: 'POST',
         body: data,
@@ -913,13 +950,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Sessions
-     * @name V1SessionsLogoutDelete
+     * @name CloseSession
      * @summary Delete session
      * @request DELETE:/api/v1/sessions/logout
      * @secure
      */
-    v1SessionsLogoutDelete: (params: RequestParams = {}) =>
-      this.request<V1SessionsLogoutDeleteData, void>({
+    closeSession: (params: RequestParams = {}) =>
+      this.request<CloseSessionData, void>({
         path: `/api/v1/sessions/logout`,
         method: 'DELETE',
         secure: true,
@@ -930,13 +967,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Users
-     * @name V1UsersCreate
+     * @name CreateUser
      * @summary Creates a user
      * @request POST:/api/v1/users
      * @secure
      */
-    v1UsersCreate: (data: V1UsersCreatePayload, params: RequestParams = {}) =>
-      this.request<V1UsersCreateData, V1UsersCreateError>({
+    createUser: (data: CreateUserPayload, params: RequestParams = {}) =>
+      this.request<CreateUserData, CreateUserError>({
         path: `/api/v1/users`,
         method: 'POST',
         body: data,
@@ -949,13 +986,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Users
-     * @name V1UsersList
+     * @name FetchUsers
      * @summary Return users list
      * @request GET:/api/v1/users
      * @secure
      */
-    v1UsersList: (params: RequestParams = {}) =>
-      this.request<V1UsersListData, any>({
+    fetchUsers: (params: RequestParams = {}) =>
+      this.request<FetchUsersData, any>({
         path: `/api/v1/users`,
         method: 'GET',
         secure: true,
@@ -966,13 +1003,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Users
-     * @name V1UsersResendConfirmationCreate
+     * @name ResendConfirmMail
      * @summary Resend confirmation mail
      * @request POST:/api/v1/users/resend_confirmation
      * @secure
      */
-    v1UsersResendConfirmationCreate: (data: V1UsersResendConfirmationCreatePayload, params: RequestParams = {}) =>
-      this.request<V1UsersResendConfirmationCreateData, void>({
+    resendConfirmMail: (data: ResendConfirmMailPayload, params: RequestParams = {}) =>
+      this.request<ResendConfirmMailData, void>({
         path: `/api/v1/users/resend_confirmation`,
         method: 'POST',
         body: data,
@@ -985,13 +1022,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Users
-     * @name V1UsersDetail
+     * @name FetchUser
      * @summary Return user
      * @request GET:/api/v1/users/{id}
      * @secure
      */
-    v1UsersDetail: (id: string, params: RequestParams = {}) =>
-      this.request<V1UsersDetailData, void>({
+    fetchUser: (id: string, params: RequestParams = {}) =>
+      this.request<FetchUserData, void>({
         path: `/api/v1/users/${id}`,
         method: 'GET',
         secure: true,
@@ -1002,13 +1039,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Users
-     * @name V1UsersPartialUpdate
+     * @name UpdateUser
      * @summary Update user
      * @request PATCH:/api/v1/users/{id}
      * @secure
      */
-    v1UsersPartialUpdate: (id: string, data: V1UsersPartialUpdatePayload, params: RequestParams = {}) =>
-      this.request<V1UsersPartialUpdateData, any>({
+    updateUser: (id: string, data: UpdateUserPayload, params: RequestParams = {}) =>
+      this.request<UpdateUserData, any>({
         path: `/api/v1/users/${id}`,
         method: 'PATCH',
         body: data,
@@ -1021,13 +1058,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Users
-     * @name V1UsersConfirmAccountDetail
+     * @name ConfirmAccount
      * @summary Confirm account
      * @request GET:/api/v1/users/{id}/confirm_account
      * @secure
      */
-    v1UsersConfirmAccountDetail: (id: string, params: RequestParams = {}) =>
-      this.request<V1UsersConfirmAccountDetailData, void>({
+    confirmAccount: (id: string, params: RequestParams = {}) =>
+      this.request<ConfirmAccountData, void>({
         path: `/api/v1/users/${id}/confirm_account`,
         method: 'GET',
         secure: true,
@@ -1038,13 +1075,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Users
-     * @name V1UsersMeList
+     * @name FetchCurrentUser
      * @summary Return current user
      * @request GET:/api/v1/users/me
      * @secure
      */
-    v1UsersMeList: (params: RequestParams = {}) =>
-      this.request<V1UsersMeListData, void>({
+    fetchCurrentUser: (params: RequestParams = {}) =>
+      this.request<FetchCurrentUserData, void>({
         path: `/api/v1/users/me`,
         method: 'GET',
         secure: true,
@@ -1055,13 +1092,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Users
-     * @name V1UsersLoadAvatarPartialUpdate
+     * @name LoadAvatar
      * @summary Load user avatar
      * @request PATCH:/api/v1/users/{id}/load_avatar
      * @secure
      */
-    v1UsersLoadAvatarPartialUpdate: (id: string, data: AvatarFile, params: RequestParams = {}) =>
-      this.request<V1UsersLoadAvatarPartialUpdateData, any>({
+    loadAvatar: (id: string, data: AvatarFile, params: RequestParams = {}) =>
+      this.request<LoadAvatarData, any>({
         path: `/api/v1/users/${id}/load_avatar`,
         method: 'PATCH',
         body: data,

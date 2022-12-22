@@ -5,44 +5,42 @@ import type {
   ProfileDataUser,
   SigninRequestDataUser,
   SignupRequestDataUser,
-  V1UsersResendConfirmationCreatePayload,
+  ResendConfirmMailPayload,
 } from './api';
 
 // export type UserId = number | string;
 type UserId = IdNumber;
 
 export function signUp(user: SignupRequestDataUser) {
-  return api.api.v1UsersCreate({ user });
+  return api.api.createUser({ user });
 }
 
 export function fetchMe() {
-  return api.api.v1UsersMeList();
+  return api.api.fetchCurrentUser();
 }
 
 export function signOut() {
-  return api.api.v1SessionsLogoutDelete();
+  return api.api.closeSession();
 }
 
 export function signIn(user: SigninRequestDataUser) {
-  return api.api.v1SessionsCreate({ user });
+  return api.api.openSession({ user });
 }
 
 export function signUpConfirm(confirmationCode: string) {
-  return api.api.v1UsersConfirmAccountDetail(confirmationCode);
+  return api.api.confirmAccount(confirmationCode);
 }
 
-export function signUpConfirmationEmailResend(
-  data: V1UsersResendConfirmationCreatePayload
-) {
-  return api.api.v1UsersResendConfirmationCreate(data);
+export function signUpConfirmationEmailResend(data: ResendConfirmMailPayload) {
+  return api.api.resendConfirmMail(data);
 }
 
 export function refreshAccessToken(refreshToken: string) {
-  return api.api.v1SessionsRefreshCreate({ token: refreshToken });
+  return api.api.refreshSession({ token: refreshToken });
 }
 
 export function updateUserInfo(id: UserId, profile: ProfileDataUser) {
-  return api.api.v1UsersPartialUpdate(String(id), { profile });
+  return api.api.updateUser(String(id), { profile });
 }
 
 export function updateUserAvatar(
@@ -50,9 +48,5 @@ export function updateUserAvatar(
   avatar: File,
   options?: { onUploadProgress: (progressEvent: AxiosProgressEvent) => void }
 ) {
-  return api.api.v1UsersLoadAvatarPartialUpdate(
-    String(id),
-    { avatar },
-    options
-  );
+  return api.api.loadAvatar(String(id), { avatar }, options);
 }

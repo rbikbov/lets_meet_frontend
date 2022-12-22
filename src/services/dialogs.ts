@@ -1,27 +1,20 @@
 import { api } from '.';
-import type {
-  Dialog,
-  IdNumber,
-  V1DialogsSendMessageCreatePayload,
-} from './api';
+import type { Dialog, IdNumber, DialogSendMessagePayload } from './api';
 
 type UserId = IdNumber;
 
 export function fetchDialogs(id: UserId) {
-  return api.api.v1UsersDialogsDetail(String(id));
+  return api.api.fetchUserDialogs(String(id));
 }
 
 export function fetchDialogDetails(id: Dialog['id']) {
-  return api.api.v1DialogsDetail(String(id));
+  return api.api.fetchDialog(String(id));
 }
 
 export function fetchDialogMessages(id: UserId) {
-  return api.api.v1DialogsMessagesDetail(String(id));
+  return api.api.fetchDialogMessages(String(id));
 }
 
-export function sendMessage(
-  dialogId: number,
-  data: V1DialogsSendMessageCreatePayload
-) {
-  return api.api.v1DialogsSendMessageCreate(String(dialogId), data);
+export function sendMessage(dialogId: number, data: DialogSendMessagePayload) {
+  return api.api.dialogSendMessage(String(dialogId), data);
 }

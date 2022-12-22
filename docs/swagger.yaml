@@ -9,6 +9,7 @@ paths:
       summary: return cities by country
       tags:
       - Cities
+      operationId: fetchCountryCities
       parameters:
       - name: country
         in: path
@@ -28,6 +29,7 @@ paths:
       summary: return all countries
       tags:
       - Cities
+      operationId: fetchCountries
       responses:
         '200':
           description: Found
@@ -40,6 +42,7 @@ paths:
       summary: creates message
       tags:
       - Dialogs
+      operationId: dialogSendMessage
       parameters:
       - name: id
         in: path
@@ -77,6 +80,7 @@ paths:
       summary: return dialogs
       tags:
       - Dialogs
+      operationId: fetchUserDialogs
       parameters:
       - name: id
         in: path
@@ -104,6 +108,7 @@ paths:
       summary: return dialog
       tags:
       - Dialogs
+      operationId: fetchDialog
       parameters:
       - name: id
         in: path
@@ -131,6 +136,7 @@ paths:
       summary: return dialog messages
       tags:
       - Dialogs
+      operationId: fetchDialogMessages
       parameters:
       - name: id
         in: path
@@ -158,6 +164,7 @@ paths:
       summary: Search persons
       tags:
       - Meets
+      operationId: fetchMeets
       parameters:
       - name: search
         in: query
@@ -186,11 +193,12 @@ paths:
               schema:
                 type: object
                 "$ref": "#/components/schemas/users_array"
-  "/api/v1/meets/{id}/like_person":
+  "/api/v1/meets/{id}/initiate":
     post:
-      summary: likes person
+      summary: initiate meet
       tags:
       - Meets
+      operationId: initiateMeet
       parameters:
       - name: id
         in: path
@@ -216,9 +224,10 @@ paths:
                     message: Access denied
   "/api/v1/meets/{id}/confirm":
     post:
-      summary: likes person
+      summary: confirm meet
       tags:
       - Meets
+      operationId: confirmMeet
       parameters:
       - name: id
         in: path
@@ -242,11 +251,35 @@ paths:
                 example_1:
                   value:
                     message: Access denied
+  "/api/v1/meets/{id}/decline":
+    delete:
+      summary: decline meet
+      tags:
+      - Meets
+      operationId: declineMeet
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Something went wrong, please try again
   "/api/v1/users/{id}/notifications":
     get:
       summary: return notifications
       tags:
       - Notifications
+      operationId: fetchUserNotifications
       parameters:
       - name: id
         in: path
@@ -274,6 +307,7 @@ paths:
       summary: Creates a session
       tags:
       - Sessions
+      operationId: openSession
       parameters: []
       responses:
         '201':
@@ -306,6 +340,7 @@ paths:
       summary: Refresh session
       tags:
       - Sessions
+      operationId: refreshSession
       parameters: []
       responses:
         '201':
@@ -338,6 +373,7 @@ paths:
       summary: Delete session
       tags:
       - Sessions
+      operationId: closeSession
       responses:
         '204':
           description: No content
@@ -354,6 +390,7 @@ paths:
       summary: Creates a user
       tags:
       - Users
+      operationId: createUser
       parameters: []
       responses:
         '201':
@@ -385,6 +422,7 @@ paths:
       summary: Return users list
       tags:
       - Users
+      operationId: fetchUsers
       responses:
         '200':
           description: Found
@@ -398,6 +436,7 @@ paths:
       summary: Resend confirmation mail
       tags:
       - Users
+      operationId: resendConfirmMail
       parameters: []
       responses:
         '201':
@@ -407,9 +446,7 @@ paths:
               examples:
                 example_1:
                   value:
-                    type: object
-                    properties:
-                      message: Confirmation mail sended again!
+                    message: Confirmation mail sended again!
         '400':
           description: Bad request
           content:
@@ -434,6 +471,7 @@ paths:
       summary: Return user
       tags:
       - Users
+      operationId: fetchUser
       parameters:
       - name: id
         in: path
@@ -460,6 +498,7 @@ paths:
       summary: Update user
       tags:
       - Users
+      operationId: updateUser
       parameters:
       - name: id
         in: path
@@ -487,6 +526,7 @@ paths:
       summary: Confirm account
       tags:
       - Users
+      operationId: confirmAccount
       parameters:
       - name: id
         in: path
@@ -515,6 +555,7 @@ paths:
       summary: Return current user
       tags:
       - Users
+      operationId: fetchCurrentUser
       responses:
         '200':
           description: Found
@@ -530,6 +571,7 @@ paths:
       summary: Load user avatar
       tags:
       - Users
+      operationId: loadAvatar
       parameters:
       - name: id
         in: path
@@ -660,7 +702,7 @@ components:
           "$ref": "#/components/schemas/gender_type"
         avatar:
           type: string
-        likes:
+        initiates:
           type: array
           items:
             "$ref": "#/components/schemas/id_number"
@@ -729,10 +771,13 @@ components:
         last_message:
           "$ref": "#/components/schemas/message"
       required:
+      - id
       - incoming_id
       - outgoing_id
       - users
       - id
+      - created_at
+      - updated_at
     message:
       type: object
       properties:
@@ -760,6 +805,8 @@ components:
     notification:
       type: object
       properties:
+        id:
+          "$ref": "#/components/schemas/id_number"
         user_id:
           "$ref": "#/components/schemas/id_number"
         content:
@@ -772,6 +819,12 @@ components:
           format: date-time
         notification_type:
           "$ref": "#/components/schemas/notification_type"
+      required:
+      - id
+      - user_id
+      - notification_type
+      - created_at
+      - updated_at
     users_array:
       type: array
       items:

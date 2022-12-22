@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import type { V1UsersResendConfirmationCreatePayload } from '@/services/api';
+import type { ResendConfirmMailPayload } from '@/services/api';
 
 import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{ loading: boolean }>(), {
 });
 
 const emits = defineEmits({
-  submit: (payload: V1UsersResendConfirmationCreatePayload) => {
+  submit: (payload: ResendConfirmMailPayload) => {
     if (payload.email) {
       return true;
     } else {

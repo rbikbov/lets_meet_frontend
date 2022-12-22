@@ -73,7 +73,7 @@ export const useDialogsStore = defineStore('dialogs', () => {
               return;
             } else {
               const newDialogResponse = await fetchDialogDetails(
-                data.message.dialog_id!
+                data.message.dialog_id
               );
               dialogs.value.unshift(newDialogResponse.data);
             }

@@ -36,7 +36,7 @@ const notificationsQuery = useQuery({
     <v-row dense>
       <v-col
         v-for="notification in notifications"
-        :key="notification.created_at"
+        :key="notification.id"
         cols="12"
       >
         <v-card

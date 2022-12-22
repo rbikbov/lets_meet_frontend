@@ -4,9 +4,9 @@ import type { IdNumber } from './api';
 type UserId = IdNumber;
 
 export function fetchUsers() {
-  return api.api.v1UsersList();
+  return api.api.fetchUsers();
 }
 
 export function fetchUserInfo(id: UserId) {
-  return api.api.v1UsersDetail(String(id));
+  return api.api.fetchUser(String(id));
 }

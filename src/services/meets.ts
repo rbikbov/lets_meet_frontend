@@ -1,16 +1,20 @@
 import { api } from '.';
-import type { IdNumber, V1MeetsListParams } from './api';
+import type { IdNumber, FetchMeetsParams } from './api';
 
 type UserId = IdNumber;
 
-export function fetchMeets(query: V1MeetsListParams) {
-  return api.api.v1MeetsList(query);
+export function fetchMeets(query: FetchMeetsParams) {
+  return api.api.fetchMeets(query);
 }
 
-export function likePerson(id: UserId) {
-  return api.api.v1MeetsLikePersonCreate(String(id));
+export function initiateMeet(id: UserId) {
+  return api.api.initiateMeet(String(id));
 }
 
-export function confirmLikePerson(id: UserId) {
-  return api.api.v1MeetsConfirmCreate(String(id));
+export function confirmMeet(id: UserId) {
+  return api.api.confirmMeet(String(id));
+}
+
+export function declineMeet(id: UserId) {
+  return api.api.declineMeet(String(id));
 }

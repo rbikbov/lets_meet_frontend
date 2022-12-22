@@ -5,8 +5,8 @@ import { useMutation, useQuery } from '@tanstack/vue-query';
 
 import { useMeetsStore } from '@/stores/meets';
 import { MEETS } from '@/services/queries/keys';
-import { confirmLikePerson, fetchMeets, likePerson } from '@/services/meets';
-import { GenderType, V1MeetsListParams } from '@/services/api';
+import { confirmMeet, fetchMeets, initiateMeet } from '@/services/meets';
+import { GenderType, FetchMeetsParams } from '@/services/api';
 import { getFullName } from '@/helpers/fullName';
 
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
@@ -14,7 +14,7 @@ import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
 const { meets } = storeToRefs(useMeetsStore());
 const { setMeets } = useMeetsStore();
 
-const meetsQueryParams = ref<V1MeetsListParams>({
+const meetsQueryParams = ref<FetchMeetsParams>({
   search: {
     age_min: 0,
     age_max: 99,
@@ -50,17 +50,17 @@ const meetsQuery = useQuery({
   },
 });
 
-const likePersonMutation = useMutation({
+const initiateMeetMutation = useMutation({
   // mutationKey: [],
-  mutationFn: (id: number) => likePerson(id).then(() => id),
+  mutationFn: (id: number) => initiateMeet(id).then(() => id),
   onSuccess: (id) => {
     console.log(`likePerson(${id})`);
   },
 });
 
-const confirmLikePersonMutation = useMutation({
+const confirmMeetMutation = useMutation({
   // mutationKey: [],
-  mutationFn: (id: number) => confirmLikePerson(id).then(() => id),
+  mutationFn: (id: number) => confirmMeet(id).then(() => id),
   onSuccess: (id) => {
     console.log(`confirmLikePerson(${id})`);
   },
@@ -120,17 +120,22 @@ const confirmLikePersonMutation = useMutation({
         <v-card
           :title="getFullName(user)"
           :subtitle="`${user.gender}, ${user.age}`"
-          :text="`Meet likes: ${user.likes}`"
+          :text="`Meet likes: ${user.initiates}`"
           :prepend-avatar="user.avatar"
         >
-          <v-btn type="button" @click="likePersonMutation.mutate(user.id)">
-            likePerson
+          <v-btn
+            type="button"
+            :loading="initiateMeetMutation.isLoading.value"
+            @click="initiateMeetMutation.mutate(user.id)"
+          >
+            Initiate Meet
           </v-btn>
           <v-btn
             type="button"
-            @click="confirmLikePersonMutation.mutate(user.id)"
+            :loading="confirmMeetMutation.isLoading.value"
+            @click="confirmMeetMutation.mutate(user.id)"
           >
-            confirmLikePerson
+            Confirm Meet
           </v-btn>
         </v-card>
       </v-col>

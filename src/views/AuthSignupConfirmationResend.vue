@@ -4,15 +4,14 @@ import { useRouter } from 'vue-router';
 import { AppRouteNames } from '@/router';
 import { useMutation } from '@tanstack/vue-query';
 import { signUpConfirmationEmailResend } from '@/services/auth';
-import type { V1UsersResendConfirmationCreatePayload } from '@/services/api';
+import type { ResendConfirmMailPayload } from '@/services/api';
 
 import AuthSignupConfirmationResendForm from '@/components/AuthSignupConfirmationResendForm.vue';
 
 const router = useRouter();
 
 const signupConfirmationResendMutation = useMutation(
-  (data: V1UsersResendConfirmationCreatePayload) =>
-    signUpConfirmationEmailResend(data),
+  (data: ResendConfirmMailPayload) => signUpConfirmationEmailResend(data),
   {
     onSuccess: async () => {
       router.push({
@@ -22,9 +21,7 @@ const signupConfirmationResendMutation = useMutation(
   }
 );
 
-const onSignupConfirmationFormSubmit = (
-  data: V1UsersResendConfirmationCreatePayload
-) => {
+const onSignupConfirmationFormSubmit = (data: ResendConfirmMailPayload) => {
   signupConfirmationResendMutation.mutate(data);
 };
 </script>
