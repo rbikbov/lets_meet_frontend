@@ -5,6 +5,7 @@ import type { SigninRequestDataUser } from '@/services/api';
 
 import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
+import InputTypePassword from '@/components/InputTypePassword.vue';
 
 export default defineComponent({
   props: {
@@ -28,6 +29,7 @@ export default defineComponent({
   components: {
     BaseFormWrapper,
     BaseInputWrapper,
+    InputTypePassword,
   },
 
   data: () => ({
@@ -70,18 +72,17 @@ export default defineComponent({
       </BaseInputWrapper>
 
       <BaseInputWrapper v-slot="{ inputProps }">
-        <v-text-field
+        <InputTypePassword
           v-bind="inputProps"
           v-model="password"
           :readonly="loading"
           :rules="[required]"
           clearable
           label="Password"
-          type="password"
           autocomplete="password"
           placeholder="Enter your password"
         >
-        </v-text-field>
+        </InputTypePassword>
       </BaseInputWrapper>
 
       <br />

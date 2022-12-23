@@ -5,6 +5,7 @@ import type { SignupRequestDataUser } from '@/services/api';
 
 import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
+import InputTypePassword from '@/components/InputTypePassword.vue';
 
 const props = withDefaults(defineProps<{ loading: boolean }>(), {
   loading: false,
@@ -86,21 +87,20 @@ const isEqual = ({
       </BaseInputWrapper>
 
       <BaseInputWrapper v-slot="{ inputProps }">
-        <v-text-field
+        <InputTypePassword
           v-bind="inputProps"
           v-model="password"
           :readonly="loading"
           :rules="[required]"
           clearable
           label="Password"
-          type="password"
           placeholder="Enter your password"
           autocomplete="password"
-        ></v-text-field>
+        ></InputTypePassword>
       </BaseInputWrapper>
 
       <BaseInputWrapper v-slot="{ inputProps }">
-        <v-text-field
+        <InputTypePassword
           v-bind="inputProps"
           v-model="password_confirmation"
           :readonly="loading"
@@ -110,10 +110,9 @@ const isEqual = ({
           ]"
           clearable
           label="Password confirm"
-          type="password"
           placeholder="Enter your password again"
           autocomplete="none"
-        ></v-text-field>
+        ></InputTypePassword>
       </BaseInputWrapper>
 
       <br />
