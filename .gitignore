@@ -29,3 +29,4 @@ coverage
 
 # secured credentials
 .env
+.env.development
