@@ -7,6 +7,8 @@ import { useNotificationsStore } from '@/stores/notifications';
 import { DIALOGS } from '@/services/queries/keys';
 import { fetchNotifications } from '@/services/notifications';
 
+import NotificationItem from '@/components/NotificationItem.vue';
+
 const { notifications } = storeToRefs(useNotificationsStore());
 const { setNotifications } = useNotificationsStore();
 
@@ -39,23 +41,7 @@ const notificationsQuery = useQuery({
         :key="notification.id"
         cols="12"
       >
-        <v-card
-          :title="JSON.stringify(notification.content)"
-          :subtitle="`Notification created at ${notification.created_at}`"
-          text="Lorem ipsum dolor sit amet consectetur, adipisicing elit.?"
-        >
-          <!--
-          <v-btn
-            type="button"
-            :to="{
-              name: AppRouteNames.notificationDetail,
-              params: { id: notification.id },
-            }"
-          >
-            Open notification
-          </v-btn>
-          -->
-        </v-card>
+        <NotificationItem :notification="notification" />
       </v-col>
     </v-row>
   </v-container>
