@@ -161,7 +161,13 @@ const filteredNavLinks = computed(() =>
   <v-app :theme="theme">
     <v-navigation-drawer rail permanent>
       <BaseAuthUserAvatarWrapper v-slot="{ url }">
-        <v-list-item nav :prepend-avatar="url"></v-list-item>
+        <v-list-item nav>
+          <template v-slot:prepend>
+            <v-avatar>
+              <v-img :src="url" alt="Avatar" cover></v-img>
+            </v-avatar>
+          </template>
+        </v-list-item>
       </BaseAuthUserAvatarWrapper>
 
       <v-divider></v-divider>

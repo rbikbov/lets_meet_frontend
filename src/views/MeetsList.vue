@@ -10,6 +10,7 @@ import { GenderType, FetchMeetsParams } from '@/services/api';
 import { getFullName } from '@/helpers/fullName';
 
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
+import BaseDefaultAvatarWrapper from '@/components/BaseDefaultAvatarWrapper.vue';
 
 const { meets } = storeToRefs(useMeetsStore());
 const { setMeets } = useMeetsStore();
@@ -117,26 +118,48 @@ const confirmMeetMutation = useMutation({
 
     <v-row dense>
       <v-col v-for="user in meets" :key="user.id" cols="12">
-        <v-card
-          :title="getFullName(user)"
-          :subtitle="`${user.gender}, ${user.age}`"
-          :text="`Meet likes: ${user.initiates}`"
-          :prepend-avatar="user.avatar"
-        >
-          <v-btn
-            type="button"
-            :loading="initiateMeetMutation.isLoading.value"
-            @click="initiateMeetMutation.mutate(user.id)"
-          >
-            Initiate Meet
-          </v-btn>
-          <v-btn
-            type="button"
-            :loading="confirmMeetMutation.isLoading.value"
-            @click="confirmMeetMutation.mutate(user.id)"
-          >
-            Confirm Meet
-          </v-btn>
+        <v-card>
+          <div class="d-flex flex-no-wrap">
+            <BaseDefaultAvatarWrapper
+              v-slot="{ url }"
+              :avatar-url="user.avatar"
+            >
+              <v-avatar class="ma-3" :size="125" :rounded="true">
+                <v-img alt="Avatar" :src="url" cover></v-img>
+              </v-avatar>
+            </BaseDefaultAvatarWrapper>
+
+            <div class="d-flex flex-column flex-grow-1">
+              <v-card-title class="text-h5">{{
+                getFullName(user)
+              }}</v-card-title>
+
+              <v-card-subtitle>{{
+                `${user.gender}, ${user.age}`
+              }}</v-card-subtitle>
+
+              <v-card-subtitle v-if="user.city">{{
+                user.city
+              }}</v-card-subtitle>
+
+              <v-card-text v-if="user.initiates">{{
+                `Meet likes: ${user.initiates}`
+              }}</v-card-text>
+
+              <v-card-actions class="mt-auto align-self-end">
+                <v-btn
+                  type="button"
+                  variant="outlined"
+                  size="small"
+                  append-icon="mdi-heart"
+                  :loading="initiateMeetMutation.isLoading.value"
+                  @click="initiateMeetMutation.mutate(user.id)"
+                >
+                  Initiate Meet
+                </v-btn>
+              </v-card-actions>
+            </div>
+          </div>
         </v-card>
       </v-col>
     </v-row>
