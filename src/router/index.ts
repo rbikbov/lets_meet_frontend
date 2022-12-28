@@ -18,7 +18,6 @@ export enum AppRouteNames {
   home = 'meets',
 
   authSignin = 'authSignin',
-  authSignout = 'authSignout',
   authSignup = 'authSignup',
   authSignupThanks = 'authSignupThanks',
   authSignupConfirmation = 'authSignupConfirmation',
@@ -64,15 +63,6 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         component: () => import('@/views/AuthSignin.vue'),
         meta: {
           middlewares: [requireNotAuth],
-        },
-      },
-
-      {
-        path: '/auth/signout',
-        name: AppRouteNames.authSignout,
-        component: () => import('@/views/AuthSignout.vue'),
-        meta: {
-          middlewares: [requireAuth],
         },
       },
 

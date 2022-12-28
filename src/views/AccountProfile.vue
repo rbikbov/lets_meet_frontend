@@ -10,6 +10,7 @@ import { fetchMe } from '@/services/auth';
 
 import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
 import BaseAuthUserAvatarWrapper from '@/components/BaseAuthUserAvatarWrapper.vue';
+import AuthSignoutProvider from '@/components/AuthSignoutProvider.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 
 const { authUser } = storeToRefs(useAuthStore());
@@ -25,13 +26,13 @@ const fetchMeQuery = useQuery({
     <BaseFormWrapper v-if="authUser">
       <v-row dense>
         <v-col>
-      <BaseAuthUserAvatarWrapper v-slot="{ url }">
+          <BaseAuthUserAvatarWrapper v-slot="{ url }">
             <v-img class="mx-auto" :width="300" :src="url" cover>
               <template v-slot:placeholder>
                 <BaseLoader />
               </template>
             </v-img>
-      </BaseAuthUserAvatarWrapper>
+          </BaseAuthUserAvatarWrapper>
         </v-col>
         <v-col>
           <v-btn
@@ -83,6 +84,22 @@ const fetchMeQuery = useQuery({
 
       <v-card-text></v-card-text>
     </BaseFormWrapper>
+
+    <AuthSignoutProvider>
+      <template v-slot="{ loading, signOut }">
+        <v-btn
+          :loading="loading"
+          class="ma-auto"
+          size="large"
+          type="submit"
+          variant="outlined"
+          prepend-icon="mdi-logout-variant"
+          @click="signOut"
+        >
+          Sign Out
+        </v-btn>
+      </template>
+    </AuthSignoutProvider>
   </div>
 </template>
 

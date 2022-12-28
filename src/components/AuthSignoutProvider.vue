@@ -5,7 +5,6 @@ import { useMutation } from '@tanstack/vue-query';
 import { AppRouteNames } from '@/router';
 import { useAuthStore } from '@/stores/auth';
 
-import AuthSignoutForm from '@/components/AuthSignoutForm.vue';
 import { signOut } from '@/services/auth';
 
 const router = useRouter();
@@ -22,16 +21,13 @@ const signOutMutation = useMutation(() => signOut(), {
   },
 });
 
-const onAuthSignoutFormSubmit = () => {
+const onSignOut = () => {
   signOutMutation.mutate();
 };
 </script>
 
 <template>
-  <AuthSignoutForm
-    :loading="signOutMutation.isLoading.value"
-    @submit="onAuthSignoutFormSubmit"
-  />
+  <slot :loading="signOutMutation.isLoading.value" :signOut="onSignOut" />
 </template>
 
 <style></style>
