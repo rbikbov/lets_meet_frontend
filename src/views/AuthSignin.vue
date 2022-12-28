@@ -1,38 +1,53 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+// @ts-nocheck
 import { useMutation } from '@tanstack/vue-query';
 
-import { AppRouteNames } from '@/router';
+import { useRightDrawerRoutingStore } from '@/stores/rightDrawerRouting';
 import { useAuthStore } from '@/stores/auth';
-import type { SigninRequestDataUser } from '@/services/api';
-
-import AuthSigninForm from '@/components/AuthSigninForm.vue';
+import { useSnackbarsStore } from '@/stores/snackbars';
+import type { OpenSessionPayload, SigninRequestDataUser } from '@/services/api';
 import { signIn } from '@/services/auth';
 
-const router = useRouter();
-const authStore = useAuthStore();
+import AuthSigninForm from '@/components/AuthSigninForm.vue';
 
-// const createToast = console.log;
+const authStore = useAuthStore();
+const rightDrawerStore = useRightDrawerRoutingStore();
+
+const { pushSnackbar } = useSnackbarsStore();
 
 const authSigninMutation = useMutation(
   // mutationKey: [],
   (credentials: SigninRequestDataUser) => signIn(credentials),
   {
-    // onError: (error) => {
-    //   if (Array.isArray((error as any).response.data.error)) {
-    //     (error as any).response.data.error.forEach((el: any) =>
-    //       createToast(el.message, {
-    //         position: 'top-right',
-    //         type: 'warning',
-    //       })
-    //     );
-    //   } else {
-    //     createToast((error as any).response.data.message, {
-    //       position: 'top-right',
-    //       type: 'danger',
-    //     });
-    //   }
-    // },
+    onError: (error) => {
+      if (!error) {
+        return;
+      }
+
+      let title: string = '';
+      let text: string = '';
+
+      if (error.name === 'AxiosError') {
+        // const text = JSON.stringify(error);
+        title = String(error.response.status);
+        text = error.response.data.error;
+      }
+
+      pushSnackbar({ title, text });
+      // if (Array.isArray((error as any).response.data.error)) {
+      //   (error as any).response.data.error.forEach((el: any) =>
+      //     createToast(el.message, {
+      //       position: 'top-right',
+      //       type: 'warning',
+      //     })
+      //   );
+      // } else {
+      //   createToast((error as any).response.data.message, {
+      //     position: 'top-right',
+      //     type: 'danger',
+      //   });
+      // }
+    },
     onSuccess: (response) => {
       // createToast('Successfully logged in', {
       //   position: 'top-right',
@@ -41,9 +56,15 @@ const authSigninMutation = useMutation(
         accessToken: response.data.token,
         refreshToken: response.data.refresh,
       });
-      router.push({
-        name: AppRouteNames.home,
+      pushSnackbar({
+        title: 'Successfully signin',
+        text: `Hello ${
+          (JSON.parse(response.config.data) as OpenSessionPayload).user.email
+        }`,
+        timeout: -1,
       });
+
+      rightDrawerStore.close();
     },
   }
 );

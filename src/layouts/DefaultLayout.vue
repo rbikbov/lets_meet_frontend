@@ -8,7 +8,7 @@ import { usePreferredDark } from '@vueuse/core';
 import { useAuthStore } from '@/stores/auth';
 import { AppRouteNames } from '@/router';
 
-import BaseAuthUserAvatarWrapper from '@/components/BaseAuthUserAvatarWrapper.vue';
+import AppSnackbars from '@/components/AppSnackbars.vue';
 
 const isFetching = useIsFetching();
 
@@ -201,5 +201,7 @@ const filteredNavLinks = computed(() =>
         </v-fade-transition>
       </RouterView>
     </v-main>
+
+    <AppSnackbars />
   </v-app>
 </template>
