@@ -10,6 +10,7 @@ import { GenderType, FetchMeetsParams } from '@/services/api';
 
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
 import BaseDefaultAvatarWrapper from '@/components/BaseDefaultAvatarWrapper.vue';
+import GoldUsersList from '@/components/GoldUsersList.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 
 const { meets } = storeToRefs(useMeetsStore());
@@ -19,7 +20,7 @@ const meetsQueryParams = ref<FetchMeetsParams>({
   search: {
     age_min: 0,
     age_max: 99,
-    gender: GenderType.Male,
+    gender: undefined,
     // city: string;
     // page: number;
     // per: number;
@@ -62,6 +63,14 @@ const initiateMeetMutation = useMutation({
 
 <template>
   <v-container fluid>
+    <GoldUsersList />
+
+    <br />
+
+    <v-divider></v-divider>
+
+    <br />
+
     <v-row>
       <v-col cols="3">
         <v-form
