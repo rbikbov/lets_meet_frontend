@@ -50,6 +50,7 @@ const getDialogLastMessagePreview = (dialog: Dialog) => {
 <template>
   <v-container fluid>
     <v-btn
+      v-if="false"
       class="mx-auto"
       color="success"
       type="button"
@@ -59,7 +60,7 @@ const getDialogLastMessagePreview = (dialog: Dialog) => {
       Fetch dialogs
     </v-btn>
 
-    <v-list lines="three">
+    <v-list class="my-0">
       <v-list-item
         v-for="dialog in dialogs"
         :key="dialog.id"
@@ -69,6 +70,10 @@ const getDialogLastMessagePreview = (dialog: Dialog) => {
           name: AppRouteNames.dialogDetail,
           params: { id: dialog.id },
         }"
+        class="mb-2 pa-3"
+        elevation="8"
+        rounded
+        variant="outlined"
       >
         <template v-slot:prepend>
           <BaseDefaultAvatarWrapper

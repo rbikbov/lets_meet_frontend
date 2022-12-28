@@ -91,10 +91,9 @@ export default defineComponent({
         :disabled="!form"
         :loading="loading"
         block
-        color="success"
         size="large"
         type="submit"
-        variant="elevated"
+        variant="outlined"
       >
         Login
       </v-btn>

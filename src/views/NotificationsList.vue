@@ -25,17 +25,18 @@ const notificationsQuery = useQuery({
 
 <template>
   <v-container fluid>
-    <v-btn
-      class="mx-auto"
-      color="success"
-      type="button"
-      variant="elevated"
-      @click="notificationsQuery.refetch"
-    >
-      Fetch notifications
-    </v-btn>
-
     <v-row dense>
+      <v-btn
+        v-if="!false"
+        class="mx-auto"
+        type="button"
+        variant="elevated"
+        @click="notificationsQuery.refetch"
+        icon
+      >
+        <v-icon icon="mdi-refresh"></v-icon>
+      </v-btn>
+
       <v-col
         v-for="notification in notifications"
         :key="notification.id"

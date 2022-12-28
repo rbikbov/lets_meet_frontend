@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useMutation, useQuery } from '@tanstack/vue-query';
 
@@ -13,12 +13,10 @@ import {
 import { DIALOGS, DIALOGS_MESSAGES } from '@/services/queries/keys';
 
 import { useAuthStore } from '@/stores/auth';
-import { getFullName } from '@/helpers/fullName';
-import { getFullDateTime } from '@/helpers/dateFormatter';
 
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
-import BaseDefaultAvatarWrapper from '@/components/BaseDefaultAvatarWrapper.vue';
-import BaseLoader from '@/components/BaseLoader.vue';
+import DialogMessageItem from '@/components/DialogMessageItem.vue';
+import type { VCol } from 'vuetify/components';
 
 const props = defineProps<{
   dialogId: number;
@@ -42,9 +40,10 @@ const dialog = ref<Dialog | null>(null);
 const dialogQuery = useQuery({
   queryKey: [DIALOGS, props.dialogId],
   queryFn: () => fetchDialogDetails(props.dialogId),
-  onSuccess: (response) => {
+  onSuccess: async (response) => {
     dialog.value = response.data;
-    dialogMessagesQuery.refetch();
+    await dialogMessagesQuery.refetch();
+    scrollToLastMessage();
   },
 });
 
@@ -113,11 +112,12 @@ const newMessageText = ref<string>('');
 const sendMessageMutation = useMutation({
   mutationFn: () =>
     sendMessage(props.dialogId, { text_message: newMessageText.value }),
-  onSuccess: (response) => {
+  onSuccess: async (response) => {
     msgFormComponent.value?.resetValidation();
     newMessageText.value = '';
     messages.value.push(response.data);
-    // messages.value.push(response.data);
+    await nextTick();
+    scrollToLastMessage();
   },
 });
 
@@ -132,152 +132,99 @@ const required = (v: string) => {
   return !!v || 'Field is required';
 };
 
-const formatMessageTitle = (title: string) => `${title}:`;
-
 const interlocutorUser = computed<User | null>(() => {
   return dialog.value && authUser.value
     ? dialog.value.users.find((u) => u.id !== authUser.value?.id)!
     : null;
 });
 
-const getMessageTitle = (msg: Message): string => {
-  if (msg.user_id === authUser.value?.id) {
-    return formatMessageTitle(
-      authUser.value ? getFullName(authUser.value) : 'From me'
-    );
-  }
-
-  return formatMessageTitle(
-    interlocutorUser.value ? getFullName(interlocutorUser.value) : 'For me'
-  );
-};
-
-const getMessageSubtitle = (msg: Message): string => {
-  const parts: string[] = [getFullDateTime(msg.created_at)];
-
-  if (msg.updated_at !== msg.created_at) {
-    parts.push(`Edited at ${getFullDateTime(msg.updated_at)}`);
-  }
-
-  return parts.join(' ');
-};
-
 const isMyMsg = (msg: Message) => {
   return msg.user_id === authUser.value?.id;
+};
+
+const scrollToLastMessage = () => {
+  document.getElementById('lastMessage')?.scrollIntoView({
+    behavior: 'smooth',
+  });
 };
 </script>
 
 <template>
-  <v-container class="fill-height overflow-auto">
-    <v-btn
-      v-if="false"
-      class="mx-auto mb-4"
-      color="success"
-      type="button"
-      variant="elevated"
-      @click="dialogMessagesQuery.refetch"
-    >
-      Fetch dialog messages
-    </v-btn>
+  <v-container class="h-100">
+    <v-row v-if="true">
+      <v-col class="d-flex">
+        <!--
+        <v-btn type="button" @click="dialogMessagesQuery.refetch">
+          Fetch dialog messages
+        </v-btn>
+        -->
+        <v-btn
+          class="ml-auto"
+          size="small"
+          icon
+          type="button"
+          variant="outlined"
+          @click="scrollToLastMessage"
+        >
+          <v-icon icon="mdi-arrow-down"></v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
 
-    <v-row class="pb-2 fill-height">
-      <v-col>
+    <v-row
+      class="overflow-auto"
+      style="height: calc(100% - 60px - 80px + 24px)"
+    >
+      <v-col v-if="authUser && interlocutorUser" cols="12">
         <div
           v-for="(item, index) in messages"
           :key="item.id"
           class="d-flex flex-row align-top"
           :class="{ 'justify-end': isMyMsg(item) }"
+          :id="index === messages.length - 1 ? 'lastMessage' : undefined"
         >
-          <v-card
-            :title="
-              messages[index - 1]?.user_id !== item.user_id
-                ? getMessageTitle(item)
-                : ''
-            "
-            :subtitle="getMessageSubtitle(item)"
-            :text="item.description"
-            class="mb-2"
-            density="compact"
-            max-width="85%"
-            min-width="35%"
-          >
-            <template
-              v-if="messages[index - 1]?.user_id !== item.user_id"
-              v-slot:prepend
-            >
-              <BaseDefaultAvatarWrapper
-                v-slot="{ url, onError }"
-                :avatar-url="
-                  isMyMsg(item) ? authUser?.avatar : interlocutorUser?.avatar
-                "
-              >
-                <v-avatar :size="40">
-                  <v-img alt="Avatar" cover :src="url" @error="onError">
-                    <template v-slot:placeholder>
-                      <BaseLoader />
-                    </template>
-                  </v-img>
-                </v-avatar>
-              </BaseDefaultAvatarWrapper>
-            </template>
-          </v-card>
-          <!-- <div
-            :class="{ 'mr-3': isMyMsg(item), 'ml-3': !isMyMsg(item) }"
-            :style="{ order: isMyMsg(item) ? 0 : 1 }"
-          >
-            <div
-          v-if="messages[index - 1]?.user_id !== item.user_id"
-            >{{ getMessageTitle(item) }}</div>
-            <div>{{ getMessageSubtitle(item) }}</div>
-            <div>{{ item.description }}</div>
-          </div>
-          <v-avatar
-            v-if="messages[index - 1]?.user_id !== item.user_id"
-           :size="36">
-            <v-img
-              alt="Avatar"
-              cover
-              :src="isMyMsg(item) ? authUser?.avatar : interlocutorUser?.avatar"
-            ></v-img>
-          </v-avatar> -->
+          <DialogMessageItem
+            :message="item"
+            :isMyMsg="isMyMsg(item)"
+            :me="authUser"
+            :interlocutor="interlocutorUser"
+            :isAuthorPrevMsg="messages[index - 1]?.user_id === item.user_id"
+          />
         </div>
       </v-col>
     </v-row>
 
-    <v-theme-provider with-background style="position: sticky; bottom: 0">
-      <v-row>
-        <v-col>
-          <v-form
-            class="d-flex flex-row align-start"
-            ref="msgFormComponent"
-            v-model="isMsgFormValid"
-            @submit.prevent="onMessageFormSubmit"
+    <v-row>
+      <v-col>
+        <v-form
+          class="d-flex"
+          ref="msgFormComponent"
+          v-model="isMsgFormValid"
+          @submit.prevent="onMessageFormSubmit"
+        >
+          <BaseInputWrapper v-slot="{ inputProps }">
+            <v-text-field
+              v-bind="inputProps"
+              v-model="newMessageText"
+              :rules="[required]"
+              :readonly="sendMessageMutation.isLoading.value"
+              clearable
+              placeholder="Type Something"
+              type="text"
+              hide-details
+            />
+          </BaseInputWrapper>
+          <v-btn
+            :loading="sendMessageMutation.isLoading.value"
+            :disabled="sendMessageMutation.isLoading.value || !isMsgFormValid"
+            icon="mdi-send"
+            type="submit"
+            class="ml-2 my-auto"
           >
-            <BaseInputWrapper v-slot="{ inputProps }">
-              <v-text-field
-                v-bind="inputProps"
-                v-model="newMessageText"
-                :rules="[required]"
-                :readonly="sendMessageMutation.isLoading.value"
-                class="my-4"
-                clearable
-                placeholder="Type Something"
-                type="text"
-              ></v-text-field>
-            </BaseInputWrapper>
-
-            <v-btn
-              :loading="sendMessageMutation.isLoading.value"
-              :disabled="sendMessageMutation.isLoading.value || !isMsgFormValid"
-              icon="mdi-send"
-              class="ml-4 my-4"
-              type="submit"
-            >
-            </v-btn>
-          </v-form>
-        </v-col>
-      </v-row>
-    </v-theme-provider>
+          </v-btn>
+        </v-form>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

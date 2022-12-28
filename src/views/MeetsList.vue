@@ -5,9 +5,8 @@ import { useMutation, useQuery } from '@tanstack/vue-query';
 
 import { useMeetsStore } from '@/stores/meets';
 import { MEETS } from '@/services/queries/keys';
-import { confirmMeet, fetchMeets, initiateMeet } from '@/services/meets';
+import { fetchMeets, initiateMeet } from '@/services/meets';
 import { GenderType, FetchMeetsParams } from '@/services/api';
-import { getFullName } from '@/helpers/fullName';
 
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
 import BaseDefaultAvatarWrapper from '@/components/BaseDefaultAvatarWrapper.vue';
@@ -59,72 +58,64 @@ const initiateMeetMutation = useMutation({
     console.log(`likePerson(${id})`);
   },
 });
-
-const confirmMeetMutation = useMutation({
-  // mutationKey: [],
-  mutationFn: (id: number) => confirmMeet(id).then(() => id),
-  onSuccess: (id) => {
-    console.log(`confirmLikePerson(${id})`);
-  },
-});
 </script>
 
 <template>
   <v-container fluid>
-    <v-form
-      class="pt-4 mb-4"
-      v-model="meetsFiltersFormIsValid"
-      @submit.prevent="onMeetsFiltersFormSubmit"
-    >
-      <BaseInputWrapper v-slot="{ inputProps }">
-        <v-range-slider
-          v-bind="inputProps"
-          v-model="agesRange"
-          :readonly="meetsQuery.isLoading.value"
-          :step="1"
-          :min="16"
-          :max="80"
-          thumb-label="always"
-          label="Age"
-        ></v-range-slider>
-      </BaseInputWrapper>
-
-      <BaseInputWrapper v-slot="{ inputProps }">
-        <v-radio-group
-          v-bind="inputProps"
-          v-model="meetsQueryParams.search!.gender"
-          :readonly="meetsQuery.isLoading.value"
-          label="Gender"
+    <v-row>
+      <v-col cols="3">
+        <v-form
+          class="pt-4 mb-4"
+          v-model="meetsFiltersFormIsValid"
+          @submit.prevent="onMeetsFiltersFormSubmit"
         >
-          <v-radio label="Unknown" :value="null"></v-radio>
-          <v-radio label="Female" :value="GenderType.Female"></v-radio>
-          <v-radio label="Male" :value="GenderType.Male"></v-radio>
-        </v-radio-group>
-      </BaseInputWrapper>
+          <BaseInputWrapper v-slot="{ inputProps }">
+            <v-range-slider
+              v-bind="inputProps"
+              v-model="agesRange"
+              :readonly="meetsQuery.isLoading.value"
+              :step="1"
+              :min="16"
+              :max="80"
+              thumb-label="always"
+              label="Age"
+            ></v-range-slider>
+          </BaseInputWrapper>
 
-      <v-btn
-        :disabled="meetsQuery.isLoading.value || !meetsFiltersFormIsValid"
-        :loading="meetsQuery.isLoading.value"
-        block
-        color="success"
-        size="large"
-        type="submit"
-        variant="elevated"
-      >
-        Fetch meets
-      </v-btn>
-    </v-form>
-
-    <v-divider></v-divider>
-
-    <v-row dense>
-      <v-col v-for="user in meets" :key="user.id" cols="12">
-        <v-card>
-          <div class="d-flex flex-no-wrap">
-            <BaseDefaultAvatarWrapper
-                v-slot="{ url, onError }"
-              :avatar-url="user.avatar"
+          <BaseInputWrapper v-slot="{ inputProps }">
+            <v-radio-group
+              v-bind="inputProps"
+              v-model="meetsQueryParams.search!.gender"
+              :readonly="meetsQuery.isLoading.value"
+              label="Gender"
             >
+              <v-radio label="Unknown" :value="undefined"></v-radio>
+              <v-radio label="Female" :value="GenderType.Female"></v-radio>
+              <v-radio label="Male" :value="GenderType.Male"></v-radio>
+            </v-radio-group>
+          </BaseInputWrapper>
+
+          <v-btn
+            :disabled="meetsQuery.isLoading.value || !meetsFiltersFormIsValid"
+            :loading="meetsQuery.isLoading.value"
+            block
+            size="large"
+            type="submit"
+            variant="outlined"
+          >
+            Fetch meets
+          </v-btn>
+        </v-form>
+      </v-col>
+
+      <v-col cols="9">
+        <v-row>
+          <v-col v-for="user in meets" :key="user.id" :cols="3">
+            <v-card variant="outlined" elevation="8">
+              <BaseDefaultAvatarWrapper
+                v-slot="{ url, onError }"
+                :avatar-url="user.avatar"
+              >
                 <v-img
                   :src="url"
                   class="align-end"
@@ -141,31 +132,31 @@ const confirmMeetMutation = useMutation({
                     <div class="flex-grow-1 mb-4">
                       <v-card-title class="text-white">{{
                         user.first_name
-              }}</v-card-title>
+                      }}</v-card-title>
 
                       <v-card-subtitle class="text-white">{{
-                `${user.gender}, ${user.age}`
-              }}</v-card-subtitle>
+                        `${user.gender}, ${user.age}`
+                      }}</v-card-subtitle>
 
                       <v-card-subtitle v-if="user.city" class="text-white">{{
-                user.city
-              }}</v-card-subtitle>
+                        user.city
+                      }}</v-card-subtitle>
 
                       <v-card-text v-if="user.initiates" class="text-white">{{
-                `Meet likes: ${user.initiates}`
-              }}</v-card-text>
+                        `Meet likes: ${user.initiates}`
+                      }}</v-card-text>
                     </div>
 
                     <v-card-actions class="mt-auto">
                       <v-spacer></v-spacer>
 
-                <v-btn
-                  size="small"
+                      <v-btn
+                        size="small"
                         color="surface-variant"
                         variant="text"
                         icon="mdi-heart-outline"
-                  :loading="initiateMeetMutation.isLoading.value"
-                  @click="initiateMeetMutation.mutate(user.id)"
+                        :loading="initiateMeetMutation.isLoading.value"
+                        @click="initiateMeetMutation.mutate(user.id)"
                       ></v-btn>
 
                       <!--
@@ -183,11 +174,13 @@ const confirmMeetMutation = useMutation({
                         icon="mdi-share-variant"
                       ></v-btn>
                       -->
-              </v-card-actions>
-            </div>
+                    </v-card-actions>
+                  </div>
                 </v-img>
               </BaseDefaultAvatarWrapper>
-        </v-card>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
   </v-container>
