@@ -1,23 +1,16 @@
 <script setup lang="ts">
-import { defineAsyncComponent, defineComponent, h } from 'vue';
+import { defineAsyncComponent } from 'vue';
 
 import { Notification, NotificationType } from '@/services/api';
-import { VProgressCircular } from 'vuetify/components/VProgressCircular';
-
-const LoadingComponent = defineComponent({
-  render: () =>
-    h('div', { class: 'd-flex justify-center pa-3' }, [
-      h(VProgressCircular, { indeterminate: true }),
-    ]),
-});
+import BaseLoader from '@/components/BaseLoader.vue';
 
 const AsyncNotificationItemTodo = defineAsyncComponent({
   loader: () => import('@/components/NotificationItemTodo.vue'),
-  loadingComponent: LoadingComponent,
+  loadingComponent: BaseLoader,
 });
 const AsyncNotificationItemLike = defineAsyncComponent({
   loader: () => import('@/components/NotificationItemLike.vue'),
-  loadingComponent: LoadingComponent,
+  loadingComponent: BaseLoader,
 });
 
 defineProps<{

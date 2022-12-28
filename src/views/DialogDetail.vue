@@ -18,6 +18,7 @@ import { getFullDateTime } from '@/helpers/dateFormatter';
 
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
 import BaseDefaultAvatarWrapper from '@/components/BaseDefaultAvatarWrapper.vue';
+import BaseLoader from '@/components/BaseLoader.vue';
 
 const props = defineProps<{
   dialogId: number;
@@ -211,7 +212,11 @@ const isMyMsg = (msg: Message) => {
                 "
               >
                 <v-avatar :size="40">
-                  <v-img alt="Avatar" cover :src="url"></v-img>
+                  <v-img alt="Avatar" cover :src="url">
+                    <template v-slot:placeholder>
+                      <BaseLoader />
+                    </template>
+                  </v-img>
                 </v-avatar>
               </BaseDefaultAvatarWrapper>
             </template>

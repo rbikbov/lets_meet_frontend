@@ -11,6 +11,7 @@ import { getFullName } from '@/helpers/fullName';
 
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
 import BaseDefaultAvatarWrapper from '@/components/BaseDefaultAvatarWrapper.vue';
+import BaseLoader from '@/components/BaseLoader.vue';
 
 const { meets } = storeToRefs(useMeetsStore());
 const { setMeets } = useMeetsStore();
@@ -124,42 +125,67 @@ const confirmMeetMutation = useMutation({
               v-slot="{ url }"
               :avatar-url="user.avatar"
             >
-              <v-avatar class="ma-3" :size="125" :rounded="true">
-                <v-img alt="Avatar" :src="url" cover></v-img>
-              </v-avatar>
-            </BaseDefaultAvatarWrapper>
+                <v-img
+                  :src="url"
+                  class="align-end"
+                  gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.9)"
+                  cover
+                  height="300px"
+                >
+                  <template v-slot:placeholder>
+                    <BaseLoader />
+                  </template>
 
-            <div class="d-flex flex-column flex-grow-1">
-              <v-card-title class="text-h5">{{
-                getFullName(user)
+                  <div class="d-flex">
+                    <div class="flex-grow-1 mb-4">
+                      <v-card-title class="text-white">{{
+                        user.first_name
               }}</v-card-title>
 
-              <v-card-subtitle>{{
+                      <v-card-subtitle class="text-white">{{
                 `${user.gender}, ${user.age}`
               }}</v-card-subtitle>
 
-              <v-card-subtitle v-if="user.city">{{
+                      <v-card-subtitle v-if="user.city" class="text-white">{{
                 user.city
               }}</v-card-subtitle>
 
-              <v-card-text v-if="user.initiates">{{
+                      <v-card-text v-if="user.initiates" class="text-white">{{
                 `Meet likes: ${user.initiates}`
               }}</v-card-text>
+                    </div>
 
-              <v-card-actions class="mt-auto align-self-end">
+                    <v-card-actions class="mt-auto">
+                      <v-spacer></v-spacer>
+
                 <v-btn
-                  type="button"
-                  variant="outlined"
                   size="small"
-                  append-icon="mdi-heart"
+                        color="surface-variant"
+                        variant="text"
+                        icon="mdi-heart-outline"
                   :loading="initiateMeetMutation.isLoading.value"
                   @click="initiateMeetMutation.mutate(user.id)"
-                >
-                  Initiate Meet
-                </v-btn>
+                      ></v-btn>
+
+                      <!--
+                      <v-btn
+                        size="small"
+                        color="surface-variant"
+                        variant="text"
+                        icon="mdi-bookmark"
+                      ></v-btn>
+
+                      <v-btn
+                        size="small"
+                        color="surface-variant"
+                        variant="text"
+                        icon="mdi-share-variant"
+                      ></v-btn>
+                      -->
               </v-card-actions>
             </div>
-          </div>
+                </v-img>
+              </BaseDefaultAvatarWrapper>
         </v-card>
       </v-col>
     </v-row>

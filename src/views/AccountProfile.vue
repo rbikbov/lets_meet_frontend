@@ -10,6 +10,7 @@ import { fetchMe } from '@/services/auth';
 
 import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
 import BaseAuthUserAvatarWrapper from '@/components/BaseAuthUserAvatarWrapper.vue';
+import BaseLoader from '@/components/BaseLoader.vue';
 
 const { authUser } = storeToRefs(useAuthStore());
 
@@ -23,7 +24,11 @@ const fetchMeQuery = useQuery({
   <div>
     <BaseFormWrapper v-if="authUser">
       <BaseAuthUserAvatarWrapper v-slot="{ url }">
-        <v-img :src="url" cover></v-img>
+            <v-img class="mx-auto" :width="300" :src="url" cover>
+              <template v-slot:placeholder>
+                <BaseLoader />
+              </template>
+            </v-img>
       </BaseAuthUserAvatarWrapper>
 
       <br />

@@ -11,6 +11,7 @@ import { getFullName } from '@/helpers/fullName';
 import type { Dialog } from '@/services/api';
 
 import BaseDefaultAvatarWrapper from '@/components/BaseDefaultAvatarWrapper.vue';
+import BaseLoader from '@/components/BaseLoader.vue';
 
 const { dialogs } = storeToRefs(useDialogsStore());
 const { setDialogs } = useDialogsStore();
@@ -75,7 +76,11 @@ const getDialogLastMessagePreview = (dialog: Dialog) => {
             :avatar-url="dialogIdToInterlocutorUserMap[dialog.id].avatar"
           >
             <v-avatar :size="50">
-              <v-img alt="Avatar" cover :src="url"></v-img>
+              <v-img alt="Avatar" cover :src="url">
+                <template v-slot:placeholder>
+                  <BaseLoader />
+                </template>
+              </v-img>
             </v-avatar>
           </BaseDefaultAvatarWrapper>
         </template>
