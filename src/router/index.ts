@@ -25,7 +25,8 @@ export enum AppRouteNames {
   authSignupConfirmationResend = 'authSignupConfirmationResend',
 
   accountProfile = 'accountProfile',
-  accountProfileUpdate = 'accountProfileUpdate',
+  accountProfileUpdateInfo = 'accountProfileUpdateInfo',
+  accountProfileUpdateAvatar = 'accountProfileUpdateAvatar',
 
   meets = 'meets',
 
@@ -133,9 +134,18 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
       },
 
       {
-        path: '/account/profile-update',
-        name: AppRouteNames.accountProfileUpdate,
-        component: () => import('@/views/AccountProfileUpdate.vue'),
+        path: '/account/profile-update-info',
+        name: AppRouteNames.accountProfileUpdateInfo,
+        component: () => import('@/views/AccountProfileUpdateInfo.vue'),
+        meta: {
+          middlewares: [requireAuth],
+        },
+      },
+
+      {
+        path: '/account/profile-update-avatar',
+        name: AppRouteNames.accountProfileUpdateAvatar,
+        component: () => import('@/views/AccountProfileUpdateAvatar.vue'),
         meta: {
           middlewares: [requireAuth],
         },

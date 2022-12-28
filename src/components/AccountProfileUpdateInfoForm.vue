@@ -10,11 +10,9 @@ const props = withDefaults(
   defineProps<{
     loading?: boolean;
     initialData: ProfileDataUser;
-    isAvatarChanged?: boolean;
   }>(),
   {
     loading: false,
-    isAvatarChanged: false,
   }
 );
 
@@ -35,7 +33,6 @@ const formData = ref<ProfileDataUser>({ ...props.initialData });
 
 const formNotChanged = computed(() => {
   return (
-    !props.isAvatarChanged &&
     props.initialData &&
     (Object.keys(formData.value) as Array<keyof typeof formData.value>).every(
       (key) => formData.value[key] === (props.initialData || {})[key]
@@ -81,9 +78,7 @@ const max = (maxValue: number) => {
 </script>
 
 <template>
-  <BaseFormWrapper v-slot="{ formProps }">
-    <slot :formProps="formProps"></slot>
-
+  <BaseFormWrapper>
     <v-form v-model="formIsValid" @submit.prevent="onSubmit">
       <BaseInputWrapper v-slot="{ inputProps }">
         <v-text-field
@@ -141,10 +136,9 @@ const max = (maxValue: number) => {
         :disabled="formNotChanged"
         :loading="loading"
         block
-        color="success"
         size="large"
         type="submit"
-        variant="elevated"
+        variant="outlined"
       >
         Save
       </v-btn>
@@ -154,10 +148,9 @@ const max = (maxValue: number) => {
       <v-btn
         :loading="loading"
         block
-        color="error"
         size="large"
         type="button"
-        variant="elevated"
+        variant="outlined"
         @click="onCancel"
       >
         Cancel

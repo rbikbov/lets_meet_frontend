@@ -6,6 +6,7 @@ import type {
   SigninRequestDataUser,
   SignupRequestDataUser,
   ResendConfirmMailPayload,
+  AvatarFile,
 } from './api';
 
 // export type UserId = number | string;
@@ -45,8 +46,8 @@ export function updateUserInfo(id: UserId, profile: ProfileDataUser) {
 
 export function updateUserAvatar(
   id: UserId,
-  avatar: File,
+  data: AvatarFile,
   options?: { onUploadProgress: (progressEvent: AxiosProgressEvent) => void }
 ) {
-  return api.api.loadAvatar(String(id), { avatar }, options);
+  return api.api.loadAvatar(String(id), data, options);
 }

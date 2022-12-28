@@ -21,8 +21,10 @@ const fetchMeQuery = useQuery({
 </script>
 
 <template>
-  <div>
+  <div class="d-flex flex-column">
     <BaseFormWrapper v-if="authUser">
+      <v-row dense>
+        <v-col>
       <BaseAuthUserAvatarWrapper v-slot="{ url }">
             <v-img class="mx-auto" :width="300" :src="url" cover>
               <template v-slot:placeholder>
@@ -30,6 +32,18 @@ const fetchMeQuery = useQuery({
               </template>
             </v-img>
       </BaseAuthUserAvatarWrapper>
+        </v-col>
+        <v-col>
+          <v-btn
+            icon="mdi-pencil"
+            :to="{ name: AppRouteNames.accountProfileUpdateAvatar }"
+            exact
+            link
+            small
+            variant="text"
+          ></v-btn>
+        </v-col>
+      </v-row>
 
       <br />
 
@@ -48,7 +62,7 @@ const fetchMeQuery = useQuery({
             <v-col>
               <v-btn
                 icon="mdi-pencil"
-                :to="{ name: AppRouteNames.accountProfileUpdate }"
+                :to="{ name: AppRouteNames.accountProfileUpdateInfo }"
                 exact
                 link
                 small
