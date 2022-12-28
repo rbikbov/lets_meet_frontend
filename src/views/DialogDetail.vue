@@ -206,13 +206,13 @@ const isMyMsg = (msg: Message) => {
               v-slot:prepend
             >
               <BaseDefaultAvatarWrapper
-                v-slot="{ url }"
+                v-slot="{ url, onError }"
                 :avatar-url="
                   isMyMsg(item) ? authUser?.avatar : interlocutorUser?.avatar
                 "
               >
                 <v-avatar :size="40">
-                  <v-img alt="Avatar" cover :src="url">
+                  <v-img alt="Avatar" cover :src="url" @error="onError">
                     <template v-slot:placeholder>
                       <BaseLoader />
                     </template>

@@ -72,11 +72,11 @@ const getDialogLastMessagePreview = (dialog: Dialog) => {
       >
         <template v-slot:prepend>
           <BaseDefaultAvatarWrapper
-            v-slot="{ url }"
+            v-slot="{ url, onError }"
             :avatar-url="dialogIdToInterlocutorUserMap[dialog.id].avatar"
           >
             <v-avatar :size="50">
-              <v-img alt="Avatar" cover :src="url">
+              <v-img alt="Avatar" cover :src="url" @error="onError">
                 <template v-slot:placeholder>
                   <BaseLoader />
                 </template>

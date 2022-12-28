@@ -122,7 +122,7 @@ const confirmMeetMutation = useMutation({
         <v-card>
           <div class="d-flex flex-no-wrap">
             <BaseDefaultAvatarWrapper
-              v-slot="{ url }"
+                v-slot="{ url, onError }"
               :avatar-url="user.avatar"
             >
                 <v-img
@@ -131,6 +131,7 @@ const confirmMeetMutation = useMutation({
                   gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.9)"
                   cover
                   height="300px"
+                  @error="onError"
                 >
                   <template v-slot:placeholder>
                     <BaseLoader />
