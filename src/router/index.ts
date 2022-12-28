@@ -15,7 +15,7 @@ import { requireAuth } from '@/router/middlewares/requireAuth';
 import { requireNotAuth } from '@/router/middlewares/requireNotAuth';
 
 export enum AppRouteNames {
-  home = 'home',
+  home = 'meets',
 
   authSignin = 'authSignin',
   authSignout = 'authSignout',
@@ -33,9 +33,6 @@ export enum AppRouteNames {
 
   dialogs = 'dialogs',
   dialogDetail = 'dialogDetail',
-
-  about = 'about',
-  users = 'users',
 }
 
 interface AppRouteMeta {
@@ -56,11 +53,8 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
     children: [
       {
         path: '/',
-        name: AppRouteNames.home,
-        component: () => import('@/views/HomeView.vue'),
-        meta: {
-          middlewares: [],
-        },
+        // name: AppRouteNames.home,
+        redirect: AppRouteNames.meets,
       },
 
       {
@@ -191,24 +185,6 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
           return {
             dialogId,
           };
-        },
-      },
-
-      {
-        path: '/about',
-        name: AppRouteNames.about,
-        component: () => import('@/views/AboutView.vue'),
-        meta: {
-          middlewares: [],
-        },
-      },
-
-      {
-        path: '/users',
-        name: AppRouteNames.users,
-        component: () => import('@/views/UsersList.vue'),
-        meta: {
-          middlewares: [requireAuth],
         },
       },
     ],

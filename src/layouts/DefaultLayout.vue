@@ -126,26 +126,6 @@ const navLinks: NavLinkItem[] = [
       visibleForNotAuth: false,
     },
   },
-  {
-    title: 'Home',
-    to: { name: AppRouteNames.home },
-    link: true,
-    exact: true,
-    meta: {
-      visibleForAuth: true,
-      visibleForNotAuth: true,
-    },
-  },
-  {
-    title: 'About',
-    to: { name: AppRouteNames.about },
-    link: true,
-    exact: true,
-    meta: {
-      visibleForAuth: true,
-      visibleForNotAuth: true,
-    },
-  },
 ];
 
 const filteredNavLinks = computed(() =>
