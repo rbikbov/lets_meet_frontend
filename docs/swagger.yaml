@@ -61,10 +61,9 @@ paths:
           description: Forbidden
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Access denied
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
       requestBody:
         content:
           application/json:
@@ -99,10 +98,9 @@ paths:
           description: Forbidden
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Access denied
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
   "/api/v1/dialogs/{id}":
     get:
       summary: return dialog
@@ -127,10 +125,9 @@ paths:
           description: Forbidden
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Access denied
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
   "/api/v1/dialogs/{id}/messages":
     get:
       summary: return dialog messages
@@ -155,16 +152,16 @@ paths:
           description: Forbidden
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Access denied
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
   "/api/v1/meets":
     get:
       summary: Search persons
       tags:
       - Meets
       operationId: fetchMeets
+      security: []
       parameters:
       - name: search
         in: query
@@ -218,10 +215,9 @@ paths:
           description: Forbidden
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Access denied
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
   "/api/v1/meets/{id}/confirm":
     post:
       summary: confirm meet
@@ -247,10 +243,17 @@ paths:
           description: Forbidden
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Access denied
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notification_id:
+                  "$ref": "#/components/schemas/id_number"
   "/api/v1/meets/{id}/decline":
     delete:
       summary: decline meet
@@ -270,10 +273,17 @@ paths:
           description: Bad request
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Something went wrong, please try again
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notification_id:
+                  "$ref": "#/components/schemas/id_number"
   "/api/v1/users/{id}/notifications":
     get:
       summary: return notifications
@@ -298,10 +308,9 @@ paths:
           description: Forbidden
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Access denied
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
   "/api/v1/sessions":
     post:
       summary: Creates a session
@@ -321,10 +330,9 @@ paths:
           description: Bad request
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Something went wrong, please try again
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
       requestBody:
         content:
           application/json:
@@ -354,10 +362,9 @@ paths:
           description: Bad request
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Something went wrong. Please try again
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
       requestBody:
         content:
           application/json:
@@ -379,12 +386,6 @@ paths:
           description: No content
         '400':
           description: Bad request
-          content:
-            application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Something went wrong. Please try again
   "/api/v1/users":
     post:
       summary: Creates a user
@@ -407,9 +408,7 @@ paths:
             application/json:
               schema:
                 type: object
-                properties:
-                  errors:
-                    "$ref": "#/components/schemas/invalid_user"
+                "$ref": "#/components/schemas/error"
       requestBody:
         content:
           application/json:
@@ -451,10 +450,9 @@ paths:
           description: Bad request
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Something went wrong, please try again
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
       requestBody:
         content:
           application/json:
@@ -490,10 +488,9 @@ paths:
           description: Bad request
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Something went wrong, please try again
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
     patch:
       summary: Update user
       tags:
@@ -546,10 +543,9 @@ paths:
           description: Bad request
           content:
             application/json:
-              examples:
-                example_1:
-                  value:
-                    message: Something went wrong, please try again
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
   "/api/v1/users/me":
     get:
       summary: Return current user
@@ -566,6 +562,11 @@ paths:
                 "$ref": "#/components/schemas/me"
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
   "/api/v1/users/{id}/load_avatar":
     patch:
       summary: Load user avatar
@@ -619,7 +620,7 @@ components:
       type: string
       enum:
       - system
-      - like
+      - initiate
       - confirm
       - visited
       - mutuality
@@ -702,6 +703,8 @@ components:
           "$ref": "#/components/schemas/gender_type"
         avatar:
           type: string
+        city:
+          type: string
         initiates:
           type: array
           items:
@@ -758,8 +761,6 @@ components:
           "$ref": "#/components/schemas/id_number"
         outgoing_id:
           "$ref": "#/components/schemas/id_number"
-        confirmed:
-          type: boolean
         created_at:
           type: string
           format: date-time
@@ -811,6 +812,8 @@ components:
           "$ref": "#/components/schemas/id_number"
         content:
           type: object
+        used:
+          type: boolean
         created_at:
           type: string
           format: date-time
@@ -823,8 +826,23 @@ components:
       - id
       - user_id
       - notification_type
+      - used
       - created_at
       - updated_at
+    error:
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            detail:
+              type: array
+              items:
+                type: string
+          additionalProperties:
+            type: array
+            items:
+              type: string
     users_array:
       type: array
       items:

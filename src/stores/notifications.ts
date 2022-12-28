@@ -26,7 +26,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
         notificationsSubscribtion = actionCable.subscribeToNotificationsChannel(
           {
             received(data) {
-              notifications.value.push(data.notification);
+              notifications.value.unshift(data.notification);
 
               // TODO: maybe fetch dialog???
               // if (data.notification.notification_type === NotificationType.Confirm)

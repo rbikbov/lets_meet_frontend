@@ -18,7 +18,7 @@ export enum GenderType {
 
 export enum NotificationType {
   System = 'system',
-  Like = 'like',
+  Initiate = 'initiate',
   Confirm = 'confirm',
   Visited = 'visited',
   Mutuality = 'mutuality',
@@ -65,6 +65,7 @@ export interface User {
   age?: number;
   gender?: GenderType;
   avatar?: string;
+  city?: string;
   initiates?: IdNumber[];
 }
 
@@ -90,7 +91,6 @@ export interface Dialog {
   id: IdNumber;
   incoming_id: IdNumber;
   outgoing_id: IdNumber;
-  confirmed?: boolean;
   /** @format date-time */
   created_at: string;
   /** @format date-time */
@@ -114,11 +114,19 @@ export interface Notification {
   id: IdNumber;
   user_id: IdNumber;
   content?: object;
+  used: boolean;
   /** @format date-time */
   created_at: string;
   /** @format date-time */
   updated_at: string;
   notification_type: NotificationType;
+}
+
+export interface Error {
+  errors?: {
+    detail?: string[];
+    [key: string]: any;
+  };
 }
 
 export type UsersArray = User[];
@@ -139,11 +147,19 @@ export interface DialogSendMessagePayload {
 
 export type DialogSendMessageData = Message;
 
+export type DialogSendMessageError = Error;
+
 export type FetchUserDialogsData = DialogsArray;
+
+export type FetchUserDialogsError = Error;
 
 export type FetchDialogData = Dialog;
 
+export type FetchDialogError = Error;
+
 export type FetchDialogMessagesData = MessagesArray;
+
+export type FetchDialogMessagesError = Error;
 
 export interface FetchMeetsParams {
   search?: {
@@ -160,11 +176,27 @@ export type FetchMeetsData = UsersArray;
 
 export type InitiateMeetData = any;
 
+export type InitiateMeetError = Error;
+
+export interface ConfirmMeetPayload {
+  notification_id?: IdNumber;
+}
+
 export type ConfirmMeetData = any;
+
+export type ConfirmMeetError = Error;
+
+export interface DeclineMeetPayload {
+  notification_id?: IdNumber;
+}
 
 export type DeclineMeetData = any;
 
+export type DeclineMeetError = Error;
+
 export type FetchUserNotificationsData = NotificationsArray;
+
+export type FetchUserNotificationsError = Error;
 
 export interface OpenSessionPayload {
   user: SigninRequestDataUser;
@@ -172,11 +204,15 @@ export interface OpenSessionPayload {
 
 export type OpenSessionData = AccessToken;
 
+export type OpenSessionError = Error;
+
 export interface RefreshSessionPayload {
   token: string;
 }
 
 export type RefreshSessionData = AccessToken;
+
+export type RefreshSessionError = Error;
 
 export type CloseSessionData = any;
 
@@ -186,9 +222,7 @@ export interface CreateUserPayload {
 
 export type CreateUserData = any;
 
-export type CreateUserError = {
-  errors?: InvalidUser;
-};
+export type CreateUserError = Error;
 
 export type FetchUsersData = UsersArray;
 
@@ -199,7 +233,11 @@ export interface ResendConfirmMailPayload {
 
 export type ResendConfirmMailData = any;
 
+export type ResendConfirmMailError = Error;
+
 export type FetchUserData = User;
+
+export type FetchUserError = Error;
 
 export interface UpdateUserPayload {
   profile?: ProfileDataUser;
@@ -209,7 +247,11 @@ export type UpdateUserData = Me;
 
 export type ConfirmAccountData = any;
 
+export type ConfirmAccountError = Error;
+
 export type FetchCurrentUserData = Me;
+
+export type FetchCurrentUserError = Error;
 
 export type LoadAvatarData = Me;
 
@@ -320,7 +362,6 @@ export namespace Api {
    * @name FetchMeets
    * @summary Search persons
    * @request GET:/api/v1/meets
-   * @secure
    */
   export namespace FetchMeets {
     export type RequestParams = {};
@@ -368,7 +409,7 @@ export namespace Api {
       id: string;
     };
     export type RequestQuery = {};
-    export type RequestBody = never;
+    export type RequestBody = ConfirmMeetPayload;
     export type RequestHeaders = {};
     export type ResponseBody = ConfirmMeetData;
   }
@@ -385,7 +426,7 @@ export namespace Api {
       id: string;
     };
     export type RequestQuery = {};
-    export type RequestBody = never;
+    export type RequestBody = DeclineMeetPayload;
     export type RequestHeaders = {};
     export type ResponseBody = DeclineMeetData;
   }
@@ -762,7 +803,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     dialogSendMessage: (id: string, data: DialogSendMessagePayload, params: RequestParams = {}) =>
-      this.request<DialogSendMessageData, void>({
+      this.request<DialogSendMessageData, DialogSendMessageError>({
         path: `/api/v1/dialogs/${id}/send_message`,
         method: 'POST',
         body: data,
@@ -781,7 +822,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     fetchUserDialogs: (id: string, params: RequestParams = {}) =>
-      this.request<FetchUserDialogsData, void>({
+      this.request<FetchUserDialogsData, FetchUserDialogsError>({
         path: `/api/v1/users/${id}/dialogs`,
         method: 'GET',
         secure: true,
@@ -798,7 +839,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     fetchDialog: (id: string, params: RequestParams = {}) =>
-      this.request<FetchDialogData, void>({
+      this.request<FetchDialogData, FetchDialogError>({
         path: `/api/v1/dialogs/${id}`,
         method: 'GET',
         secure: true,
@@ -815,7 +856,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     fetchDialogMessages: (id: string, params: RequestParams = {}) =>
-      this.request<FetchDialogMessagesData, void>({
+      this.request<FetchDialogMessagesData, FetchDialogMessagesError>({
         path: `/api/v1/dialogs/${id}/messages`,
         method: 'GET',
         secure: true,
@@ -829,14 +870,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name FetchMeets
      * @summary Search persons
      * @request GET:/api/v1/meets
-     * @secure
      */
     fetchMeets: (query: FetchMeetsParams, params: RequestParams = {}) =>
       this.request<FetchMeetsData, any>({
         path: `/api/v1/meets`,
         method: 'GET',
         query: query,
-        secure: true,
         ...params,
       }),
 
@@ -850,7 +889,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     initiateMeet: (id: string, params: RequestParams = {}) =>
-      this.request<InitiateMeetData, void>({
+      this.request<InitiateMeetData, InitiateMeetError>({
         path: `/api/v1/meets/${id}/initiate`,
         method: 'POST',
         secure: true,
@@ -866,11 +905,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/api/v1/meets/{id}/confirm
      * @secure
      */
-    confirmMeet: (id: string, params: RequestParams = {}) =>
-      this.request<ConfirmMeetData, void>({
+    confirmMeet: (id: string, data: ConfirmMeetPayload, params: RequestParams = {}) =>
+      this.request<ConfirmMeetData, ConfirmMeetError>({
         path: `/api/v1/meets/${id}/confirm`,
         method: 'POST',
+        body: data,
         secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 
@@ -883,11 +924,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/api/v1/meets/{id}/decline
      * @secure
      */
-    declineMeet: (id: string, params: RequestParams = {}) =>
-      this.request<DeclineMeetData, void>({
+    declineMeet: (id: string, data: DeclineMeetPayload, params: RequestParams = {}) =>
+      this.request<DeclineMeetData, DeclineMeetError>({
         path: `/api/v1/meets/${id}/decline`,
         method: 'DELETE',
+        body: data,
         secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 
@@ -901,7 +944,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     fetchUserNotifications: (id: string, params: RequestParams = {}) =>
-      this.request<FetchUserNotificationsData, void>({
+      this.request<FetchUserNotificationsData, FetchUserNotificationsError>({
         path: `/api/v1/users/${id}/notifications`,
         method: 'GET',
         secure: true,
@@ -918,7 +961,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     openSession: (data: OpenSessionPayload, params: RequestParams = {}) =>
-      this.request<OpenSessionData, void>({
+      this.request<OpenSessionData, OpenSessionError>({
         path: `/api/v1/sessions`,
         method: 'POST',
         body: data,
@@ -937,7 +980,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     refreshSession: (data: RefreshSessionPayload, params: RequestParams = {}) =>
-      this.request<RefreshSessionData, void>({
+      this.request<RefreshSessionData, RefreshSessionError>({
         path: `/api/v1/sessions/refresh`,
         method: 'POST',
         body: data,
@@ -1009,7 +1052,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     resendConfirmMail: (data: ResendConfirmMailPayload, params: RequestParams = {}) =>
-      this.request<ResendConfirmMailData, void>({
+      this.request<ResendConfirmMailData, ResendConfirmMailError>({
         path: `/api/v1/users/resend_confirmation`,
         method: 'POST',
         body: data,
@@ -1028,7 +1071,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     fetchUser: (id: string, params: RequestParams = {}) =>
-      this.request<FetchUserData, void>({
+      this.request<FetchUserData, FetchUserError>({
         path: `/api/v1/users/${id}`,
         method: 'GET',
         secure: true,
@@ -1064,7 +1107,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     confirmAccount: (id: string, params: RequestParams = {}) =>
-      this.request<ConfirmAccountData, void>({
+      this.request<ConfirmAccountData, ConfirmAccountError>({
         path: `/api/v1/users/${id}/confirm_account`,
         method: 'GET',
         secure: true,
@@ -1081,7 +1124,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     fetchCurrentUser: (params: RequestParams = {}) =>
-      this.request<FetchCurrentUserData, void>({
+      this.request<FetchCurrentUserData, FetchCurrentUserError>({
         path: `/api/v1/users/me`,
         method: 'GET',
         secure: true,
