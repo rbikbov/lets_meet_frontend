@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/vue-query';
 
 import { useAuthStore } from '@/stores/auth';
 import { useNotificationsStore } from '@/stores/notifications';
-import { DIALOGS } from '@/services/queries/keys';
+import { NOTIFICATIONS } from '@/services/queries/keys';
 import { fetchNotifications } from '@/services/notifications';
 
 import NotificationItem from '@/components/NotificationItem.vue';
@@ -15,7 +15,7 @@ const { setNotifications } = useNotificationsStore();
 const { authUser } = storeToRefs(useAuthStore());
 
 const notificationsQuery = useQuery({
-  queryKey: [DIALOGS],
+  queryKey: [NOTIFICATIONS],
   queryFn: () => fetchNotifications(authUser.value?.id!),
   onSuccess: (response) => {
     setNotifications(response.data);
