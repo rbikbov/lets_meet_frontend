@@ -176,9 +176,11 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
           middlewares: [requireAuth],
         },
         props: (route) => {
-          const rawDialogId = route.params.id;
+          const rawDialogId = Array.isArray(route.params.id)
+            ? route.params.id[0]
+            : route.params.id;
           if (!(typeof rawDialogId === 'string')) {
-            throw new Error('Wrong param "id'); // TODO: error
+            throw new Error('Wrong param "id"');
           }
 
           const dialogId = parseInt(rawDialogId, 10);
