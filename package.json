@@ -22,7 +22,7 @@
     "rollup-plugin-analyzer": "^4.0.0",
     "vue": "^3.2.41",
     "vue-router": "^4.1.5",
-    "vuetify": "^3.0.1"
+    "vuetify": "^3.0.6"
   },
   "devDependencies": {
     "@mdi/font": "^7.0.96",
