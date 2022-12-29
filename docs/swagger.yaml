@@ -155,6 +155,49 @@ paths:
               schema:
                 type: object
                 "$ref": "#/components/schemas/error"
+  "/api/v1/users/{user_id}/dialogs/{id}/read_messages":
+    patch:
+      summary: read messages by ids
+      tags:
+      - Dialogs
+      operationId: readDialogMessages
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  read_ids:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/id_number"
+                required:
+                - read_ids
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message_ids:
+                  type: array
+                  items:
+                    "$ref": "#/components/schemas/id_number"
+              required:
+              - message_ids
   "/api/v1/meets":
     get:
       summary: Search persons
@@ -304,6 +347,34 @@ paths:
               schema:
                 type: object
                 "$ref": "#/components/schemas/notifications_array"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
+  "/api/v1/notifications/{id}/close":
+    patch:
+      summary: close notify
+      tags:
+      - Notifications
+      operationId: closeNotification
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Notify closed
         '403':
           description: Forbidden
           content:
@@ -597,6 +668,48 @@ paths:
                   contentType:
                   - image/png
                   - image/jpeg
+  "/api/v1/users/{id}/add_to_black_list":
+    patch:
+      summary: Added user to BL
+      tags:
+      - Users
+      operationId: addUserToBlackList
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: User added to black list
+  "/api/v1/users/{id}/remove_from_black_list":
+    patch:
+      summary: Remove user from BL
+      tags:
+      - Users
+      operationId: removeUserFromBlackList
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: User removed from black list
 servers:
 - url: http://{defaultHost}
   variables:
@@ -709,6 +822,10 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/id_number"
+        black_list:
+          type: array
+          items:
+            "$ref": "#/components/schemas/id_number"
       required:
       - id
       - created_at
@@ -790,6 +907,8 @@ components:
           "$ref": "#/components/schemas/id_number"
         description:
           type: string
+        read:
+          type: boolean
         created_at:
           type: string
           format: date-time
@@ -801,6 +920,7 @@ components:
       - dialog_id
       - user_id
       - description
+      - read
       - created_at
       - updated_at
     notification:

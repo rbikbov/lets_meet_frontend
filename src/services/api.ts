@@ -67,6 +67,7 @@ export interface User {
   avatar?: string;
   city?: string;
   initiates?: IdNumber[];
+  black_list?: IdNumber[];
 }
 
 export type Me = User & {
@@ -104,6 +105,7 @@ export interface Message {
   dialog_id: IdNumber;
   user_id: IdNumber;
   description: string;
+  read: boolean;
   /** @format date-time */
   created_at: string;
   /** @format date-time */
@@ -161,6 +163,14 @@ export type FetchDialogMessagesData = MessagesArray;
 
 export type FetchDialogMessagesError = Error;
 
+export interface ReadDialogMessagesPayload {
+  message_ids: IdNumber[];
+}
+
+export interface ReadDialogMessagesData {
+  read_ids: IdNumber[];
+}
+
 export interface FetchMeetsParams {
   search?: {
     age_min?: number;
@@ -197,6 +207,10 @@ export type DeclineMeetError = Error;
 export type FetchUserNotificationsData = NotificationsArray;
 
 export type FetchUserNotificationsError = Error;
+
+export type CloseNotificationData = any;
+
+export type CloseNotificationError = Error;
 
 export interface OpenSessionPayload {
   user: SigninRequestDataUser;
@@ -254,6 +268,10 @@ export type FetchCurrentUserData = Me;
 export type FetchCurrentUserError = Error;
 
 export type LoadAvatarData = Me;
+
+export type AddUserToBlackListData = any;
+
+export type RemoveUserFromBlackListData = any;
 
 export namespace Api {
   /**
@@ -358,6 +376,24 @@ export namespace Api {
   }
   /**
    * No description
+   * @tags Dialogs
+   * @name ReadDialogMessages
+   * @summary read messages by ids
+   * @request PATCH:/api/v1/users/{user_id}/dialogs/{id}/read_messages
+   * @secure
+   */
+  export namespace ReadDialogMessages {
+    export type RequestParams = {
+      userId: string;
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ReadDialogMessagesPayload;
+    export type RequestHeaders = {};
+    export type ResponseBody = ReadDialogMessagesData;
+  }
+  /**
+   * No description
    * @tags Meets
    * @name FetchMeets
    * @summary Search persons
@@ -446,6 +482,23 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = FetchUserNotificationsData;
+  }
+  /**
+   * No description
+   * @tags Notifications
+   * @name CloseNotification
+   * @summary close notify
+   * @request PATCH:/api/v1/notifications/{id}/close
+   * @secure
+   */
+  export namespace CloseNotification {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = CloseNotificationData;
   }
   /**
    * No description
@@ -619,6 +672,40 @@ export namespace Api {
     export type RequestBody = AvatarFile;
     export type RequestHeaders = {};
     export type ResponseBody = LoadAvatarData;
+  }
+  /**
+   * No description
+   * @tags Users
+   * @name AddUserToBlackList
+   * @summary Added user to BL
+   * @request PATCH:/api/v1/users/{id}/add_to_black_list
+   * @secure
+   */
+  export namespace AddUserToBlackList {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AddUserToBlackListData;
+  }
+  /**
+   * No description
+   * @tags Users
+   * @name RemoveUserFromBlackList
+   * @summary Remove user from BL
+   * @request PATCH:/api/v1/users/{id}/remove_from_black_list
+   * @secure
+   */
+  export namespace RemoveUserFromBlackList {
+    export type RequestParams = {
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RemoveUserFromBlackListData;
   }
 }
 
@@ -866,6 +953,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags Dialogs
+     * @name ReadDialogMessages
+     * @summary read messages by ids
+     * @request PATCH:/api/v1/users/{user_id}/dialogs/{id}/read_messages
+     * @secure
+     */
+    readDialogMessages: (userId: string, id: string, data: ReadDialogMessagesPayload, params: RequestParams = {}) =>
+      this.request<ReadDialogMessagesData, any>({
+        path: `/api/v1/users/${userId}/dialogs/${id}/read_messages`,
+        method: 'PATCH',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags Meets
      * @name FetchMeets
      * @summary Search persons
@@ -947,6 +1053,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<FetchUserNotificationsData, FetchUserNotificationsError>({
         path: `/api/v1/users/${id}/notifications`,
         method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Notifications
+     * @name CloseNotification
+     * @summary close notify
+     * @request PATCH:/api/v1/notifications/{id}/close
+     * @secure
+     */
+    closeNotification: (id: string, params: RequestParams = {}) =>
+      this.request<CloseNotificationData, CloseNotificationError>({
+        path: `/api/v1/notifications/${id}/close`,
+        method: 'PATCH',
         secure: true,
         ...params,
       }),
@@ -1147,6 +1270,40 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         body: data,
         secure: true,
         type: ContentType.FormData,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Users
+     * @name AddUserToBlackList
+     * @summary Added user to BL
+     * @request PATCH:/api/v1/users/{id}/add_to_black_list
+     * @secure
+     */
+    addUserToBlackList: (id: string, params: RequestParams = {}) =>
+      this.request<AddUserToBlackListData, any>({
+        path: `/api/v1/users/${id}/add_to_black_list`,
+        method: 'PATCH',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Users
+     * @name RemoveUserFromBlackList
+     * @summary Remove user from BL
+     * @request PATCH:/api/v1/users/{id}/remove_from_black_list
+     * @secure
+     */
+    removeUserFromBlackList: (id: string, params: RequestParams = {}) =>
+      this.request<RemoveUserFromBlackListData, any>({
+        path: `/api/v1/users/${id}/remove_from_black_list`,
+        method: 'PATCH',
+        secure: true,
         ...params,
       }),
   };

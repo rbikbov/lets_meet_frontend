@@ -100,8 +100,28 @@ export const useActionCable = (params: {
     return notificationsSubscribtion;
   };
 
+  const subscribeToDialogNotificationsChannel: SubscribeToNamedChannel<
+    unknown,
+    { dialog_id: number; messages_readed_ids: number[] }
+  > = (mixin) => {
+    const channelName = 'DialogNotificationsChannel';
+    const dialogNotificationsSubscribtion = _subscribeToChannel(
+      {
+        channel: channelName,
+        token: params.accessToken.value,
+      },
+      mixin
+    );
+    if (!dialogNotificationsSubscribtion) {
+      throw new Error('no dialogNotificationsSubscribtion');
+    }
+    _subscribtions[channelName] = dialogNotificationsSubscribtion;
+    return dialogNotificationsSubscribtion;
+  };
+
   return {
     subscribeToMessagesChannel,
     subscribeToNotificationsChannel,
+    subscribeToDialogNotificationsChannel,
   };
 };

@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useMutation, useQuery } from '@tanstack/vue-query';
+import { useDebounceFn } from '@vueuse/core';
 
 import type { Dialog, Message, User } from '@/services/api';
 import { useActionCable } from '@/services/actionCable';
@@ -9,6 +10,7 @@ import {
   fetchDialogMessages,
   fetchDialogDetails,
   sendMessage,
+  readMessages,
 } from '@/services/dialogs';
 import { DIALOGS, DIALOGS_MESSAGES } from '@/services/queries/keys';
 
@@ -55,11 +57,22 @@ const subscribeToDialogMessages = () => {
   const actionCable = useActionCable({ accessToken });
 
   messagesSubscribtion = actionCable.subscribeToMessagesChannel({
-    received(data) {
+    async received(data) {
       if (data.message.dialog_id !== props.dialogId) {
         return;
       }
       messages.value.push(data.message);
+      await nextTick();
+
+      const lastMsgEl = getLastMessageElement();
+      if (!lastMsgEl) {
+        return;
+      }
+      const parentHeight = lastMsgEl.parentElement!.offsetHeight;
+      const parentScrollHeight = lastMsgEl.parentElement!.scrollHeight;
+      if (parentHeight - parentScrollHeight < lastMsgEl.offsetHeight) {
+        scrollToLastMessage();
+      }
     },
     connected: () =>
       console.log(
@@ -80,14 +93,54 @@ const unsubscribeFromDialogMessages = () => {
   );
 };
 
+let dialogNotificationsSubscribtion: ReturnType<
+  ReturnType<typeof useActionCable>['subscribeToNotificationsChannel']
+> = null;
+
+const subscribeToDialogNotificationsMessages = () => {
+  const actionCable = useActionCable({ accessToken });
+
+  dialogNotificationsSubscribtion =
+    actionCable.subscribeToDialogNotificationsChannel({
+      received(data) {
+        if (data.dialog_id !== props.dialogId) {
+          return;
+        }
+        messages.value.forEach((m) => {
+          if (!data.messages_readed_ids.includes(m.id)) {
+            return;
+          }
+          m.read = true;
+        });
+      },
+      connected: () =>
+        console.log(
+          `Connected to dialog notifications stream (dialogId = ${props.dialogId})`
+        ),
+    });
+};
+
+const unsubscribeFromDialogNotificationsMessages = () => {
+  if (!dialogNotificationsSubscribtion) {
+    return;
+  }
+
+  dialogNotificationsSubscribtion.unsubscribe();
+  console.log(
+    `Unsubscribed from dialog notifications stream (dialogId = ${props.dialogId})`,
+    dialogNotificationsSubscribtion
+  );
+};
+
 watch(
   isAuthenticated,
   (val) => {
     if (val) {
       subscribeToDialogMessages();
+      subscribeToDialogNotificationsMessages();
     } else {
-      // TODO: check unsubscribing
       unsubscribeFromDialogMessages();
+      unsubscribeFromDialogNotificationsMessages();
     }
   },
   { immediate: true }
@@ -95,13 +148,16 @@ watch(
 
 onBeforeUnmount(() => {
   unsubscribeFromDialogMessages();
+  unsubscribeFromDialogNotificationsMessages();
 });
 
 watch(
   () => props.dialogId,
   () => {
     unsubscribeFromDialogMessages();
+    unsubscribeFromDialogNotificationsMessages();
     subscribeToDialogMessages();
+    subscribeToDialogNotificationsMessages();
   }
 );
 
@@ -142,11 +198,79 @@ const isMyMsg = (msg: Message) => {
   return msg.user_id === authUser.value?.id;
 };
 
+const LAST_MESSAGE_ID = 'lastMessage';
+
+const getLastMessageElement = () => document.getElementById(LAST_MESSAGE_ID);
+
 const scrollToLastMessage = () => {
-  document.getElementById('lastMessage')?.scrollIntoView({
+  getLastMessageElement()?.scrollIntoView({
     behavior: 'smooth',
   });
 };
+
+const intersectedMessagesIds = new Set<Message['id']>();
+const onIntersect = (
+  msg: Message,
+  isIntersecting: boolean,
+  entries: IntersectionObserverEntry[]
+  // observer: IntersectionObserver
+) => {
+  if (
+    !isIntersecting ||
+    msg.read ||
+    msg.user_id === authUser.value?.id ||
+    entries[0].intersectionRatio < 0.5
+  ) {
+    return;
+  }
+
+  intersectedMessagesIds.add(msg.id);
+  debouncedReadMessages();
+};
+
+const readMessagesMutation = useMutation({
+  mutationFn: async ({
+    userId,
+    dialogId,
+    message_ids,
+  }: {
+    userId: number;
+    dialogId: number;
+    message_ids: number[];
+  }) =>
+    readMessages(userId, dialogId, {
+      message_ids,
+    }),
+  onSuccess: async (response) => {
+    response.data.read_ids.forEach((id) => {
+      messages.value.forEach((m) => {
+        if (m.id === id) {
+          m.read = true;
+        }
+      });
+    });
+  },
+});
+
+const debouncedReadMessages = useDebounceFn(
+  () => {
+    if (
+      !interlocutorUser.value ||
+      !dialog.value ||
+      !intersectedMessagesIds.size
+    ) {
+      return;
+    }
+    readMessagesMutation.mutate({
+      userId: interlocutorUser.value.id,
+      dialogId: dialog.value.id,
+      message_ids: Array.from(intersectedMessagesIds.values()),
+    });
+    intersectedMessagesIds.clear();
+  },
+  1000,
+  { maxWait: 3000 }
+);
 </script>
 
 <template>
@@ -181,9 +305,16 @@ const scrollToLastMessage = () => {
           :key="item.id"
           class="d-flex flex-row align-top"
           :class="{ 'justify-end': isMyMsg(item) }"
-          :id="index === messages.length - 1 ? 'lastMessage' : undefined"
+          :id="index === messages.length - 1 ? LAST_MESSAGE_ID : undefined"
         >
           <DialogMessageItem
+            v-intersect="{
+              handler: (isIntersecting: boolean, entries: IntersectionObserverEntry[]) =>
+                onIntersect(item, isIntersecting, entries),
+              options: {
+                threshold: [0, 0.5, 1.0],
+              },
+            }"
             :message="item"
             :isMyMsg="isMyMsg(item)"
             :me="authUser"

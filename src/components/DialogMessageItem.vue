@@ -63,5 +63,11 @@ const getMessageSubtitle = (msg: Message): string => {
         </v-avatar>
       </BaseDefaultAvatarWrapper>
     </template>
+
+    <v-icon
+      class="ma-4 position-absolute"
+      :icon="message.read ? 'mdi-check-all' : 'mdi-check'"
+      style="right: 0; bottom: 0"
+    />
   </v-card>
 </template>

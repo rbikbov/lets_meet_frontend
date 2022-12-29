@@ -1,5 +1,10 @@
 import { api } from '.';
-import type { Dialog, IdNumber, DialogSendMessagePayload } from './api';
+import type {
+  Dialog,
+  IdNumber,
+  DialogSendMessagePayload,
+  ReadDialogMessagesPayload,
+} from './api';
 
 type UserId = IdNumber;
 
@@ -17,4 +22,12 @@ export function fetchDialogMessages(id: UserId) {
 
 export function sendMessage(dialogId: number, data: DialogSendMessagePayload) {
   return api.api.dialogSendMessage(String(dialogId), data);
+}
+
+export function readMessages(
+  userId: number,
+  dialogId: number,
+  data: ReadDialogMessagesPayload
+) {
+  return api.api.readDialogMessages(String(userId), String(dialogId), data);
 }
