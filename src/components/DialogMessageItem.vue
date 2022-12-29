@@ -40,21 +40,19 @@ const getMessageSubtitle = (msg: Message): string => {
 
 <template>
   <v-card
-    :title="!isAuthorPrevMsg ? getMessageTitle(message) : ''"
-    :subtitle="getMessageSubtitle(message)"
-    :text="message.description"
-    class="mb-2"
+    class="mb-2 pa-2"
     density="compact"
     max-width="85%"
     min-width="35%"
     variant="outlined"
   >
-    <template v-if="!isAuthorPrevMsg" v-slot:prepend>
+    <div class="d-flex mb-2">
       <BaseDefaultAvatarWrapper
+        v-if="!isAuthorPrevMsg"
         v-slot="{ url, onError }"
         :avatar-url="isMyMsg ? me?.avatar : interlocutor?.avatar"
       >
-        <v-avatar :size="40">
+        <v-avatar class="mr-2" :size="40">
           <v-img alt="Avatar" cover :src="url" @error="onError">
             <template v-slot:placeholder>
               <BaseLoader />
@@ -62,12 +60,28 @@ const getMessageSubtitle = (msg: Message): string => {
           </v-img>
         </v-avatar>
       </BaseDefaultAvatarWrapper>
-    </template>
 
-    <v-icon
-      class="ma-4 position-absolute"
-      :icon="message.read ? 'mdi-check-all' : 'mdi-check'"
-      style="right: 0; bottom: 0"
-    />
+      <div class="d-flex flex-column align-items-start">
+        <v-card-title v-if="!isAuthorPrevMsg" class="pa-0">
+          {{ getMessageTitle(message) }}
+        </v-card-title>
+
+        <v-card-subtitle class="pa-0">
+          {{ getMessageSubtitle(message) }}
+        </v-card-subtitle>
+      </div>
+    </div>
+
+    <v-card-text class="pa-0">
+      {{ message.description }}
+    </v-card-text>
+
+    <div class="d-flex flex-row justify-end">
+      <v-icon
+        class="ma-0"
+        :icon="message.read ? 'mdi-check-all' : 'mdi-check'"
+        size="18"
+      />
+    </div>
   </v-card>
 </template>
