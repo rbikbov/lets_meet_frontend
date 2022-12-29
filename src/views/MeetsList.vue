@@ -94,11 +94,19 @@ const initiateMeetMutation = useMutation({
           <BaseInputWrapper v-slot="{ inputProps }">
             <v-radio-group
               v-bind="inputProps"
-              v-model="meetsQueryParams.search!.gender"
-              :readonly="meetsQuery.isLoading.value"
               label="Gender"
+              :readonly="meetsQuery.isLoading.value"
+              :model-value="meetsQueryParams.search?.gender"
+              @update:model-value="
+                ($event: GenderType | null) =>
+                  (meetsQueryParams.search!.gender = $event || undefined)
+              "
             >
-              <v-radio label="Unknown" :value="undefined"></v-radio>
+              <v-radio
+                label="All"
+                :value-comparator="(v) => !v"
+                :value="null"
+              ></v-radio>
               <v-radio label="Female" :value="GenderType.Female"></v-radio>
               <v-radio label="Male" :value="GenderType.Male"></v-radio>
             </v-radio-group>
