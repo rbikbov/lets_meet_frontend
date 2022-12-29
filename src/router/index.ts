@@ -13,6 +13,7 @@ import {
 } from '@/router/middlewaresPipeline';
 import { requireAuth } from '@/router/middlewares/requireAuth';
 import { requireNotAuth } from '@/router/middlewares/requireNotAuth';
+import { isRightDrawerRoute } from './middlewares/isRightDrawerRoute';
 
 export enum AppRouteNames {
   home = 'meets',
@@ -62,7 +63,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.authSignin,
         component: () => import('@/views/AuthSignin.vue'),
         meta: {
-          middlewares: [requireNotAuth],
+          middlewares: [requireNotAuth, isRightDrawerRoute],
         },
       },
 
@@ -71,7 +72,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.authSignup,
         component: () => import('@/views/AuthSignup.vue'),
         meta: {
-          middlewares: [requireNotAuth],
+          middlewares: [requireNotAuth, isRightDrawerRoute],
         },
       },
 
@@ -80,7 +81,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.authSignupThanks,
         component: () => import('@/views/AuthSignupThanks.vue'),
         meta: {
-          middlewares: [requireNotAuth],
+          middlewares: [requireNotAuth, isRightDrawerRoute],
         },
         props: (route) => {
           const email = route.query?.email || '';
@@ -95,7 +96,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.authSignupConfirmation,
         component: () => import('@/views/AuthSignupConfirmation.vue'),
         meta: {
-          middlewares: [],
+          middlewares: [isRightDrawerRoute],
         },
         props: (route) => {
           const confirmationCode = route.params.confirmationCode || '';
@@ -110,7 +111,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.authSignupConfirmationResend,
         component: () => import('@/views/AuthSignupConfirmationResend.vue'),
         meta: {
-          middlewares: [requireNotAuth],
+          middlewares: [requireNotAuth, isRightDrawerRoute],
         },
       },
 
@@ -119,7 +120,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.accountProfile,
         component: () => import('@/views/AccountProfile.vue'),
         meta: {
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, isRightDrawerRoute],
         },
       },
 
@@ -128,7 +129,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.accountProfileUpdateInfo,
         component: () => import('@/views/AccountProfileUpdateInfo.vue'),
         meta: {
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, isRightDrawerRoute],
         },
       },
 
@@ -137,7 +138,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.accountProfileUpdateAvatar,
         component: () => import('@/views/AccountProfileUpdateAvatar.vue'),
         meta: {
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, isRightDrawerRoute],
         },
       },
 
@@ -146,7 +147,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.meets,
         component: () => import('@/views/MeetsList.vue'),
         meta: {
-          middlewares: [requireAuth],
+          middlewares: [],
         },
       },
 
@@ -155,7 +156,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.notifications,
         component: () => import('@/views/NotificationsList.vue'),
         meta: {
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, isRightDrawerRoute],
         },
       },
 
@@ -164,7 +165,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.dialogs,
         component: () => import('@/views/DialogsList.vue'),
         meta: {
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, isRightDrawerRoute],
         },
       },
 
@@ -173,7 +174,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         name: AppRouteNames.dialogDetail,
         component: () => import('@/views/DialogDetail.vue'),
         meta: {
-          middlewares: [requireAuth],
+          middlewares: [requireAuth, isRightDrawerRoute],
         },
         props: (route) => {
           const rawDialogId = Array.isArray(route.params.id)
@@ -200,6 +201,15 @@ const router = createRouter({
       : createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
+
+// maybe use separate router instance for right drawer
+// const routerRightDrawer = createRouter({
+//   history:
+//     process.env.NODE_ENV === 'production'
+//       ? createWebHashHistory(import.meta.env.BASE_URL)
+//       : createWebHistory(import.meta.env.BASE_URL),
+//   routes,
+// });
 
 router.beforeEach(
   (

@@ -20,7 +20,7 @@ export async function requireAuth({ next }: { next: NavigationGuardNext }) {
       });
     }
   } catch (error) {
-    console.error('requireNotAuth', error);
+    console.error('requireAuth', error);
     document.location.href = '/auth/signin';
   }
 

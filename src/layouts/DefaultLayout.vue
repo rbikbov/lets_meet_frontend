@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, defineAsyncComponent, ref } from 'vue';
 import { useIsFetching } from '@tanstack/vue-query';
 import { storeToRefs } from 'pinia';
-import { RouterView } from 'vue-router';
+import { RouteLocationNamedRaw, RouterView } from 'vue-router';
 import { usePreferredDark } from '@vueuse/core';
 
 import { useAuthStore } from '@/stores/auth';
 import { AppRouteNames } from '@/router';
 
 import AppSnackbars from '@/components/AppSnackbars.vue';
+import { VIcon } from 'vuetify/components';
+import { useRightDrawerRoutingStore } from '@/stores/rightDrawerRouting';
 
 const isFetching = useIsFetching();
 
 const { authUser, isAuthenticated } = storeToRefs(useAuthStore());
-const userTitle = computed(() =>
-  isAuthenticated.value ? authUser.value?.email : 'Anonymous'
-);
+// const userTitle = computed(() =>
+//   isAuthenticated.value ? authUser.value?.email : 'Anonymous'
+// );
 
 const prefersDark = usePreferredDark();
 const isDark = ref(prefersDark);
@@ -24,18 +26,21 @@ const toggleTheme = () => {
   isDark.value = !isDark.value;
 };
 
-type NavLinkItem = {
-  title: string;
-  to: { name: AppRouteNames };
+interface AppBarNavLink {
+  title?: string;
+  to: RouteLocationNamedRaw & { name: AppRouteNames };
+  // to: { name: AppRouteNames };
   link: true;
   exact: true;
   meta: {
     visibleForAuth: boolean;
     visibleForNotAuth: boolean;
+    disabled?: boolean;
   };
-};
+  extraProps: VIcon['$props'];
+}
 
-const navLinks: NavLinkItem[] = [
+const appBarNavLinks: AppBarNavLink[] = [
   {
     title: 'SignUp',
     to: { name: AppRouteNames.authSignup },
@@ -44,6 +49,9 @@ const navLinks: NavLinkItem[] = [
     meta: {
       visibleForAuth: false,
       visibleForNotAuth: true,
+    },
+    extraProps: {
+      icon: 'mdi-account-plus-outline',
     },
   },
   {
@@ -54,6 +62,10 @@ const navLinks: NavLinkItem[] = [
     meta: {
       visibleForAuth: false,
       visibleForNotAuth: true,
+      disabled: true,
+    },
+    extraProps: {
+      icon: 'mdi-email-fast-outline',
     },
   },
   {
@@ -65,25 +77,8 @@ const navLinks: NavLinkItem[] = [
       visibleForAuth: false,
       visibleForNotAuth: true,
     },
-  },
-  {
-    title: 'SignOut',
-    to: { name: AppRouteNames.authSignout },
-    link: true,
-    exact: true,
-    meta: {
-      visibleForAuth: true,
-      visibleForNotAuth: false,
-    },
-  },
-  {
-    title: 'Profile',
-    to: { name: AppRouteNames.accountProfile },
-    link: true,
-    exact: true,
-    meta: {
-      visibleForAuth: true,
-      visibleForNotAuth: false,
+    extraProps: {
+      icon: 'mdi-login-variant',
     },
   },
   {
@@ -94,6 +89,10 @@ const navLinks: NavLinkItem[] = [
     meta: {
       visibleForAuth: true,
       visibleForNotAuth: false,
+      disabled: true,
+    },
+    extraProps: {
+      icon: 'mdi-account-multiple-plus',
     },
   },
   {
@@ -105,6 +104,9 @@ const navLinks: NavLinkItem[] = [
       visibleForAuth: true,
       visibleForNotAuth: false,
     },
+    extraProps: {
+      icon: 'mdi-bell-outline' || 'mdi-bell-badge-outline',
+    },
   },
   {
     title: 'Dialogs',
@@ -115,84 +117,104 @@ const navLinks: NavLinkItem[] = [
       visibleForAuth: true,
       visibleForNotAuth: false,
     },
+    extraProps: {
+      icon: 'mdi-forum-outline',
+    },
   },
   {
-    title: 'Users',
-    to: { name: AppRouteNames.users },
+    title: 'Profile',
+    to: { name: AppRouteNames.accountProfile },
     link: true,
     exact: true,
     meta: {
       visibleForAuth: true,
       visibleForNotAuth: false,
     },
+    extraProps: {
+      icon: 'mdi-account-outline',
+    },
   },
 ];
 
-const filteredNavLinks = computed(() =>
-  navLinks.filter(
+const filteredAppBarNavLinks = computed(() =>
+  appBarNavLinks.filter(
     (l) =>
-      (isAuthenticated.value && l.meta.visibleForAuth) ||
-      (!isAuthenticated.value && l.meta.visibleForNotAuth)
+      !l.meta.disabled &&
+      ((isAuthenticated.value && l.meta.visibleForAuth) ||
+        (!isAuthenticated.value && l.meta.visibleForNotAuth))
   )
 );
+
+const { to: rightDrawerTo, matchedRoute: rightDrawerRoute } = storeToRefs(
+  useRightDrawerRoutingStore()
+);
+
+const rightDrawerComponent = computed(() =>
+  rightDrawerRoute.value?.components?.default
+    ? defineAsyncComponent({
+        // @ts-ignore
+        loader: rightDrawerRoute.value.components.default,
+      })
+    : null
+);
+const rightDrawerComponentProps = computed(() => {
+  const propsDefault = rightDrawerRoute.value?.props.default;
+  const isFunc = propsDefault && typeof propsDefault === 'function';
+  return propsDefault && isFunc
+    ? propsDefault(rightDrawerTo.value)
+    : propsDefault;
+});
 </script>
 
 <template>
   <v-app :theme="theme">
-    <v-navigation-drawer rail permanent>
-      <BaseAuthUserAvatarWrapper v-slot="{ url }">
-        <v-list-item nav>
-          <template v-slot:prepend>
-            <v-avatar>
-              <v-img :src="url" alt="Avatar" cover></v-img>
-            </v-avatar>
-          </template>
-        </v-list-item>
-      </BaseAuthUserAvatarWrapper>
-
-      <v-divider></v-divider>
-
-      <v-list density="compact" nav>
-        <v-list-item
-          prepend-icon="mdi-view-dashboard"
-          value="dashboard"
-        ></v-list-item>
-
-        <v-list-item prepend-icon="mdi-forum" value="messages"></v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
-    <v-navigation-drawer permanent>
-      <v-list>
-        <v-list-item :title="userTitle" key="userTitle"></v-list-item>
-
-        <v-divider></v-divider>
-
-        <v-list-item
-          v-for="linkInfo in filteredNavLinks"
-          :key="linkInfo.to.name"
-          :title="linkInfo.title"
-          :to="linkInfo.to"
-          :link="linkInfo.link"
-          :exact="linkInfo.exact"
-        ></v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
-    <v-app-bar title="Lets Meet">
-      <v-spacer></v-spacer>
-
+    <v-app-bar>
       <v-btn
         :icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
         @click="toggleTheme"
       ></v-btn>
 
-      <v-btn>
+      <v-app-bar-title>Let's Meet</v-app-bar-title>
+
+      <v-spacer></v-spacer>
+
+      <v-btn icon>
         <v-progress-circular
           :indeterminate="!!isFetching"
         ></v-progress-circular>
       </v-btn>
+
+      <v-spacer></v-spacer>
+
+      <v-btn
+        v-for="navLink in filteredAppBarNavLinks"
+        :key="navLink.to.name"
+        :to="navLink.to"
+        link
+        :icon="!navLink.title"
+        :prepend-icon="navLink.title ? navLink.extraProps.icon : undefined"
+        exact
+      >
+        <v-icon v-if="!navLink.title" :icon="navLink.extraProps.icon"></v-icon>
+        <template v-if="navLink.title">{{ navLink.title }}</template>
+      </v-btn>
     </v-app-bar>
+
+    <keep-alive>
+      <v-navigation-drawer
+        :model-value="!!rightDrawerRoute"
+        permanent
+        location="right"
+        width="600"
+      >
+        <component
+          v-if="rightDrawerRoute"
+          :is="rightDrawerComponent"
+          v-bind="rightDrawerComponentProps"
+          :key="rightDrawerRoute.path"
+        />
+      </v-navigation-drawer>
+    </keep-alive>
 
     <v-main>
       <RouterView v-slot="{ Component }">
