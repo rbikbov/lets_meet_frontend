@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useMutation, useQuery } from '@tanstack/vue-query';
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/vue-query';
 import { useDebounceFn } from '@vueuse/core';
 
 import type { Dialog, Message, User } from '@/services/api';
@@ -26,18 +26,37 @@ const props = defineProps<{
 
 const { accessToken, isAuthenticated, authUser } = storeToRefs(useAuthStore());
 
+const dialog = ref<Dialog | null>(null);
 const messages = ref<Message[]>([]);
 
-const dialogMessagesQuery = useQuery({
+const dialogMessagesQuery = useInfiniteQuery({
   queryKey: [DIALOGS_MESSAGES, props.dialogId],
-  queryFn: () => fetchDialogMessages(props.dialogId),
-  onSuccess: (response) => {
-    messages.value = response.data;
+  queryFn: ({ pageParam }) => {
+    return fetchDialogMessages({
+      id: String(props.dialogId),
+      page: pageParam,
+    });
+  },
+
+  getNextPageParam: (lastPage, allPages) =>
+    lastPage.data.has_next ? lastPage.data.current_page! + 1 : false,
+  getPreviousPageParam: (firstPage, allPages) =>
+    firstPage.data.has_prev ? firstPage.data.current_page! - 1 : false,
+
+  onSuccess: (responses) => {
+    messages.value = responses.pages.map((r) => r.data.results).flat();
   },
   enabled: false,
 });
 
-const dialog = ref<Dialog | null>(null);
+const fetchPreviousClicked = async () => {
+  const prevFirstMsg = messages.value.length ? messages.value[0] : null;
+  await dialogMessagesQuery.fetchPreviousPage();
+  // scroll to previous first element
+  if (prevFirstMsg) {
+    scrollToElement(getMessageElement(prevFirstMsg), false);
+  }
+};
 
 const dialogQuery = useQuery({
   queryKey: [DIALOGS, props.dialogId],
@@ -45,6 +64,7 @@ const dialogQuery = useQuery({
   onSuccess: async (response) => {
     dialog.value = response.data;
     await dialogMessagesQuery.refetch();
+    // await dialogMessagesQuery.fetchPreviousPage();
     scrollToLastMessage();
   },
 });
@@ -198,14 +218,20 @@ const isMyMsg = (msg: Message) => {
   return msg.user_id === authUser.value?.id;
 };
 
-const LAST_MESSAGE_ID = 'lastMessage';
+const getMessageElement = (msg: Message) =>
+  document.getElementById(`message_${msg.id}`);
 
-const getLastMessageElement = () => document.getElementById(LAST_MESSAGE_ID);
+const getLastMessageElement = () =>
+  messages.value.length ? getMessageElement(messages.value[0]) : null;
+
+const scrollToElement = (el: HTMLElement | null, smooth = true) => {
+  el?.scrollIntoView({
+    behavior: smooth ? 'smooth' : undefined,
+  });
+};
 
 const scrollToLastMessage = () => {
-  getLastMessageElement()?.scrollIntoView({
-    behavior: 'smooth',
-  });
+  scrollToElement(getLastMessageElement());
 };
 
 const intersectedMessagesIds = new Set<Message['id']>();
@@ -277,11 +303,17 @@ const debouncedReadMessages = useDebounceFn(
   <v-container class="h-100">
     <v-row v-if="true">
       <v-col class="d-flex">
-        <!--
-        <v-btn type="button" @click="dialogMessagesQuery.refetch">
-          Fetch dialog messages
+        <v-btn
+          v-if="dialogMessagesQuery.hasPreviousPage"
+          class="mx-auto"
+          size="small"
+          type="button"
+          variant="outlined"
+          :loading="dialogMessagesQuery.isFetchingPreviousPage.value"
+          @click="fetchPreviousClicked"
+        >
+          Fetch previous
         </v-btn>
-        -->
         <v-btn
           class="ml-auto"
           size="small"
@@ -305,7 +337,7 @@ const debouncedReadMessages = useDebounceFn(
           :key="item.id"
           class="d-flex flex-row align-top"
           :class="{ 'justify-end': isMyMsg(item) }"
-          :id="index === messages.length - 1 ? LAST_MESSAGE_ID : undefined"
+          :id="`message_${item.id}`"
         >
           <DialogMessageItem
             v-intersect="{

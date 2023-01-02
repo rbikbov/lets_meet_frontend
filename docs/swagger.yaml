@@ -86,6 +86,10 @@ paths:
         required: true
         schema:
           type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
       responses:
         '200':
           description: Found
@@ -140,6 +144,10 @@ paths:
         required: true
         schema:
           type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
       responses:
         '200':
           description: Found
@@ -147,7 +155,16 @@ paths:
             application/json:
               schema:
                 type: object
-                "$ref": "#/components/schemas/messages_array"
+                allOf:
+                - "$ref": "#/components/schemas/paginated_result"
+                - type: object
+                  properties:
+                    results:
+                      type: array
+                      items:
+                        "$ref": "#/components/schemas/message"
+                  required:
+                  - results
         '403':
           description: Forbidden
           content:
@@ -220,8 +237,6 @@ paths:
             city:
               type: string
             page:
-              type: integer
-            per:
               type: integer
         required:
         - search
@@ -339,6 +354,10 @@ paths:
         required: true
         schema:
           type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
       responses:
         '200':
           description: Found
@@ -346,7 +365,16 @@ paths:
             application/json:
               schema:
                 type: object
-                "$ref": "#/components/schemas/notifications_array"
+                allOf:
+                - "$ref": "#/components/schemas/paginated_result"
+                - type: object
+                  properties:
+                    results:
+                      type: array
+                      items:
+                        "$ref": "#/components/schemas/notification"
+                  required:
+                  - results
         '403':
           description: Forbidden
           content:
@@ -926,6 +954,17 @@ components:
           "$ref": "#/components/schemas/id_number"
         content:
           type: object
+          properties:
+            user_ids:
+              type: array
+              items:
+                "$ref": "#/components/schemas/id_number"
+            images:
+              type: array
+              items:
+                type: string
+            text_notification:
+              type: string
         used:
           type: boolean
         created_at:
@@ -973,5 +1012,31 @@ components:
       type: array
       items:
         "$ref": "#/components/schemas/notification"
+    paginated_result:
+      type: object
+      properties:
+        has_next:
+          type: boolean
+        has_prev:
+          type: boolean
+        total_count:
+          type: integer
+        current_page:
+          type: integer
+        total_pages:
+          type: integer
+        limit_value:
+          type: integer
+        results:
+          type: array
+          items: {}
+      required:
+      - has_next
+      - has_prev
+      - total_count
+      - current_page
+      - total_pages
+      - limit_value
+      - results
 security:
 - bearerAuth: []

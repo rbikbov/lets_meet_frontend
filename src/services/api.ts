@@ -113,7 +113,11 @@ export interface Message {
 export interface Notification {
   id: IdNumber;
   user_id: IdNumber;
-  content?: object;
+  content?: {
+    user_ids?: IdNumber[];
+    images?: string[];
+    text_notification?: string;
+  };
   used: boolean;
   /** @format date-time */
   created_at: string;
@@ -137,6 +141,16 @@ export type MessagesArray = Message[];
 
 export type NotificationsArray = Notification[];
 
+export interface PaginatedResult {
+  has_next: boolean;
+  has_prev: boolean;
+  total_count: number;
+  current_page: number;
+  total_pages: number;
+  limit_value: number;
+  results: any[];
+}
+
 export type FetchCountryCitiesData = any[];
 
 export type FetchCountriesData = object;
@@ -149,6 +163,11 @@ export type DialogSendMessageData = Message;
 
 export type DialogSendMessageError = Error;
 
+export interface FetchUserDialogsParams {
+  page?: number;
+  id: string;
+}
+
 export type FetchUserDialogsData = DialogsArray;
 
 export type FetchUserDialogsError = Error;
@@ -157,7 +176,14 @@ export type FetchDialogData = Dialog;
 
 export type FetchDialogError = Error;
 
-export type FetchDialogMessagesData = MessagesArray;
+export interface FetchDialogMessagesParams {
+  page?: number;
+  id: string;
+}
+
+export type FetchDialogMessagesData = PaginatedResult & {
+  results: Message[];
+};
 
 export type FetchDialogMessagesError = Error;
 
@@ -176,7 +202,6 @@ export interface FetchMeetsParams {
     gender?: GenderType;
     city?: string;
     page?: number;
-    per?: number;
   };
 }
 
@@ -202,7 +227,14 @@ export type DeclineMeetData = any;
 
 export type DeclineMeetError = Error;
 
-export type FetchUserNotificationsData = NotificationsArray;
+export interface FetchUserNotificationsParams {
+  page?: number;
+  id: string;
+}
+
+export type FetchUserNotificationsData = PaginatedResult & {
+  results: Notification[];
+};
 
 export type FetchUserNotificationsError = Error;
 
@@ -333,7 +365,9 @@ export namespace Api {
     export type RequestParams = {
       id: string;
     };
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      page?: number;
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = FetchUserDialogsData;
@@ -367,7 +401,9 @@ export namespace Api {
     export type RequestParams = {
       id: string;
     };
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      page?: number;
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = FetchDialogMessagesData;
@@ -406,7 +442,6 @@ export namespace Api {
         gender?: GenderType;
         city?: string;
         page?: number;
-        per?: number;
       };
     };
     export type RequestBody = never;
@@ -476,7 +511,9 @@ export namespace Api {
     export type RequestParams = {
       id: string;
     };
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      page?: number;
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = FetchUserNotificationsData;
@@ -906,10 +943,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/v1/users/{id}/dialogs
      * @secure
      */
-    fetchUserDialogs: (id: string, params: RequestParams = {}) =>
+    fetchUserDialogs: ({ id, ...query }: FetchUserDialogsParams, params: RequestParams = {}) =>
       this.request<FetchUserDialogsData, FetchUserDialogsError>({
         path: `/api/v1/users/${id}/dialogs`,
         method: 'GET',
+        query: query,
         secure: true,
         ...params,
       }),
@@ -940,10 +978,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/v1/dialogs/{id}/messages
      * @secure
      */
-    fetchDialogMessages: (id: string, params: RequestParams = {}) =>
+    fetchDialogMessages: ({ id, ...query }: FetchDialogMessagesParams, params: RequestParams = {}) =>
       this.request<FetchDialogMessagesData, FetchDialogMessagesError>({
         path: `/api/v1/dialogs/${id}/messages`,
         method: 'GET',
+        query: query,
         secure: true,
         ...params,
       }),
@@ -1047,10 +1086,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/v1/users/{id}/notifications
      * @secure
      */
-    fetchUserNotifications: (id: string, params: RequestParams = {}) =>
+    fetchUserNotifications: ({ id, ...query }: FetchUserNotificationsParams, params: RequestParams = {}) =>
       this.request<FetchUserNotificationsData, FetchUserNotificationsError>({
         path: `/api/v1/users/${id}/notifications`,
         method: 'GET',
+        query: query,
         secure: true,
         ...params,
       }),

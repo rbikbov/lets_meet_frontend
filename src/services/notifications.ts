@@ -1,8 +1,6 @@
 import { api } from '.';
-import type { IdNumber } from './api';
+import type { FetchUserNotificationsParams } from './api';
 
-type UserId = IdNumber;
-
-export function fetchNotifications(id: UserId) {
-  return api.api.fetchUserNotifications(String(id));
+export function fetchNotifications(requestData: FetchUserNotificationsParams) {
+  return api.api.fetchUserNotifications(requestData);
 }

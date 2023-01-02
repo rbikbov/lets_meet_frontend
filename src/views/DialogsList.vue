@@ -21,7 +21,7 @@ const { dialogIdToInterlocutorUserMap } = storeToRefs(useDialogsStore());
 
 const dialogsQuery = useQuery({
   queryKey: [DIALOGS],
-  queryFn: () => fetchDialogs(authUser.value!.id),
+  queryFn: () => fetchDialogs({ id: String(authUser.value!.id) }),
   onSuccess: (response) => {
     setDialogs(response.data);
   },
