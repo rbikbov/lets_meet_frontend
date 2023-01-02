@@ -874,10 +874,6 @@ components:
       properties:
         id:
           "$ref": "#/components/schemas/id_number"
-        incoming_id:
-          "$ref": "#/components/schemas/id_number"
-        outgoing_id:
-          "$ref": "#/components/schemas/id_number"
         created_at:
           type: string
           format: date-time
@@ -890,8 +886,6 @@ components:
           "$ref": "#/components/schemas/message"
       required:
       - id
-      - incoming_id
-      - outgoing_id
       - users
       - id
       - created_at

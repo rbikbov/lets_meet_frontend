@@ -90,8 +90,6 @@ export interface AccessToken {
 
 export interface Dialog {
   id: IdNumber;
-  incoming_id: IdNumber;
-  outgoing_id: IdNumber;
   /** @format date-time */
   created_at: string;
   /** @format date-time */

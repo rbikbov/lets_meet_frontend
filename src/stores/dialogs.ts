@@ -38,12 +38,8 @@ export const useDialogsStore = defineStore('dialogs', () => {
       }
 
       return dialogs.value.reduce((acc, dialog) => {
-        const interlocutorUserId =
-          dialog.incoming_id === authUser.value?.id
-            ? dialog.outgoing_id
-            : dialog.incoming_id;
         acc[dialog.id] = dialog.users.find(
-          (usr) => usr.id === interlocutorUserId
+          (usr) => usr.id !== authUser.value?.id
         )!;
         return acc;
       }, {} as DialogIdToInterlocutorUserMap);
