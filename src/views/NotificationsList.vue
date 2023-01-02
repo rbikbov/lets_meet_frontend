@@ -40,10 +40,6 @@ const a = reactive({
 });
 
 watch(() => a, console.log);
-
-const fetchPreviousClicked = async () => {
-  await notificationsQuery.fetchPreviousPage();
-};
 </script>
 
 <template>
@@ -79,7 +75,7 @@ const fetchPreviousClicked = async () => {
           type="button"
           variant="outlined"
           :loading="notificationsQuery.isFetchingPreviousPage.value"
-          @click="fetchPreviousClicked"
+          @click="notificationsQuery.fetchPreviousPage"
         >
           Fetch previous
         </v-btn>

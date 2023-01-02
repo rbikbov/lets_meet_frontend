@@ -97,7 +97,16 @@ paths:
             application/json:
               schema:
                 type: object
-                "$ref": "#/components/schemas/dialogs_array"
+                allOf:
+                - "$ref": "#/components/schemas/paginated_result"
+                - type: object
+                  properties:
+                    results:
+                      type: array
+                      items:
+                        "$ref": "#/components/schemas/dialog"
+                  required:
+                  - results
         '403':
           description: Forbidden
           content:
@@ -1000,18 +1009,6 @@ components:
       type: array
       items:
         "$ref": "#/components/schemas/user"
-    dialogs_array:
-      type: array
-      items:
-        "$ref": "#/components/schemas/dialog"
-    messages_array:
-      type: array
-      items:
-        "$ref": "#/components/schemas/message"
-    notifications_array:
-      type: array
-      items:
-        "$ref": "#/components/schemas/notification"
     paginated_result:
       type: object
       properties:

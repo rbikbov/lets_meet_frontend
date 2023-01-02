@@ -37,12 +37,10 @@ const dialogMessagesQuery = useInfiniteQuery({
       page: pageParam,
     });
   },
-
   getNextPageParam: (lastPage, allPages) =>
     lastPage.data.has_next ? lastPage.data.current_page! + 1 : false,
   getPreviousPageParam: (firstPage, allPages) =>
     firstPage.data.has_prev ? firstPage.data.current_page! - 1 : false,
-
   onSuccess: (responses) => {
     messages.value = responses.pages.map((r) => r.data.results).flat();
   },

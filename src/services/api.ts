@@ -135,12 +135,6 @@ export interface Error {
 
 export type UsersArray = User[];
 
-export type DialogsArray = Dialog[];
-
-export type MessagesArray = Message[];
-
-export type NotificationsArray = Notification[];
-
 export interface PaginatedResult {
   has_next: boolean;
   has_prev: boolean;
@@ -168,7 +162,9 @@ export interface FetchUserDialogsParams {
   id: string;
 }
 
-export type FetchUserDialogsData = DialogsArray;
+export type FetchUserDialogsData = PaginatedResult & {
+  results: Dialog[];
+};
 
 export type FetchUserDialogsError = Error;
 
