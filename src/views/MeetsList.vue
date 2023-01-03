@@ -158,16 +158,21 @@ const initiateMeetMutation = useMutation({
                       <v-card-subtitle v-if="user.city" class="text-white">{{
                         user.city
                       }}</v-card-subtitle>
-
-                      <v-card-text v-if="user.initiates" class="text-white">{{
-                        `Meet likes: ${user.initiates}`
-                      }}</v-card-text>
                     </div>
 
                     <v-card-actions class="mt-auto">
                       <v-spacer></v-spacer>
 
                       <v-btn
+                        v-if="user.initiated"
+                        size="small"
+                        color="surface-variant"
+                        variant="text"
+                        disabled
+                        icon="mdi-heart"
+                      ></v-btn>
+                      <v-btn
+                        v-else
                         size="small"
                         color="surface-variant"
                         variant="text"

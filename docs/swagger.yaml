@@ -838,7 +838,7 @@ components:
       properties:
         avatar:
           type: file
-    user:
+    base_user:
       type: object
       properties:
         id:
@@ -855,22 +855,26 @@ components:
           type: string
         city:
           type: string
-        initiates:
-          type: array
-          items:
-            "$ref": "#/components/schemas/id_number"
-        black_list:
-          type: array
-          items:
-            "$ref": "#/components/schemas/id_number"
       required:
       - id
       - created_at
       - updated_at
       - first_name
+    user:
+      allOf:
+      - "$ref": "#/components/schemas/base_user"
+      - type: object
+        properties:
+          initiated:
+            type: boolean
+          black_listed:
+            type: boolean
+        required:
+        - initiated
+        - black_listed
     me:
       allOf:
-      - "$ref": "#/components/schemas/user"
+      - "$ref": "#/components/schemas/base_user"
       - type: object
         properties:
           email:

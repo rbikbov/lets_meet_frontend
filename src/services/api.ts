@@ -58,7 +58,7 @@ export interface AvatarFile {
   avatar?: File;
 }
 
-export interface User {
+export interface BaseUser {
   id: IdNumber;
   first_name: string;
   last_name?: string;
@@ -66,11 +66,14 @@ export interface User {
   gender?: GenderType;
   avatar?: string;
   city?: string;
-  initiates?: IdNumber[];
-  black_list?: IdNumber[];
 }
 
-export type Me = User & {
+export type User = BaseUser & {
+  initiated: boolean;
+  black_listed: boolean;
+};
+
+export type Me = BaseUser & {
   /** @format email */
   email: string;
 };
