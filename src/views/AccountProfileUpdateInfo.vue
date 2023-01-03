@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia';
 
 import { AppRouteNames } from '@/router';
 import { useAuthStore } from '@/stores/auth';
-import type { ProfileDataUser, User } from '@/services/api';
+import type { ProfileDataUser, BaseUser } from '@/services/api';
 import { AUTH_USER } from '@/services/queries/keys';
 import { fetchMe, updateUserInfo } from '@/services/auth';
 
@@ -35,7 +35,7 @@ const updateUserInfoMutation = useMutation(
 );
 
 const getEditableFieldsFromInitialData = (
-  data: User | null
+  data: BaseUser | null
 ): ProfileDataUser => {
   return {
     first_name: data?.first_name || '',
