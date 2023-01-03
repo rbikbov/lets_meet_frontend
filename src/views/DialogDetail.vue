@@ -83,12 +83,15 @@ const subscribeToDialogMessages = () => {
       await nextTick();
 
       const lastMsgEl = getLastMessageElement();
-      if (!lastMsgEl) {
+      const scrollableParent = lastMsgEl?.parentElement?.parentElement;
+      if (!lastMsgEl || !scrollableParent) {
         return;
       }
-      const parentHeight = lastMsgEl.parentElement!.offsetHeight;
-      const parentScrollHeight = lastMsgEl.parentElement!.scrollHeight;
-      if (parentHeight - parentScrollHeight < lastMsgEl.offsetHeight) {
+      const { scrollHeight, scrollTop, clientHeight } = scrollableParent;
+      const isLastMsgVisible =
+        scrollHeight - clientHeight - scrollTop - lastMsgEl.offsetHeight <
+        lastMsgEl.offsetHeight;
+      if (isLastMsgVisible) {
         scrollToLastMessage();
       }
     },
