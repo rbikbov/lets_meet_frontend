@@ -220,7 +220,9 @@ const getMessageElement = (msg: Message) =>
   document.getElementById(`message_${msg.id}`);
 
 const getLastMessageElement = () =>
-  messages.value.length ? getMessageElement(messages.value[0]) : null;
+  messages.value.length
+    ? getMessageElement(messages.value[messages.value.length - 1])
+    : null;
 
 const scrollToElement = (el: HTMLElement | null, smooth = true) => {
   el?.scrollIntoView({
@@ -302,7 +304,7 @@ const debouncedReadMessages = useDebounceFn(
     <v-row v-if="true">
       <v-col class="d-flex">
         <v-btn
-          v-if="dialogMessagesQuery.hasPreviousPage"
+          v-if="dialogMessagesQuery.hasPreviousPage?.value"
           class="mx-auto"
           size="small"
           type="button"
