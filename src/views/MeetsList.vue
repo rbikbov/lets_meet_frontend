@@ -164,7 +164,7 @@ const initiateMeetMutation = useMutation({
                       <v-spacer></v-spacer>
 
                       <v-btn
-                        v-if="user.initiated"
+                        v-if="user.initiated_him"
                         size="small"
                         color="surface-variant"
                         variant="text"

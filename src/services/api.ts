@@ -69,8 +69,10 @@ export interface BaseUser {
 }
 
 export type User = BaseUser & {
-  initiated: boolean;
-  black_listed: boolean;
+  initiated_me: boolean;
+  initiated_him: boolean;
+  blocked_me: boolean;
+  blocked_him: boolean;
 };
 
 export type Me = BaseUser & {
@@ -712,7 +714,7 @@ export namespace Api {
    * @tags Users
    * @name AddUserToBlackList
    * @summary Added user to BL
-   * @request PATCH:/api/v1/users/{id}/add_to_black_list
+   * @request PATCH:/api/v1/users/{id}/block
    * @secure
    */
   export namespace AddUserToBlackList {
@@ -729,7 +731,7 @@ export namespace Api {
    * @tags Users
    * @name RemoveUserFromBlackList
    * @summary Remove user from BL
-   * @request PATCH:/api/v1/users/{id}/remove_from_black_list
+   * @request PATCH:/api/v1/users/{id}/unblock
    * @secure
    */
   export namespace RemoveUserFromBlackList {
@@ -1316,12 +1318,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Users
      * @name AddUserToBlackList
      * @summary Added user to BL
-     * @request PATCH:/api/v1/users/{id}/add_to_black_list
+     * @request PATCH:/api/v1/users/{id}/block
      * @secure
      */
     addUserToBlackList: (id: string, params: RequestParams = {}) =>
       this.request<AddUserToBlackListData, any>({
-        path: `/api/v1/users/${id}/add_to_black_list`,
+        path: `/api/v1/users/${id}/block`,
         method: 'PATCH',
         secure: true,
         ...params,
@@ -1333,12 +1335,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Users
      * @name RemoveUserFromBlackList
      * @summary Remove user from BL
-     * @request PATCH:/api/v1/users/{id}/remove_from_black_list
+     * @request PATCH:/api/v1/users/{id}/unblock
      * @secure
      */
     removeUserFromBlackList: (id: string, params: RequestParams = {}) =>
       this.request<RemoveUserFromBlackListData, any>({
-        path: `/api/v1/users/${id}/remove_from_black_list`,
+        path: `/api/v1/users/${id}/unblock`,
         method: 'PATCH',
         secure: true,
         ...params,

@@ -705,7 +705,7 @@ paths:
                   contentType:
                   - image/png
                   - image/jpeg
-  "/api/v1/users/{id}/add_to_black_list":
+  "/api/v1/users/{id}/block":
     patch:
       summary: Added user to BL
       tags:
@@ -726,7 +726,7 @@ paths:
                 example_1:
                   value:
                     message: User added to black list
-  "/api/v1/users/{id}/remove_from_black_list":
+  "/api/v1/users/{id}/unblock":
     patch:
       summary: Remove user from BL
       tags:
@@ -865,13 +865,19 @@ components:
       - "$ref": "#/components/schemas/base_user"
       - type: object
         properties:
-          initiated:
+          initiated_me:
             type: boolean
-          black_listed:
+          initiated_him:
+            type: boolean
+          blocked_me:
+            type: boolean
+          blocked_him:
             type: boolean
         required:
-        - initiated
-        - black_listed
+        - initiated_me
+        - initiated_him
+        - blocked_me
+        - blocked_him
     me:
       allOf:
       - "$ref": "#/components/schemas/base_user"
