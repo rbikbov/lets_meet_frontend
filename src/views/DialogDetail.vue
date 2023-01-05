@@ -182,10 +182,10 @@ watch(
   }
 );
 
-const isMsgFormValid = ref(false);
+const newMessageText = ref<string>('');
+const isMsgFormValid = computed<boolean>(() => !!newMessageText.value);
 const msgFormComponent = ref<HTMLFormElement | null>(null);
 
-const newMessageText = ref<string>('');
 const sendMessageMutation = useMutation({
   mutationFn: () =>
     sendMessage(props.dialogId, { text_message: newMessageText.value }),
@@ -203,10 +203,6 @@ const onMessageFormSubmit = () => {
     return;
   }
   sendMessageMutation.mutate();
-};
-
-const required = (v: string) => {
-  return !!v || 'Field is required';
 };
 
 const interlocutorUser = computed<User | null>(() => {
@@ -330,10 +326,7 @@ const debouncedReadMessages = useDebounceFn(
       </v-col>
     </v-row>
 
-    <v-row
-      class="overflow-auto"
-      style="height: calc(100% - 60px - 80px + 24px)"
-    >
+    <v-row class="overflow-auto" style="height: calc(100% - 60px - 80px + 2px)">
       <v-col v-if="authUser && interlocutorUser" cols="12">
         <div
           v-for="(item, index) in messages"
@@ -365,19 +358,20 @@ const debouncedReadMessages = useDebounceFn(
         <v-form
           class="d-flex"
           ref="msgFormComponent"
-          v-model="isMsgFormValid"
           @submit.prevent="onMessageFormSubmit"
         >
           <BaseInputWrapper v-slot="{ inputProps }">
             <v-text-field
               v-bind="inputProps"
               v-model="newMessageText"
-              :rules="[required]"
               :readonly="sendMessageMutation.isLoading.value"
+              :maxlength="1024"
+              counter
               clearable
+              required
               placeholder="Type Something"
               type="text"
-              hide-details
+              autofocus
             />
           </BaseInputWrapper>
           <v-btn
@@ -385,7 +379,7 @@ const debouncedReadMessages = useDebounceFn(
             :disabled="sendMessageMutation.isLoading.value || !isMsgFormValid"
             icon="mdi-send"
             type="submit"
-            class="ml-2 my-auto"
+            class="ml-2 mb-auto"
           >
           </v-btn>
         </v-form>
