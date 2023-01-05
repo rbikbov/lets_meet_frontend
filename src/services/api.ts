@@ -433,6 +433,7 @@ export namespace Api {
    * @name FetchMeets
    * @summary Search persons
    * @request GET:/api/v1/meets
+   * @secure
    */
   export namespace FetchMeets {
     export type RequestParams = {};
@@ -1014,12 +1015,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name FetchMeets
      * @summary Search persons
      * @request GET:/api/v1/meets
+     * @secure
      */
     fetchMeets: (query: FetchMeetsParams, params: RequestParams = {}) =>
       this.request<FetchMeetsData, any>({
         path: `/api/v1/meets`,
         method: 'GET',
         query: query,
+        secure: true,
         ...params,
       }),
 

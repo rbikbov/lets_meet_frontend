@@ -230,7 +230,6 @@ paths:
       tags:
       - Meets
       operationId: fetchMeets
-      security: []
       parameters:
       - name: search
         in: query
