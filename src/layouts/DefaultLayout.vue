@@ -209,14 +209,16 @@ const rightDrawerComponentProps = computed(() => {
         location="right"
         width="600"
       >
-        <v-btn
+        <v-col
           v-if="rightDrawerRoute"
-          icon
-          style="position: absolute; left: 0; top: 0"
-          @click="closeRightDrawer"
+          cols="auto"
+          class="d-flex align-center"
+          style="position: absolute; right: 4px; top: 4px; height: 64px"
         >
-          <v-icon icon="mdi-close"></v-icon>
-        </v-btn>
+          <v-btn icon size="30" variant="outlined" @click="closeRightDrawer">
+            <v-icon icon="mdi-close"></v-icon>
+          </v-btn>
+        </v-col>
 
         <component
           v-if="rightDrawerRoute"
