@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/vue-query';
 import { useDebounceFn } from '@vueuse/core';
+import type { VCol } from 'vuetify/components';
 
+import { AppRouteNames } from '@/router';
 import type { Dialog, Message, User } from '@/services/api';
 import { useActionCable } from '@/services/actionCable';
 import {
@@ -15,10 +17,12 @@ import {
 import { DIALOGS, DIALOGS_MESSAGES } from '@/services/queries/keys';
 
 import { useAuthStore } from '@/stores/auth';
+import { getFullName } from '@/helpers/fullName';
 
 import BaseInputWrapper from '@/components/BaseInputWrapper.vue';
 import DialogMessageItem from '@/components/DialogMessageItem.vue';
-import type { VCol } from 'vuetify/components';
+import BaseDefaultAvatarWrapper from '@/components/BaseDefaultAvatarWrapper.vue';
+import BaseLoader from '@/components/BaseLoader.vue';
 
 const props = defineProps<{
   dialogId: number;
@@ -48,12 +52,15 @@ const dialogMessagesQuery = useInfiniteQuery({
 });
 
 const fetchPreviousClicked = async () => {
-  const prevFirstMsg = messages.value.length ? messages.value[0] : null;
+  getScrollState();
+  const { scrollTop, scrollHeight } = { ...scrollState };
+
   await dialogMessagesQuery.fetchPreviousPage();
-  // scroll to previous first element
-  if (prevFirstMsg) {
-    scrollToElement(getMessageElement(prevFirstMsg), false);
-  }
+
+  getScrollState();
+  const top = scrollTop + (scrollState.scrollHeight - scrollHeight);
+
+  scrollTo({ top });
 };
 
 const dialogQuery = useQuery({
@@ -63,7 +70,7 @@ const dialogQuery = useQuery({
     dialog.value = response.data;
     await dialogMessagesQuery.refetch();
     // await dialogMessagesQuery.fetchPreviousPage();
-    scrollToLastMessage();
+    scrollToBottom();
   },
 });
 
@@ -83,16 +90,15 @@ const subscribeToDialogMessages = () => {
       await nextTick();
 
       const lastMsgEl = getLastMessageElement();
-      const scrollableParent = lastMsgEl?.parentElement?.parentElement;
-      if (!lastMsgEl || !scrollableParent) {
+      if (!lastMsgEl) {
         return;
       }
-      const { scrollHeight, scrollTop, clientHeight } = scrollableParent;
+      const { scrollHeight, scrollTop, clientHeight } = scrollState;
       const isLastMsgVisible =
         scrollHeight - clientHeight - scrollTop - lastMsgEl.offsetHeight <
         lastMsgEl.offsetHeight;
       if (isLastMsgVisible) {
-        scrollToLastMessage();
+        scrollToBottom();
       }
     },
     connected: () =>
@@ -194,7 +200,7 @@ const sendMessageMutation = useMutation({
     newMessageText.value = '';
     messages.value.push(response.data);
     await nextTick();
-    scrollToLastMessage();
+    scrollToBottom();
   },
 });
 
@@ -223,14 +229,19 @@ const getLastMessageElement = () =>
     ? getMessageElement(messages.value[messages.value.length - 1])
     : null;
 
-const scrollToElement = (el: HTMLElement | null, smooth = true) => {
-  el?.scrollIntoView({
-    behavior: smooth ? 'smooth' : undefined,
-  });
+const getMessagesScrollableContainer = () =>
+  document.getElementById('messagesScrollableContainer');
+
+const scrollTo = (options: { top: number; behavior?: 'smooth' }) => {
+  getMessagesScrollableContainer()?.scrollTo(options);
 };
 
-const scrollToLastMessage = () => {
-  scrollToElement(getLastMessageElement());
+const scrollToBottom = () => {
+  getScrollState();
+  scrollTo({
+    top: scrollState.scrollHeight + scrollState.clientHeight,
+    behavior: 'smooth',
+  });
 };
 
 const intersectedMessagesIds = new Set<Message['id']>();
@@ -243,7 +254,7 @@ const onIntersect = (
   if (
     !isIntersecting ||
     msg.read ||
-    msg.user_id === authUser.value?.id ||
+    isMyMsg(msg) ||
     entries[0].intersectionRatio < 0.5
   ) {
     return;
@@ -296,40 +307,103 @@ const debouncedReadMessages = useDebounceFn(
   1000,
   { maxWait: 3000 }
 );
+
+const scrollState = reactive({
+  clientHeight: 0,
+  scrollHeight: 0,
+  scrollTop: 0,
+  fromBottom: 0,
+  fromBottomPercent: 0,
+});
+
+const getScrollState = () => {
+  const el = getMessagesScrollableContainer();
+  if (!el) {
+    return;
+  }
+  const { scrollHeight, scrollTop, clientHeight } = el;
+  const fromBottom = scrollHeight - scrollTop - clientHeight;
+  const fromBottomPercent = scrollHeight
+    ? Math.ceil((fromBottom / scrollHeight) * 100)
+    : 0;
+
+  scrollState.scrollHeight = scrollHeight;
+  scrollState.scrollTop = scrollTop;
+  scrollState.fromBottom = fromBottom;
+  scrollState.fromBottomPercent = fromBottomPercent;
+};
+
+const debouncedOnScroll = useDebounceFn(getScrollState, 500, { maxWait: 1500 });
 </script>
 
 <template>
   <v-container class="h-100">
-    <v-row v-if="true">
-      <v-col class="d-flex">
+    <v-row>
+      <v-col class="d-flex pr-12 elevation-4">
+        <div class="my-auto mr-2">
+          <v-btn
+            icon
+            size="30"
+            variant="outlined"
+            :to="{ name: AppRouteNames.dialogs }"
+          >
+            <v-icon icon="mdi-arrow-left"></v-icon>
+          </v-btn>
+        </div>
+
+        <div class="flex-grow-1 d-flex">
+          <BaseDefaultAvatarWrapper
+            v-slot="{ url, onError }"
+            :avatar-url="interlocutorUser?.avatar"
+          >
+            <v-avatar class="mr-2" :size="40">
+              <v-img alt="Avatar" cover :src="url" @error="onError">
+                <template v-slot:placeholder>
+                  <BaseLoader />
+                </template>
+              </v-img>
+            </v-avatar>
+          </BaseDefaultAvatarWrapper>
+
+          <div>
+            <div class="text-caption font-bold">
+              {{ getFullName(interlocutorUser || {}) }}
+            </div>
+            <div class="text-caption font-italic">
+              {{
+                `${interlocutorUser?.gender}, ${interlocutorUser?.age}, ${interlocutorUser?.city}`
+              }}
+            </div>
+          </div>
+        </div>
+      </v-col>
+    </v-row>
+
+    <v-row
+      id="messagesScrollableContainer"
+      v-scroll.self="debouncedOnScroll"
+      class="overflow-auto"
+      style="height: calc(100% - 60px - 80px + 2px)"
+    >
+      <v-col
+        v-if="authUser && interlocutorUser"
+        cols="12"
+        class="d-flex flex-column"
+      >
         <v-btn
           v-if="dialogMessagesQuery.hasPreviousPage?.value"
-          class="mx-auto"
+          class="mx-auto mb-4"
           size="small"
           type="button"
           variant="outlined"
           :loading="dialogMessagesQuery.isFetchingPreviousPage.value"
           @click="fetchPreviousClicked"
         >
-          Fetch previous
+          Fetch previous messages
         </v-btn>
-        <v-btn
-          class="ml-auto"
-          size="small"
-          icon
-          type="button"
-          variant="outlined"
-          @click="scrollToLastMessage"
-        >
-          <v-icon icon="mdi-arrow-down"></v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
 
-    <v-row class="overflow-auto" style="height: calc(100% - 60px - 80px + 2px)">
-      <v-col v-if="authUser && interlocutorUser" cols="12">
         <div
-          v-for="(item, index) in messages"
+          v-for="item in messages"
           :key="item.id"
           class="d-flex flex-row align-top"
           :class="{ 'justify-end': isMyMsg(item) }"
@@ -344,16 +418,25 @@ const debouncedReadMessages = useDebounceFn(
               },
             }"
             :message="item"
-            :isMyMsg="isMyMsg(item)"
-            :me="authUser"
-            :interlocutor="interlocutorUser"
-            :isAuthorPrevMsg="messages[index - 1]?.user_id === item.user_id"
           />
         </div>
+
+        <v-btn
+          v-if="scrollState.fromBottomPercent > 20"
+          icon
+          class="ma-8"
+          :style="`position: absolute; right: 0; bottom: 80px`"
+          size="large"
+          type="button"
+          variant="tonal"
+          @click="scrollToBottom"
+        >
+          <v-icon icon="mdi-arrow-down"></v-icon>
+        </v-btn>
       </v-col>
     </v-row>
 
-    <v-row>
+    <v-row class="elevation-4">
       <v-col>
         <v-form
           class="d-flex"
@@ -366,10 +449,12 @@ const debouncedReadMessages = useDebounceFn(
               v-model="newMessageText"
               :readonly="sendMessageMutation.isLoading.value"
               :maxlength="1024"
-              counter
+              persistent-counter
+              persistent-hint
+              hint="Type Something =)"
+              placeholder="Hello!"
               clearable
               required
-              placeholder="Type Something"
               type="text"
               autofocus
             />
