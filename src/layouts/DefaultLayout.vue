@@ -149,6 +149,8 @@ const { to: rightDrawerTo, matchedRoute: rightDrawerRoute } = storeToRefs(
   useRightDrawerRoutingStore()
 );
 
+const { close: closeRightDrawer } = useRightDrawerRoutingStore();
+
 const rightDrawerComponent = computed(() =>
   rightDrawerRoute.value?.components?.default
     ? defineAsyncComponent({
@@ -207,6 +209,15 @@ const rightDrawerComponentProps = computed(() => {
         location="right"
         width="600"
       >
+        <v-btn
+          v-if="rightDrawerRoute"
+          icon
+          style="position: absolute; left: 0; top: 0"
+          @click="closeRightDrawer"
+        >
+          <v-icon icon="mdi-close"></v-icon>
+        </v-btn>
+
         <component
           v-if="rightDrawerRoute"
           :is="rightDrawerComponent"
