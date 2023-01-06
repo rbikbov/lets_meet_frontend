@@ -26,23 +26,42 @@ const fetchMeQuery = useQuery({
     <BaseFormWrapper v-if="authUser">
       <v-row dense>
         <v-col>
-          <BaseAuthUserAvatarWrapper v-slot="{ url }">
-            <v-img class="mx-auto" :width="300" :src="url" cover>
-              <template v-slot:placeholder>
-                <BaseLoader />
-              </template>
-            </v-img>
+          <BaseAuthUserAvatarWrapper v-slot="{ url, onError }">
+            <v-hover v-slot:default="{ isHovering, props }">
+              <v-img
+                v-bind="props"
+                class="mx-auto"
+                cover
+                :width="300"
+                :src="url"
+                @error="onError"
+              >
+                <template v-slot:placeholder>
+                  <BaseLoader />
+                </template>
+
+                <v-overlay
+                  :model-value="isHovering"
+                  contained
+                  scrim="#EEE"
+                  class="align-center justify-center"
+                  width="100%"
+                  height="100%"
+                >
+                  <v-btn
+                    link
+                    :to="{ name: AppRouteNames.accountProfileUpdateAvatar }"
+                    width="100%"
+                    height="100%"
+                    variant="plain"
+                    color="black"
+                  >
+                    <v-icon icon="mdi-camera" size="180"></v-icon>
+                  </v-btn>
+                </v-overlay>
+              </v-img>
+            </v-hover>
           </BaseAuthUserAvatarWrapper>
-        </v-col>
-        <v-col>
-          <v-btn
-            icon="mdi-pencil"
-            :to="{ name: AppRouteNames.accountProfileUpdateAvatar }"
-            exact
-            link
-            small
-            variant="text"
-          ></v-btn>
         </v-col>
       </v-row>
 
