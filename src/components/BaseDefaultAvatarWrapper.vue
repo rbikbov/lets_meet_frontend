@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { defaultAvatarUrl } from '@/helpers/defaultAvatar';
 
@@ -11,6 +11,13 @@ const loadingError = ref(false);
 const onError = () => {
   loadingError.value = true;
 };
+
+watch(
+  () => props.avatarUrl,
+  () => {
+    loadingError.value = false;
+  }
+);
 
 const url = computed(
   () =>
