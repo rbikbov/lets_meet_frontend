@@ -256,6 +256,116 @@ paths:
               schema:
                 type: object
                 "$ref": "#/components/schemas/users_array"
+  "/api/v1/meets/pull_persons":
+    get:
+      summary: Pull persons
+      tags:
+      - Meets
+      operationId: updatePullPersonsByFilter
+      parameters:
+      - name: search
+        in: query
+        schema:
+          type: object
+          properties:
+            age_min:
+              type: integer
+            age_max:
+              type: integer
+            gender:
+              "$ref": "#/components/schemas/gender_type"
+            city:
+              type: string
+            page:
+              type: integer
+        required:
+        - search
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/user"
+        '204':
+          description: No content
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Persons are empty! Try to change filter for search more
+                      persons
+  "/api/v1/meets/current_person":
+    get:
+      summary: Fetch current person
+      tags:
+      - Meets
+      operationId: fetchCurrentPerson
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/user"
+        '204':
+          description: No content
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Persons are empty! Try to change filter for search more
+                      persons
+  "/api/v1/meets/initiate_current_person":
+    patch:
+      summary: initiate current person
+      tags:
+      - Meets
+      operationId: initiateCurrentPerson
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/user"
+        '204':
+          description: No content
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Persons are empty! Try to change filter for search more
+                      persons
+  "/api/v1/meets/skip_current_person":
+    patch:
+      summary: skip current person
+      tags:
+      - Meets
+      operationId: skipCurrentPerson
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/user"
+        '204':
+          description: No content
+          content:
+            application/json:
+              examples:
+                example_1:
+                  value:
+                    message: Persons are empty! Try to change filter for search more
+                      persons
   "/api/v1/meets/{id}/initiate":
     post:
       summary: initiate meet
@@ -366,6 +476,10 @@ paths:
         in: query
         schema:
           type: integer
+      - name: used
+        in: query
+        schema:
+          type: boolean
       responses:
         '200':
           description: Found

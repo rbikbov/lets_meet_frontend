@@ -28,6 +28,8 @@ export enum AppRouteNames {
   accountProfileUpdateInfo = 'accountProfileUpdateInfo',
   accountProfileUpdateAvatar = 'accountProfileUpdateAvatar',
 
+  meetsPulls = 'meetsPulls',
+
   meets = 'meets',
 
   notifications = 'notifications',
@@ -55,7 +57,7 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
       {
         path: '/',
         // name: AppRouteNames.home,
-        redirect: AppRouteNames.meets,
+        redirect: { name: AppRouteNames.meetsPulls },
       },
 
       {
@@ -146,6 +148,15 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         path: '/meets',
         name: AppRouteNames.meets,
         component: () => import('@/views/MeetsList.vue'),
+        meta: {
+          middlewares: [],
+        },
+      },
+
+      {
+        path: '/meets-pulls',
+        name: AppRouteNames.meetsPulls,
+        component: () => import('@/views/MeetsPulls.vue'),
         meta: {
           middlewares: [],
         },

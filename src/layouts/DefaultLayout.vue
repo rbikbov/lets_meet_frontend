@@ -176,7 +176,14 @@ const rightDrawerComponentProps = computed(() => {
         @click="toggleTheme"
       ></v-btn>
 
-      <v-app-bar-title>Let's Meet</v-app-bar-title>
+      <v-app-bar-title>
+        <v-btn link :to="{ name: AppRouteNames.meetsPulls }" :active="false">
+          Let's Meet
+        </v-btn>
+        <v-btn link :to="{ name: AppRouteNames.meets }" exact>
+          Premium Meets
+        </v-btn>
+      </v-app-bar-title>
 
       <v-spacer></v-spacer>
 

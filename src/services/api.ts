@@ -208,6 +208,24 @@ export interface FetchMeetsParams {
 
 export type FetchMeetsData = UsersArray;
 
+export interface UpdatePullPersonsByFilterParams {
+  search?: {
+    age_min?: number;
+    age_max?: number;
+    gender?: GenderType;
+    city?: string;
+    page?: number;
+  };
+}
+
+export type UpdatePullPersonsByFilterData = User;
+
+export type FetchCurrentPersonData = User;
+
+export type InitiateCurrentPersonData = User;
+
+export type SkipCurrentPersonData = User;
+
 export type InitiateMeetData = any;
 
 export type InitiateMeetError = Error;
@@ -230,6 +248,7 @@ export type DeclineMeetError = Error;
 
 export interface FetchUserNotificationsParams {
   page?: number;
+  used?: boolean;
   id: string;
 }
 
@@ -453,6 +472,74 @@ export namespace Api {
   /**
    * No description
    * @tags Meets
+   * @name UpdatePullPersonsByFilter
+   * @summary Pull persons
+   * @request GET:/api/v1/meets/pull_persons
+   * @secure
+   */
+  export namespace UpdatePullPersonsByFilter {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      search?: {
+        age_min?: number;
+        age_max?: number;
+        gender?: GenderType;
+        city?: string;
+        page?: number;
+      };
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdatePullPersonsByFilterData;
+  }
+  /**
+   * No description
+   * @tags Meets
+   * @name FetchCurrentPerson
+   * @summary Fetch current person
+   * @request GET:/api/v1/meets/current_person
+   * @secure
+   */
+  export namespace FetchCurrentPerson {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = FetchCurrentPersonData;
+  }
+  /**
+   * No description
+   * @tags Meets
+   * @name InitiateCurrentPerson
+   * @summary initiate current person
+   * @request PATCH:/api/v1/meets/initiate_current_person
+   * @secure
+   */
+  export namespace InitiateCurrentPerson {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = InitiateCurrentPersonData;
+  }
+  /**
+   * No description
+   * @tags Meets
+   * @name SkipCurrentPerson
+   * @summary skip current person
+   * @request PATCH:/api/v1/meets/skip_current_person
+   * @secure
+   */
+  export namespace SkipCurrentPerson {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SkipCurrentPersonData;
+  }
+  /**
+   * No description
+   * @tags Meets
    * @name InitiateMeet
    * @summary initiate meet
    * @request POST:/api/v1/meets/{id}/initiate
@@ -515,6 +602,7 @@ export namespace Api {
     };
     export type RequestQuery = {
       page?: number;
+      used?: boolean;
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
@@ -1022,6 +1110,75 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/v1/meets`,
         method: 'GET',
         query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Meets
+     * @name UpdatePullPersonsByFilter
+     * @summary Pull persons
+     * @request GET:/api/v1/meets/pull_persons
+     * @secure
+     */
+    updatePullPersonsByFilter: (query: UpdatePullPersonsByFilterParams, params: RequestParams = {}) =>
+      this.request<UpdatePullPersonsByFilterData, any>({
+        path: `/api/v1/meets/pull_persons`,
+        method: 'GET',
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Meets
+     * @name FetchCurrentPerson
+     * @summary Fetch current person
+     * @request GET:/api/v1/meets/current_person
+     * @secure
+     */
+    fetchCurrentPerson: (params: RequestParams = {}) =>
+      this.request<FetchCurrentPersonData, any>({
+        path: `/api/v1/meets/current_person`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Meets
+     * @name InitiateCurrentPerson
+     * @summary initiate current person
+     * @request PATCH:/api/v1/meets/initiate_current_person
+     * @secure
+     */
+    initiateCurrentPerson: (params: RequestParams = {}) =>
+      this.request<InitiateCurrentPersonData, any>({
+        path: `/api/v1/meets/initiate_current_person`,
+        method: 'PATCH',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Meets
+     * @name SkipCurrentPerson
+     * @summary skip current person
+     * @request PATCH:/api/v1/meets/skip_current_person
+     * @secure
+     */
+    skipCurrentPerson: (params: RequestParams = {}) =>
+      this.request<SkipCurrentPersonData, any>({
+        path: `/api/v1/meets/skip_current_person`,
+        method: 'PATCH',
         secure: true,
         ...params,
       }),

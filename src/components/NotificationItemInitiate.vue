@@ -46,10 +46,12 @@ const declineMeetMutation = useMutation({
 
 const onConfirmClick = () => {
   confirmMeetMutation.mutate(props.notification.content.user_ids[0]);
+  // TODO: hide buttons
 };
 
 const onDeclineClick = () => {
   declineMeetMutation.mutate(props.notification.content.user_ids[0]);
+  // TODO: hide buttons
 };
 </script>
 

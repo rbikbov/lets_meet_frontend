@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useMutation, useQuery } from '@tanstack/vue-query';
 
@@ -15,7 +15,7 @@ import MeetsGridCardItem from '@/components/MeetsGridCardItem.vue';
 const { meets } = storeToRefs(useMeetsStore());
 const { setMeets } = useMeetsStore();
 
-const meetsQueryParams: FetchMeetsParams = reactive({
+const meetsQueryParams = ref<FetchMeetsParams>({
   search: {
     age_min: 18,
     age_max: 70,
@@ -32,7 +32,7 @@ const onMeetsFiltersFormSubmit = () => {
 
 const meetsQuery = useQuery({
   queryKey: [MEETS],
-  queryFn: () => fetchMeets(meetsQueryParams),
+  queryFn: () => fetchMeets(meetsQueryParams.value),
   onSuccess: (response) => {
     setMeets(response.data || []);
   },

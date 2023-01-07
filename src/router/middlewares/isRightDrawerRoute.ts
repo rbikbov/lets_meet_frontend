@@ -18,7 +18,7 @@ export async function isRightDrawerRoute({
     rightDrawerRoutingStore.setTo(to);
 
     if (!from || !from.name) {
-      next({ name: AppRouteNames.meets });
+      next({ name: AppRouteNames.meetsPulls });
       return;
     }
   } catch (error) {

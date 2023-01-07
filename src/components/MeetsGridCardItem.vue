@@ -16,17 +16,16 @@ const props = withDefaults(
 </script>
 
 <template>
-  <v-card variant="outlined" elevation="8">
+  <v-card class="h-100" variant="outlined" elevation="8">
     <BaseDefaultAvatarWrapper
       v-slot="{ url, onError }"
       :avatar-url="user.avatar"
     >
       <v-img
         :src="url"
-        class="align-end"
+        class="align-end h-100"
         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.9)"
         cover
-        height="300px"
         @error="onError"
       >
         <template v-slot:placeholder>

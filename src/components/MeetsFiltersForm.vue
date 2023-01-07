@@ -55,7 +55,7 @@ const onSubmit = () => {
       <v-range-slider
         v-bind="inputProps"
         v-model="agesRange"
-        :readonly="loading"
+        :disabled="loading"
         :step="1"
         :min="16"
         :max="80"
@@ -68,7 +68,7 @@ const onSubmit = () => {
       <v-radio-group
         v-bind="inputProps"
         label="Gender"
-        :readonly="loading"
+        :disabled="loading"
         :model-value="meetsQueryParams.search?.gender"
         @update:model-value="
           ($event: GenderType | null) =>
