@@ -1,17 +1,27 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { useQuery } from '@tanstack/vue-query';
+
+import { STARS_LIST } from '@/services/queries/keys';
+import { fetchStarsList } from '@/services/stars';
+
+import MeetsGridCardItem from '@/components/MeetsGridCardItem.vue';
 
 const model = ref(null);
-
 watch(() => model.value, console.log);
+
+const starsListQuery = useQuery({
+  queryKey: [STARS_LIST],
+  queryFn: () => fetchStarsList(),
+});
 </script>
 
 <template>
   <v-sheet class="mx-auto" elevation="8">
     <v-slide-group v-model="model" class="pa-0" center-active show-arrows>
       <v-slide-group-item
-        v-for="n in 100"
-        :key="n"
+        v-for="user in starsListQuery.data.value?.data.results"
+        :key="user.id"
         v-slot="{ isSelected, toggle }"
       >
         <v-card
@@ -24,7 +34,7 @@ watch(() => model.value, console.log);
           <div
             class="d-flex flex-column fill-height align-center justify-center"
           >
-            <div class="mb-auto">{{ n }}</div>
+            <MeetsGridCardItem :user="user" />
             <v-scale-transition>
               <v-icon
                 v-if="isSelected"

@@ -4,6 +4,58 @@ info:
   title: API V1
   version: v1
 paths:
+  "/api/v1/accounts/activate_premium":
+    patch:
+      summary: activates premium
+      tags:
+      - Accounts
+      operationId: activatePremium
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  date_expires:
+                    type: string
+                    format: date-time
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
+  "/api/v1/accounts/activate_stars":
+    patch:
+      summary: activates star
+      tags:
+      - Accounts
+      operationId: activateStars
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  date_expires:
+                    type: string
+                    format: date-time
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
   "/api/v1/cities":
     get:
       summary: return cities by country
@@ -75,6 +127,32 @@ paths:
               required:
               - text_message
   "/api/v1/users/{id}/dialogs":
+    post:
+      summary: creates dialog
+      tags:
+      - Dialogs
+      operationId: createDialogWithUser
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/dialog"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
     get:
       summary: return dialogs
       tags:
@@ -255,7 +333,31 @@ paths:
             application/json:
               schema:
                 type: object
-                "$ref": "#/components/schemas/users_array"
+                allOf:
+                - "$ref": "#/components/schemas/paginated_result"
+                - type: object
+                  properties:
+                    results:
+                      "$ref": "#/components/schemas/users_array"
+  "/api/v1/meets/stars_list":
+    get:
+      summary: return stars users
+      tags:
+      - Meets
+      operationId: fetchStarsList
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                - "$ref": "#/components/schemas/paginated_result"
+                - type: object
+                  properties:
+                    results:
+                      "$ref": "#/components/schemas/users_array"
   "/api/v1/meets/pull_persons":
     get:
       summary: Pull persons
@@ -532,6 +634,49 @@ paths:
               schema:
                 type: object
                 "$ref": "#/components/schemas/error"
+  "/api/v1/buy_thirty":
+    post:
+      summary: buy 30 coins
+      tags:
+      - Payments
+      operationId: buyThirtyCoins
+      parameters: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  coins:
+                    type: integer
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number:
+                  type: integer
+                month:
+                  type: integer
+                year:
+                  type: integer
+                cvv:
+                  type: integer
+              required:
+              - number
+              - month
+              - year
+              - cvv
   "/api/v1/sessions":
     post:
       summary: Creates a session
@@ -999,6 +1144,14 @@ components:
           email:
             type: string
             format: email
+          coins:
+            type: integer
+          premium_expires:
+            type: string
+            format: date-time
+          stars_expires:
+            type: string
+            format: date-time
         required:
         - email
     invalid_user:

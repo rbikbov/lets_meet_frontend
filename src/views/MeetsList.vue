@@ -8,7 +8,7 @@ import { MEETS } from '@/services/queries/keys';
 import type { FetchMeetsParams } from '@/services/api';
 import { fetchMeets, initiateMeet } from '@/services/meets';
 
-import GoldUsersList from '@/components/GoldUsersList.vue';
+import StarUsersList from '@/components/StarUsersList.vue';
 import MeetsFiltersForm from '@/components/MeetsFiltersForm.vue';
 import MeetsGridCardItem from '@/components/MeetsGridCardItem.vue';
 
@@ -30,11 +30,12 @@ const onMeetsFiltersFormSubmit = () => {
   meetsQuery.refetch();
 };
 
+// TODO: infinity query
 const meetsQuery = useQuery({
   queryKey: [MEETS],
   queryFn: () => fetchMeets(meetsQueryParams.value),
   onSuccess: (response) => {
-    setMeets(response.data || []);
+    setMeets(response.data.results || []);
   },
 });
 
@@ -49,7 +50,7 @@ const initiateMeetMutation = useMutation({
 
 <template>
   <v-container fluid>
-    <GoldUsersList />
+    <StarUsersList />
 
     <br />
 

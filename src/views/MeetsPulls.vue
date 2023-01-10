@@ -14,7 +14,7 @@ import {
   skipCurrentPerson,
 } from '@/services/meets';
 
-import GoldUsersList from '@/components/GoldUsersList.vue';
+import StarUsersList from '@/components/StarUsersList.vue';
 import MeetsFiltersForm from '@/components/MeetsFiltersForm.vue';
 import MeetsGridCardItem from '@/components/MeetsGridCardItem.vue';
 
@@ -84,7 +84,7 @@ const onMeetsFiltersFormSubmit = () => {
 
 <template>
   <v-container fluid>
-    <GoldUsersList />
+    <StarUsersList />
 
     <br />
 

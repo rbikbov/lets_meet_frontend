@@ -78,6 +78,11 @@ export type User = BaseUser & {
 export type Me = BaseUser & {
   /** @format email */
   email: string;
+  coins?: number;
+  /** @format date-time */
+  premium_expires?: string;
+  /** @format date-time */
+  stars_expires?: string;
 };
 
 export interface InvalidUser {
@@ -150,6 +155,22 @@ export interface PaginatedResult {
   results: any[];
 }
 
+export interface ActivatePremiumData {
+  message?: string;
+  /** @format date-time */
+  date_expires?: string;
+}
+
+export type ActivatePremiumError = Error;
+
+export interface ActivateStarsData {
+  message?: string;
+  /** @format date-time */
+  date_expires?: string;
+}
+
+export type ActivateStarsError = Error;
+
 export type FetchCountryCitiesData = any[];
 
 export type FetchCountriesData = object;
@@ -161,6 +182,10 @@ export interface DialogSendMessagePayload {
 export type DialogSendMessageData = Message;
 
 export type DialogSendMessageError = Error;
+
+export type CreateDialogWithUserData = Dialog;
+
+export type CreateDialogWithUserError = Error;
 
 export interface FetchUserDialogsParams {
   page?: number;
@@ -206,7 +231,13 @@ export interface FetchMeetsParams {
   };
 }
 
-export type FetchMeetsData = UsersArray;
+export type FetchMeetsData = PaginatedResult & {
+  results?: UsersArray;
+};
+
+export type FetchStarsListData = PaginatedResult & {
+  results?: UsersArray;
+};
 
 export interface UpdatePullPersonsByFilterParams {
   search?: {
@@ -261,6 +292,19 @@ export type FetchUserNotificationsError = Error;
 export type CloseNotificationData = any;
 
 export type CloseNotificationError = Error;
+
+export interface BuyThirtyCoinsPayload {
+  number: number;
+  month: number;
+  year: number;
+  cvv: number;
+}
+
+export interface BuyThirtyCoinsData {
+  coins?: number;
+}
+
+export type BuyThirtyCoinsError = Error;
 
 export interface OpenSessionPayload {
   user: SigninRequestDataUser;
@@ -326,6 +370,36 @@ export type RemoveUserFromBlackListData = any;
 export namespace Api {
   /**
    * No description
+   * @tags Accounts
+   * @name ActivatePremium
+   * @summary activates premium
+   * @request PATCH:/api/v1/accounts/activate_premium
+   * @secure
+   */
+  export namespace ActivatePremium {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ActivatePremiumData;
+  }
+  /**
+   * No description
+   * @tags Accounts
+   * @name ActivateStars
+   * @summary activates star
+   * @request PATCH:/api/v1/accounts/activate_stars
+   * @secure
+   */
+  export namespace ActivateStars {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ActivateStarsData;
+  }
+  /**
+   * No description
    * @tags Cities
    * @name FetchCountryCities
    * @summary return cities by country
@@ -372,6 +446,24 @@ export namespace Api {
     export type RequestBody = DialogSendMessagePayload;
     export type RequestHeaders = {};
     export type ResponseBody = DialogSendMessageData;
+  }
+  /**
+   * No description
+   * @tags Dialogs
+   * @name CreateDialogWithUser
+   * @summary creates dialog
+   * @request POST:/api/v1/users/{id}/dialogs
+   * @secure
+   */
+  export namespace CreateDialogWithUser {
+    export type RequestParams = {
+      userId: string;
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateDialogWithUserData;
   }
   /**
    * No description
@@ -468,6 +560,21 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = FetchMeetsData;
+  }
+  /**
+   * No description
+   * @tags Meets
+   * @name FetchStarsList
+   * @summary return stars users
+   * @request GET:/api/v1/meets/stars_list
+   * @secure
+   */
+  export namespace FetchStarsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = FetchStarsListData;
   }
   /**
    * No description
@@ -624,6 +731,21 @@ export namespace Api {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = CloseNotificationData;
+  }
+  /**
+   * No description
+   * @tags Payments
+   * @name BuyThirtyCoins
+   * @summary buy 30 coins
+   * @request POST:/api/v1/buy_thirty
+   * @secure
+   */
+  export namespace BuyThirtyCoins {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = BuyThirtyCoinsPayload;
+    export type RequestHeaders = {};
+    export type ResponseBody = BuyThirtyCoinsData;
   }
   /**
    * No description
@@ -974,6 +1096,40 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags Accounts
+     * @name ActivatePremium
+     * @summary activates premium
+     * @request PATCH:/api/v1/accounts/activate_premium
+     * @secure
+     */
+    activatePremium: (params: RequestParams = {}) =>
+      this.request<ActivatePremiumData, ActivatePremiumError>({
+        path: `/api/v1/accounts/activate_premium`,
+        method: 'PATCH',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Accounts
+     * @name ActivateStars
+     * @summary activates star
+     * @request PATCH:/api/v1/accounts/activate_stars
+     * @secure
+     */
+    activateStars: (params: RequestParams = {}) =>
+      this.request<ActivateStarsData, ActivateStarsError>({
+        path: `/api/v1/accounts/activate_stars`,
+        method: 'PATCH',
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags Cities
      * @name FetchCountryCities
      * @summary return cities by country
@@ -1021,6 +1177,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         body: data,
         secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Dialogs
+     * @name CreateDialogWithUser
+     * @summary creates dialog
+     * @request POST:/api/v1/users/{id}/dialogs
+     * @secure
+     */
+    createDialogWithUser: (userId: string, id: string, params: RequestParams = {}) =>
+      this.request<CreateDialogWithUserData, CreateDialogWithUserError>({
+        path: `/api/v1/users/${id}/dialogs`,
+        method: 'POST',
+        secure: true,
         ...params,
       }),
 
@@ -1110,6 +1283,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/v1/meets`,
         method: 'GET',
         query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Meets
+     * @name FetchStarsList
+     * @summary return stars users
+     * @request GET:/api/v1/meets/stars_list
+     * @secure
+     */
+    fetchStarsList: (params: RequestParams = {}) =>
+      this.request<FetchStarsListData, any>({
+        path: `/api/v1/meets/stars_list`,
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1270,6 +1460,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/v1/notifications/${id}/close`,
         method: 'PATCH',
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Payments
+     * @name BuyThirtyCoins
+     * @summary buy 30 coins
+     * @request POST:/api/v1/buy_thirty
+     * @secure
+     */
+    buyThirtyCoins: (data: BuyThirtyCoinsPayload, params: RequestParams = {}) =>
+      this.request<BuyThirtyCoinsData, BuyThirtyCoinsError>({
+        path: `/api/v1/buy_thirty`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 

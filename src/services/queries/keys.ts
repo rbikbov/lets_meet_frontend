@@ -6,3 +6,4 @@ export const MEETS_FETCH_CURRENT_PERSON = 'fetchCurrentPersonQuery';
 export const NOTIFICATIONS = 'notifications';
 export const DIALOGS = 'dialogs';
 export const DIALOGS_MESSAGES = 'dialogMessages';
+export const STARS_LIST = 'starsList';
