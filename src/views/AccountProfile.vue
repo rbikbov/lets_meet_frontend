@@ -7,18 +7,40 @@ import { useAuthStore } from '@/stores/auth';
 
 import { AUTH_USER } from '@/services/queries/keys';
 import { fetchMe } from '@/services/auth';
+import { getFullDateTime } from '@/helpers/dateFormatter';
 
 import BaseFormWrapper from '@/components/BaseFormWrapper.vue';
 import BaseAuthUserAvatarWrapper from '@/components/BaseAuthUserAvatarWrapper.vue';
 import AuthSignoutProvider from '@/components/AuthSignoutProvider.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
+import AccountPremiumActivateOrIncrease from '@/components/AccountPremiumActivateOrIncrease.vue';
+import AccountStarsActivateOrIncrease from '@/components/AccountStarsActivateOrIncrease.vue';
 
 const { authUser } = storeToRefs(useAuthStore());
+const { setAuthUser } = useAuthStore();
 
 const fetchMeQuery = useQuery({
   queryKey: [AUTH_USER],
   queryFn: () => fetchMe(),
+  onSuccess: (response) => {
+    setAuthUser(response.data);
+  },
 });
+
+const onPremiumClicked = (fn: () => Promise<void>) => {
+  fn().then(() => fetchMeQuery.refetch());
+};
+
+const onStarsClicked = (fn: () => Promise<void>) => {
+  fn().then(() => fetchMeQuery.refetch());
+};
+
+const formatExpiresBtnText = (date?: string) => {
+  if (!date) {
+    return 'Activate';
+  }
+  return Number(new Date(date)) > Date.now() ? 'Increase' : 'Activate';
+};
 </script>
 
 <template>
@@ -93,31 +115,89 @@ const fetchMeQuery = useQuery({
         </v-col>
       </v-row>
 
-      <v-card-subtitle> {{ authUser.email }} </v-card-subtitle>
+      <v-card-subtitle> Email: {{ authUser.email }} </v-card-subtitle>
 
       <v-card-subtitle> Age: {{ authUser.age }} </v-card-subtitle>
 
       <v-card-subtitle> Gender: {{ authUser.gender }} </v-card-subtitle>
 
+      <v-card-subtitle> City: {{ authUser.city }} </v-card-subtitle>
+
+      <v-card-subtitle> Coins: {{ authUser.coins }} </v-card-subtitle>
+
+      <v-card-subtitle>
+        Premium expires:
+        {{
+          authUser.premium_expires
+            ? getFullDateTime(authUser.premium_expires)
+            : '-'
+        }}
+      </v-card-subtitle>
+
+      <v-card-subtitle>
+        Stars expires:
+        {{
+          authUser.stars_expires ? getFullDateTime(authUser.stars_expires) : '-'
+        }}
+      </v-card-subtitle>
+
       <!-- <v-divider></v-divider> -->
 
-      <v-card-text></v-card-text>
+      <!-- <v-card-text></v-card-text> -->
+
+      <v-card-actions class="d-flex flex-column">
+        <v-btn
+          class="mb-2"
+          link
+          exact
+          prepend-icon="mdi-cash-plus"
+          variant="outlined"
+          :to="{ name: AppRouteNames.accountBuyCoins }"
+        >
+          Buy coins
+        </v-btn>
+        <AccountPremiumActivateOrIncrease v-slot="{ loading, onActivate }">
+          <v-btn
+            class="mb-2"
+            link
+            exact
+            prepend-icon="mdi-cash-plus"
+            variant="outlined"
+            :loading="loading"
+            @click="onPremiumClicked(onActivate)"
+          >
+            {{ formatExpiresBtnText(authUser.premium_expires) }}
+            premium
+          </v-btn>
+        </AccountPremiumActivateOrIncrease>
+        <AccountStarsActivateOrIncrease v-slot="{ loading, onActivate }">
+          <v-btn
+            link
+            exact
+            prepend-icon="mdi-cash-plus"
+            variant="outlined"
+            :loading="loading"
+            @click="onStarsClicked(onActivate)"
+          >
+            {{ formatExpiresBtnText(authUser.stars_expires) }}
+            stars
+          </v-btn>
+        </AccountStarsActivateOrIncrease>
+      </v-card-actions>
     </BaseFormWrapper>
 
-    <AuthSignoutProvider>
-      <template v-slot="{ loading, signOut }">
-        <v-btn
-          :loading="loading"
-          class="ma-auto"
-          size="large"
-          type="submit"
-          variant="outlined"
-          prepend-icon="mdi-logout-variant"
-          @click="signOut"
-        >
-          Sign Out
-        </v-btn>
-      </template>
+    <AuthSignoutProvider v-slot="{ loading, onSignOut }">
+      <v-btn
+        :loading="loading"
+        class="ma-auto"
+        size="large"
+        type="submit"
+        variant="outlined"
+        prepend-icon="mdi-logout-variant"
+        @click="onSignOut"
+      >
+        Sign Out
+      </v-btn>
     </AuthSignoutProvider>
   </div>
 </template>

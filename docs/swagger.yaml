@@ -634,7 +634,7 @@ paths:
               schema:
                 type: object
                 "$ref": "#/components/schemas/error"
-  "/api/v1/buy_thirty":
+  "/api/v1/payments/buy_thirty":
     post:
       summary: buy 30 coins
       tags:

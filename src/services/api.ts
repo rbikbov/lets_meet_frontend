@@ -737,7 +737,7 @@ export namespace Api {
    * @tags Payments
    * @name BuyThirtyCoins
    * @summary buy 30 coins
-   * @request POST:/api/v1/buy_thirty
+   * @request POST:/api/v1/payments/buy_thirty
    * @secure
    */
   export namespace BuyThirtyCoins {
@@ -1469,12 +1469,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Payments
      * @name BuyThirtyCoins
      * @summary buy 30 coins
-     * @request POST:/api/v1/buy_thirty
+     * @request POST:/api/v1/payments/buy_thirty
      * @secure
      */
     buyThirtyCoins: (data: BuyThirtyCoinsPayload, params: RequestParams = {}) =>
       this.request<BuyThirtyCoinsData, BuyThirtyCoinsError>({
-        path: `/api/v1/buy_thirty`,
+        path: `/api/v1/payments/buy_thirty`,
         method: 'POST',
         body: data,
         secure: true,

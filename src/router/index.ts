@@ -28,6 +28,8 @@ export enum AppRouteNames {
   accountProfileUpdateInfo = 'accountProfileUpdateInfo',
   accountProfileUpdateAvatar = 'accountProfileUpdateAvatar',
 
+  accountBuyCoins = 'accountBuyCoins',
+
   meetsPulls = 'meetsPulls',
 
   meets = 'meets',
@@ -139,6 +141,15 @@ const routes: Readonly<RouteRecordRawWithMeta[]> = [
         path: '/account/profile-update-avatar',
         name: AppRouteNames.accountProfileUpdateAvatar,
         component: () => import('@/views/AccountProfileUpdateAvatar.vue'),
+        meta: {
+          middlewares: [requireAuth, isRightDrawerRoute],
+        },
+      },
+
+      {
+        path: '/account/buy-coins',
+        name: AppRouteNames.accountBuyCoins,
+        component: () => import('@/views/AccountBuyCoins.vue'),
         meta: {
           middlewares: [requireAuth, isRightDrawerRoute],
         },

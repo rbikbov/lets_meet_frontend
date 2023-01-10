@@ -20,6 +20,9 @@ const { jwtPayload } = storeToRefs(useAuthStore());
 const fetchMeQuery = useQuery({
   queryKey: [AUTH_USER],
   queryFn: () => fetchMe(),
+  onSuccess: (response) => {
+    authStore.setAuthUser(response.data);
+  },
 });
 
 const accountProfileUpdateAvatarForm = ref<

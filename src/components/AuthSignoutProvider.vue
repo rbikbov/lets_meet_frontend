@@ -21,13 +21,13 @@ const signOutMutation = useMutation(() => signOut(), {
   },
 });
 
-const onSignOut = () => {
-  signOutMutation.mutate();
+const onSignOut = async () => {
+  await signOutMutation.mutate();
 };
 </script>
 
 <template>
-  <slot :loading="signOutMutation.isLoading.value" :signOut="onSignOut" />
+  <slot :loading="signOutMutation.isLoading.value" :onSignOut="onSignOut" />
 </template>
 
 <style></style>
