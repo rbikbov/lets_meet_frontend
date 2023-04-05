@@ -8,8 +8,8 @@ yarn build
 
 # prepare variables
 origin_url=$(git remote get-url origin)
-GITHUB_USERNAME="rafizz"
-GITHUB_REPO_BRANCH_NAME="lets_meet"
+GITHUB_USERNAME="some_github_login"
+GITHUB_REPO_BRANCH_NAME="github_repository_branch_name"
 
 # navigate into the build output directory
 cd dist
@@ -19,7 +19,6 @@ echo > .nojekyll
 
 # if you are deploying to a custom domain
 # echo 'www.example.com' > CNAME
-echo 'dev.lets-meet.ml' > CNAME
 
 git init
 git add -A
